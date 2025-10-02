@@ -4,9 +4,9 @@
   "description": "WebAssembly фотопроцесор для браузера",
   "main": "index.html",
   "scripts": {
-    "start": "npx serve . -s",
-    "dev": "npx serve . -s",
-    "serve": "npx serve . -s",
+    "start": "PORT=${PORT:-8080} npx serve . -s -l $PORT",
+    "dev": "npx serve . -s -l 8080",
+    "serve": "npx serve . -s -l 8080",
     "build": "echo 'No build needed for static site'"
   },
   "keywords": [

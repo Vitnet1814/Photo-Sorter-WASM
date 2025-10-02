@@ -1,0 +1,27 @@
+{
+  "name": "photo-filter-wasm",
+  "version": "1.0.0",
+  "description": "WebAssembly фотопроцесор для браузера",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "start": "python -m http.server 8000"
+  },
+  "keywords": [
+    "webassembly",
+    "photo",
+    "filter",
+    "image-processing",
+    "ukraine"
+  ],
+  "author": "Vitnet1814",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vitnet1814/Photo-Sorter-WASM.git"
+  },
+  "homepage": "https://github.com/Vitnet1814/Photo-Sorter-WASM#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

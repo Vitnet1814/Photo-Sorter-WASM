@@ -143,8 +143,8 @@ extern "C" {
         result += "  \"width\": " + std::to_string(meta.width) + ",\n";
         result += "  \"height\": " + std::to_string(meta.height) + ",\n";
         result += "  \"format\": \"" + meta.format + "\",\n";
-        result += "  \"has_exif\": " + (meta.has_exif ? "true" : "false") + ",\n";
-        result += "  \"is_valid\": " + (meta.is_valid ? "true" : "false") + "\n";
+        result += "  \"has_exif\": " + std::string(meta.has_exif ? "true" : "false") + ",\n";
+        result += "  \"is_valid\": " + std::string(meta.is_valid ? "true" : "false") + "\n";
         result += "}";
         
         return result.c_str();

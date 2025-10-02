@@ -51,7 +51,6 @@ emcc src/main.cpp src/exif-reader.cpp \
     -s MODULARIZE=1 \
     -s EXPORT_NAME="PhotoProcessor" \
     -s ENVIRONMENT='web' \
-    -s USE_ES6_IMPORT_META=0 \
     -s SINGLE_FILE=0 \
     -o ../frontend/wasm/photo-processor.js
 

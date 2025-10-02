@@ -4,8 +4,10 @@
   "description": "WebAssembly фотопроцесор для браузера",
   "main": "index.html",
   "scripts": {
-    "dev": "python -m http.server 8000",
-    "start": "python -m http.server 8000"
+    "dev": "python3 -m http.server 8000",
+    "start": "python3 -m http.server 8000",
+    "serve": "npx serve .",
+    "serve-node": "npx http-server . -p 8000"
   },
   "keywords": [
     "webassembly",

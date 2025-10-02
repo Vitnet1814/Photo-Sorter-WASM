@@ -1,0 +1,27 @@
+# Railway ignore file
+# Ignorujeme файли що не потрібні для деплою
+
+# Development files
+.vscode/
+.idea/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+build/
+dist/
+*.tar.gz
+
+# Test files
+test_photos/
+sample_images/
+
+# WASM source files (скомпільовані файли беруться з frontend/wasm/)
+wasm-source/
+
+# Backup files
+*.bak
+*.backup

@@ -4,10 +4,10 @@
   "description": "WebAssembly фотопроцесор для браузера",
   "main": "index.html",
   "scripts": {
-    "dev": "python3 -m http.server 8000",
-    "start": "python3 -m http.server 8000",
-    "serve": "npx serve .",
-    "serve-node": "npx http-server . -p 8000"
+    "start": "npx serve . -s",
+    "dev": "npx serve . -s",
+    "serve": "npx serve . -s",
+    "build": "echo 'No build needed for static site'"
   },
   "keywords": [
     "webassembly",
@@ -25,5 +25,8 @@
   "homepage": "https://github.com/Vitnet1814/Photo-Sorter-WASM#readme",
   "engines": {
     "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
   }
 }

@@ -5,6 +5,8 @@ const path = require('path');
 const port = process.env.PORT || 8080;
 
 console.log(`🚀 Starting Photo Filter WASM on port ${port}`);
+console.log(`🔍 Railway PORT env:`, process.env.PORT);
+console.log(`📋 All env vars:`, Object.keys(process.env).filter(k => k.includes('PORT')));
 
 // Запускаємо serve з правильним портом
 const serve = spawn('npx', ['serve', '.', '-s', '-l', port.toString()], {

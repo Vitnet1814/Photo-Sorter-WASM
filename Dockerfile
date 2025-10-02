@@ -88,8 +88,10 @@ ENV SECRET_KEY=change-this-in-production
 ENV JWT_SECRET_KEY=change-this-in-production
 ENV REDIS_URL=redis://redis:6379/0
 
-# Створюємо директорію для даних
-RUN mkdir -p /app/data && chown photosorter:photosorter /app/data
+# Створюємо директорію для даних з правильними правами
+RUN mkdir -p /app/data 
+RUN chmod 777 /app/data
+RUN chown photosorter:photosorter /app/data || chown root:root /app/data
 
 # Відкриваємо порти
 EXPOSE 80 5000
@@ -98,5 +100,14 @@ EXPOSE 80 5000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost/api/health || exit 1
 
-# Запуск Flask напряму (тимчасово для debugging)
-CMD ["python", "/app/backend/app.py"]
+# Debug: спочатку виводимо структуру файлів
+RUN ls -la /app/backend/
+RUN python --version
+RUN which python
+RUN python -c "import sys; print(sys.path)"
+
+# Змінюємо права перед запуском
+RUN chmod 777 /app/data
+
+# Запуск Flask як root (тимчасово)
+CMD ["python", "-u", "/app/backend/app.py"]

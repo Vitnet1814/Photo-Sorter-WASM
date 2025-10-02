@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Sorter WASM - Сортування фотографій</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-images"></i>
+                    <h1>Photo Sorter WASM</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline" id="settingsBtn">
+                        <i class="fas fa-cog"></i>
+                        Налаштування
+                    </button>
+                    <button class="btn btn-primary" id="premiumBtn">
+                        <i class="fas fa-crown"></i>
+                        Преміум
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <div class="welcome-content">
+                    <h2>Автоматичне сортування фотографій</h2>
+                    <p>Використовуйте потужність WebAssembly для швидкого та точного сортування ваших фото за датою, камерою, розміром та іншими критеріями.</p>
+                </div>
+            </section>
+
+            <!-- Folder Selection -->
+            <section class="folder-selection">
+                <div class="folder-cards">
+                    <div class="folder-card" id="inputFolderCard">
+                        <div class="folder-icon">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <h3>Вхідна папка</h3>
+                        <p>Виберіть папку з невідсортованими фото</p>
+                        <button class="btn btn-primary" id="selectInputBtn">
+                            <i class="fas fa-folder-plus"></i>
+                            Вибрати папку
+                        </button>
+                        <div class="folder-info" id="inputFolderInfo" style="display: none;">
+                            <div class="folder-path" id="inputFolderPath"></div>
+                            <div class="folder-stats" id="inputFolderStats"></div>
+                        </div>
+                    </div>
+
+                    <div class="folder-card" id="outputFolderCard">
+                        <div class="folder-icon">
+                            <i class="fas fa-folder-plus"></i>
+                        </div>
+                        <h3>Вихідна папка</h3>
+                        <p>Папка для відсортованих фото</p>
+                        <button class="btn btn-primary" id="selectOutputBtn">
+                            <i class="fas fa-folder-plus"></i>
+                            Вибрати папку
+                        </button>
+                        <div class="folder-info" id="outputFolderInfo" style="display: none;">
+                            <div class="folder-path" id="outputFolderPath"></div>
+                            <div class="folder-stats" id="outputFolderStats"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Processing Options -->
+            <section class="processing-options">
+                <div class="options-grid">
+                    <div class="option-group">
+                        <h3>Режим обробки</h3>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="processingMode" value="copy" checked>
+                                <span class="radio-custom"></span>
+                                <div class="radio-content">
+                                    <strong>Копіювання</strong>
+                                    <small>Створює дублікати фото</small>
+                                </div>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="processingMode" value="move">
+                                <span class="radio-custom"></span>
+                                <div class="radio-content">
+                                    <strong>Переміщення</strong>
+                                    <small>Переносить оригінали (економія місця)</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <h3>Критерій сортування</h3>
+                        <select class="select-input" id="sortCriteria">
+                            <option value="0">За датою зйомки (EXIF)</option>
+                            <option value="1">За датою модифікації файлу</option>
+                            <option value="2">За розміром фото</option>
+                            <option value="3">За типом камери</option>
+                        </select>
+                    </div>
+
+                    <div class="option-group">
+                        <h3>Додаткові опції</h3>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="createSubfolders" checked>
+                                <span class="checkbox-custom"></span>
+                                Створювати підпапки за днями
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="handleDuplicates" checked>
+                                <span class="checkbox-custom"></span>
+                                Обробляти дублікати
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="preserveStructure">
+                                <span class="checkbox-custom"></span>
+                                Зберігати оригінальну структуру
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Progress Section -->
+            <section class="progress-section" id="progressSection" style="display: none;">
+                <div class="progress-header">
+                    <h3>Обробка фото</h3>
+                    <button class="btn btn-outline btn-sm" id="cancelBtn">
+                        <i class="fas fa-times"></i>
+                        Скасувати
+                    </button>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                
+                <div class="progress-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Оброблено:</span>
+                        <span class="stat-value" id="processedCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Помилки:</span>
+                        <span class="stat-value" id="errorCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Пропущено:</span>
+                        <span class="stat-value" id="skippedCount">0</span>
+                    </div>
+                </div>
+
+                <div class="progress-log">
+                    <h4>Лог обробки</h4>
+                    <div class="log-content" id="logContent"></div>
+                </div>
+            </section>
+
+            <!-- Statistics Section -->
+            <section class="statistics-section" id="statisticsSection" style="display: none;">
+                <h3>Статистика обробки</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="totalPhotos">0</div>
+                            <div class="stat-label">Всього фото</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="validPhotos">0</div>
+                            <div class="stat-label">Валідних</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="withExif">0</div>
+                            <div class="stat-label">З EXIF</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-hdd"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="totalSize">0</div>
+                            <div class="stat-label">Загальний розмір</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Start Button -->
+            <section class="start-section">
+                <button class="btn btn-success btn-large" id="startBtn" disabled>
+                    <i class="fas fa-play"></i>
+                    Почати сортування
+                </button>
+            </section>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Налаштування</h3>
+                <button class="modal-close" id="closeSettingsBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label>Мова інтерфейсу</label>
+                    <select class="select-input" id="languageSelect">
+                        <option value="uk">Українська</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Формат назв папок</label>
+                    <select class="select-input" id="folderFormatSelect">
+                        <option value="ukrainian">Українські назви</option>
+                        <option value="english">English names</option>
+                        <option value="numbers">Тільки цифри</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Максимальний розмір файлу (MB)</label>
+                    <input type="number" class="input-field" id="maxFileSize" value="100" min="1" max="1000">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="saveSettingsBtn">Зберегти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Modal -->
+    <div class="modal" id="premiumModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Преміум версія</h3>
+                <button class="modal-close" id="closePremiumBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="premium-features">
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Безліміт фото на сесію</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Розширені опції сортування</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Геолокація та метадані</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Пріоритетна підтримка</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Без реклами</span>
+                    </div>
+                </div>
+                <div class="pricing">
+                    <div class="price">$5<span>/місяць</span></div>
+                    <button class="btn btn-primary btn-large">Отримати преміум</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Завантаження WebAssembly модуля...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/wasm-loader.js"></script>
+    <script src="js/file-handler.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

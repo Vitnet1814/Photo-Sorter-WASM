@@ -1,0 +1,10 @@
+# Ігнорувати файли для Vercel деплою
+/node_modules
+/backend/venv
+/backend/instance
+/backend/__pycache__
+*.db
+.env
+.env.local
+.DS_Store
+*.log

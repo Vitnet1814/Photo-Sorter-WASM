@@ -17,8 +17,6 @@ class FileHandler {
         this.totalFiles = 0;
         this.errors = 0;
         this.skipped = 0;
-        this.downloadQueue = []; // Черга для скачування на Android Chrome
-        this.isAndroidChromeMode = false;
     }
 
     /**
@@ -309,20 +307,6 @@ class FileHandler {
 
             console.log(`📊 Знайдено ${files.length} зображень для обробки`);
             
-            // Діагностична інформація для мобільних пристроїв
-            if (/Android|iPhone|iPad|BlackBerry|Windows Phone/.test(navigator.userAgent)) {
-                console.log('📱 Мобільний режим: увімкнено пококращене логування');
-                console.log('📱 User Agent:', navigator.userAgent);
-                
-                // Спеціальна перевірка для Android Chrome
-                if (/Android.*Chrome/.test(navigator.userAgent)) {
-                    console.log('🤖 Android Chrome detected - активуємо обхід InvalidStateError');
-                    console.log('💡 Android Chrome: спроби прямого копіювання з паузами');
-                }
-            }
-
-            // Перевіряємо чи це Android Chrome - тоді пропускаємо WASM обробку
-            const isAndroidChrome = /Android.*Chrome/.test(navigator.userAgent);
             
             // Обробляємо файли по одному
             for (let i = 0; i < files.length; i++) {
@@ -335,20 +319,8 @@ class FileHandler {
                 const fileHandle = fileObj.handle;
                 const parentHandle = fileObj.parentHandle;
                 
-                let result;
-                if (isAndroidChrome) {
-                    // Android Chrome - пропускаємо WASM обробку
-                    console.log(`🤖 Android Chrome: пропускаємо WASM для ${file.name}`);
-                    result = {
-                        success: true,
-                        filename: file.name,
-                        size: file.size,
-                        exifData: { dateTaken: '2024-01-01' } // Базові фальшиві дані
-                    };
-                } else {
-                    // Звичайна обробка через WASM
-                    result = await this.processFile(file, options);
-                }
+                // Обробляємо файл через WASM
+                const result = await this.processFile(file, options);
                 
                 console.log(`📋 Результат обробки файлу ${file.name}:`, result);
                 console.log(`📊 Розмір файлу до копіювання: ${file.size} байт`);
@@ -373,11 +345,6 @@ class FileHandler {
                 await new Promise(resolve => setTimeout(resolve, 10));
             }
 
-            // Якщо це Android Chrome і є файли в черзі - обробляємо їх
-            if (/Android.*Chrome/.test(navigator.userAgent) && this.downloadQueue.length > 0) {
-                console.log(`📱 Android Chrome: обробляємо чергу скачувань`);
-                await this.processDownloadQueue();
-            }
 
             return {
                 success: true,
@@ -523,67 +490,6 @@ class FileHandler {
             throw new Error(`Оригінальний файл ${file.name} має розмір 0 байт!`);
         }
         
-        // Перевіряємо чи цe Android Chrome з проблемами
-        const isAndroidChrome = /Android.*Chrome/.test(navigator.userAgent);
-        
-        if (isAndroidChrome) {
-            console.log(`🚨 Android Chrome - ТЕСТ КОПІЮВАННЯ БЕЗ БУДЬ-ЯКОЇ ОБРОБКИ`);
-            // Ультра-спрощений підхід - НЕ ЧИТАЄМО файл для массивів якщо це можливо
-            try {
-                console.log(`📁 Спробуємо пряме копіювання оригінального File object`);
-                
-                // Можливо проблема в тому що ми перетворюємо File в ArrayBuffer
-                // Спробуємо передати оригінальний File object
-                const newFileHandle = await targetFolderHandle.getFileHandle(file.name, { create: true });
-                const writable = await newFileHandle.createWritable();
-                
-                console.log(`📤 Передаємо оригінальний File object розміром: ${file.size}`);
-                await writable.write(file);
-                await writable.close();
-                console.log(`✅ СПРОБА 1: Файл ${file.name} скопійовано УСПІШНО!`);
-                return;
-            } catch (simpleError) {
-                console.log(`❌ СПРОБА 1 не працює: ${simpleError.name}`);
-                
-                // СПРОБА 2: Чекаємо трохи і пробуємо ще раз
-                console.log(`⏳ Чекаємо 200ms і пробуємо ще раз...`);
-                await new Promise(resolve => setTimeout(resolve, 200));
-                
-                try {
-                    // Видаляємо файл якщо він є і створюємо новий
-                    try {
-                        await targetFolderHandle.removeEntry(file.name);
-                        console.log(`🗑️ Видалено пошкоджений файл`);
-                    } catch (removeError) {
-                        console.log(`ℹ️ Файлу не існує для видалення`);
-                    }
-                    
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    
-                    const newFileHandle2 = await targetFolderHandle.getFileHandle(file.name, { create: true });
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    
-                    const writable2 = await newFileHandle2.createWritable();
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    
-                    console.log(`📤 СПРОБА 2: Передаємо оригінальний File object розміром: ${file.size}`);
-                    await writable2.write(file);
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    
-                    await writable2.close();
-                    await new Promise(resolve => setTimeout(resolve, 200));
-                    
-                    console.log(`✅ СПРОБА 2: Файл ${file.name} скопійовано УСПІШНО!`);
-                    return;
-                    
-                } catch (simpleError2) {
-                    console.log(`❌ СПРОБА 2 теж не працює: ${simpleError2.name}`);
-                    // Fallback до скачування лише якщо обидві спроби не пройшли
-                    this.addFileToDownloadQueue(file);
-                    return;
-                }
-            }
-        }
 
         try {
             // Створюємо новий файл у цільовій папці
@@ -1043,7 +949,6 @@ class FileHandler {
         this.errors = 0;
         this.skipped = 0;
         this.isProcessing = false;
-        this.downloadQueue = []; // Очищуємо чергу скачувань
 
         if (window.wasmLoader && window.wasmLoader.isModuleLoaded()) {
             window.wasmLoader.clearMetadata();

@@ -86,8 +86,29 @@ class PhotoSorterApp {
             os: os,
             browser: browser,
             version: version,
-            fullBrowser: version ? `${browser} ${version}` : browser
+            fullBrowser: version ? `${browser} ${version}` : browser,
+            isMobile: /Android|iPhone|iPad|BlackBerry|Windows Phone/i.test(userAgent),
+            isSupported: this.isDeviceSupported(os, browser, userAgent)
         };
+    }
+
+    /**
+     * Перевіряє чи підтримується комбінація OS + браузер
+     * @param {string} os - Операційна система
+     * @param {string} browser - Браузер
+     * @param {string} userAgent - User Agent
+     * @returns {boolean} Чи підтримується
+     */
+    isDeviceSupported(os, browser, userAgent) {
+        // Desktop версії завжди підтримувані
+        const isDesktop = !/Android|iPhone|iPad|BlackBerry|Windows Phone/i.test(userAgent);
+        
+        if (isDesktop) {
+            return true;
+        }
+        
+        // Мобільні пристрої поки що не підтримуються
+        return false;
     }
 
     /**
@@ -97,13 +118,92 @@ class PhotoSorterApp {
         const envInfo = this.getEnvironmentInfo();
         
         // Оновлюємо тексти в хедері
-        document.querySelector('.env-os').textContent = `OS: ${envInfo.os}`;
-        document.querySelector('.env-browser').textContent = `Browser: ${envInfo.fullBrowser}`;
+        const osElement = document.querySelector('.env-os');
+        const browserElement = document.querySelector('.env-browser');
+        
+        osElement.textContent = `OS: ${envInfo.os}`;
+        browserElement.textContent = `Browser: ${envInfo.fullBrowser}`;
+        
+        // Якщо пристрій не підтримується - додавайте червоний стиль
+        if (!envInfo.isSupported) {
+            osElement.style.color = '#dc3545'; // Червоний колір
+            osElement.style.fontWeight = 'bold';
+            browserElement.style.color = '#dc3545';
+            browserElement.style.fontWeight = 'bold';
+            
+            // Показуємо блокувальний повідомлення
+            this.showUnsupportedDeviceMessage();
+            
+            // Блокуємо функціональність
+            this.blockUIForUnsupportedDevice();
+        }
         
         // Додаємо CSS класи для стилізації
         document.querySelector('.env-info').classList.add('ready');
         
         console.log('🌍 Середовище:', envInfo);
+        console.log(`📱 Підтримується: ${envInfo.isSupported}`);
+    }
+
+    /**
+     * Показує повідомлення про непідтримуваний пристрій
+     */
+    showUnsupportedDeviceMessage() {
+        // Створюємо повідомлення поверх всього контенту
+        const warningBlock = document.createElement('div');
+        warningBlock.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            z-index: 9999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        `;
+        
+        warningBlock.innerHTML = `
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.2rem;">
+                    📱 Мобільні пристрої поки що не підтримуються
+                </h3>
+                <p style="margin: 0; opacity: 0.9;">
+                    На Android та iOS мають обмеження з доступом до файлів. 
+                    Будь ласка, використовуйте <strong>Desktop браузер</strong> (Chrome, Edge або Firefox на Windows/Mac/Linux)
+                </p>
+            </div>
+        `;
+        
+        document.body.appendChild(warningBlock);
+        
+        // Додаємо відступ для контенту під повідомленням
+        document.body.style.paddingTop = warningBlock.offsetHeight + 'px';
+    }
+
+    /**
+     * Блокує UI для непідтримуваних пристроїв
+     */
+    blockUIForUnsupportedDevice() {
+        // Блокуємо кнопки вибору папок
+        const selectInputBtn = document.getElementById('selectInputBtn');
+        const selectOutputBtn = document.getElementById('selectOutputBtn');
+        const startBtn = document.getElementById('startBtn');
+        
+        if (selectInputBtn) {
+            selectInputBtn.disabled = true;
+            selectInputBtn.style.opacity = '0.5';
+        }
+        if (selectOutputBtn) {
+            selectOutputBtn.disabled = true;
+            selectOutputBtn.style.opacity = '0.5';
+        }
+        if (startBtn) {
+            startBtn.disabled = true;
+            startBtn.style.opacity = '0.5';
+        }
     }
 
     /**

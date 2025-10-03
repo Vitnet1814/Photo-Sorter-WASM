@@ -314,8 +314,8 @@ class FileHandler {
                 
                 // Спеціальна перевірка для Android Chrome
                 if (/Android.*Chrome/.test(navigator.userAgent)) {
-                    console.log('🤖 Android Chrome detected - можливі проблеми з File System Access API');
-                    console.log('💡 Рекомендації: перезапустіть Chrome, перевірте версію браузера');
+                    console.log('🤖 Android Chrome detected - активуємо обхід InvalidStateError');
+                    console.log('💡 Буде використано showSaveFilePicker замість createWritable');
                 }
             }
 
@@ -498,6 +498,15 @@ class FileHandler {
             throw new Error(`Оригінальний файл ${file.name} має розмір 0 байт!`);
         }
         
+        // Перевіряємо чи це Android Chrome з проблемами
+        const isAndroidChrome = /Android.*Chrome/.test(navigator.userAgent);
+        
+        if (isAndroidChrome) {
+            console.log(`🚨 Виявлено Android Chrome - використовуємо альтернативний метод`);
+            await this.androidChromeWorkaround(file, targetFolderHandle);
+            return;
+        }
+
         try {
             // Створюємо новий файл у цільовій папці
             const fileName = file.name;
@@ -648,6 +657,115 @@ class FileHandler {
         }
         
         console.log(`✅ Всі chunks записані успішно`);
+    }
+
+    /**
+     * Обхід проблем з Android Chrome через showSaveFilePicker
+     * @param {File} file - Файл для копіювання
+     * @param {FileSystemDirectoryHandle} targetFolderHandle - Handle папки призначення
+     */
+    async androidChromeWorkaround(file, targetFolderHandle) {
+        console.log(`📱 ANDROID WORKAROUND для файлу: ${file.name}`);
+        
+        try {
+            // Спробуємо використати showSaveFilePicker замість createWritable
+            if ('showSaveFilePicker' in window) {
+                console.log(`🎯 Використовуємо showSaveFilePicker для ${file.name}`);
+                
+                const fileHandle = await window.showSaveFilePicker({
+                    suggestedName: file.name,
+                    types: [{
+                        description: 'JPEG зображення',
+                        accept: {
+                            'image/jpeg': ['.jpg', '.jpeg']
+                        }
+                    }]
+                });
+                
+                const writable = await fileHandle.createWritable();
+                await writable.write(file);
+                await writable.close();
+                
+                console.log(`✅ УСПІШНО збережено через showSaveFilePicker: ${file.name}`);
+                this.showUserMessage(`✅ Файл ${file.name} збережено успішно!`);
+                return;
+            }
+            
+            // Fallback: показуємо інструкції користувачу
+            console.log(`📥 Fallback: запропонуємо користувачу завантажити файл`);
+            
+            const fileURL = URL.createObjectURL(file);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = fileURL;
+            downloadLink.download = file.name;
+            downloadLink.style.display = 'none';
+            
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(fileURL);
+            
+            this.showUserMessage(`Проблема з Android Chrome. Файл ${file.name} завантажується. Будь ласка, збережіть його в потрібну папку вручну.`);
+            
+        } catch (error) {
+            console.error(`❌ Android workaround не працює:`, error);
+            
+            // Останній fallback - просто повідомляємо про проблему
+            this.showUserMessage(`Помилка Android Chrome: ${file.name}. Спробуйте інший браузер або збережіть файли вручну.`);
+        }
+    }
+
+    /**
+     * Показує повідомлення користувачу
+     * @param {string} message - Повідомлення
+     */
+    showUserMessage(message) {
+        // Створюємо модальне вікно для повідомлення
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        `;
+        
+        modal.innerHTML = `
+            <div style="
+                background: white;
+                padding: 2rem;
+                border-radius: 0.5rem;
+                max-width: 90%;
+                text-align: center;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            ">
+                <h3 style="margin: 0 0 1rem 0; color: #333;">📱 Android Chrome</h3>
+                <p style="margin: 0 0 1.5rem 0; color: #666; line-height: 1.5;">${message}</p>
+                <button onclick="this.closest('div').parentNode.remove()" style="
+                    background: #007bff;
+                    color: white;
+                    border: none;
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 0.25rem;
+                    cursor: pointer;
+                    font-size: 1rem;
+                ">Зрозуміло</button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Автоматично видаляємо через 10 секунд
+        setTimeout(() => {
+            if (modal.parentNode) {
+                modal.parentNode.removeChild(modal);
+            }
+        }, 10000);
     }
 
     /**

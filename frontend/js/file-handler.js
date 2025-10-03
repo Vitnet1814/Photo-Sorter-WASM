@@ -317,7 +317,7 @@ class FileHandler {
                 // Спеціальна перевірка для Android Chrome
                 if (/Android.*Chrome/.test(navigator.userAgent)) {
                     console.log('🤖 Android Chrome detected - активуємо обхід InvalidStateError');
-                    console.log('💡 Файли будуть автоматично завантажениі після обробки');
+                    console.log('💡 Android Chrome: спроби прямого копіювання з паузами');
                 }
             }
 
@@ -510,10 +510,55 @@ class FileHandler {
         const isAndroidChrome = /Android.*Chrome/.test(navigator.userAgent);
         
         if (isAndroidChrome) {
-            console.log(`🚨 Виявлено Android Chrome - файл буде додано до черги скачування`);
-            this.addFileToDownloadQueue(file);
-            // Не завершуємо виконання, а чекаємо на пакетне оброблення
-            return;
+            console.log(`🚨 Android Chrome - просто копіюємо файл без обробки`);
+            // Спробуємо простий підхід - копіюємо файли БЕЗ попередньої WASM обробки
+            try {
+                const newFileHandle = await targetFolderHandle.getFileHandle(file.name, { create: true });
+                const writable = await newFileHandle.createWritable();
+                await writable.write(file);
+                await writable.close();
+                console.log(`✅ СПРОБА 1: Файл ${file.name} скопійовано УСПІШНО!`);
+                return;
+            } catch (simpleError) {
+                console.log(`❌ СПРОБА 1 не працює: ${simpleError.name}`);
+                
+                // СПРОБА 2: Чекаємо трохи і пробуємо ще раз
+                console.log(`⏳ Чекаємо 200ms і пробуємо ще раз...`);
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                try {
+                    // Видаляємо файл якщо він є і створюємо новий
+                    try {
+                        await targetFolderHandle.removeEntry(file.name);
+                        console.log(`🗑️ Видалено пошкоджений файл`);
+                    } catch (removeError) {
+                        console.log(`ℹ️ Файлу не існує для видалення`);
+                    }
+                    
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    const newFileHandle2 = await targetFolderHandle.getFileHandle(file.name, { create: true });
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    const writable2 = await newFileHandle2.createWritable();
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    await writable2.write(file);
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    await writable2.close();
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    
+                    console.log(`✅ СПРОБА 2: Файл ${file.name} скопійовано УСПІШНО!`);
+                    return;
+                    
+                } catch (simpleError2) {
+                    console.log(`❌ СПРОБА 2 теж не працює: ${simpleError2.name}`);
+                    // Fallback до скачування лише якщо обидві спроби не пройшли
+                    this.addFileToDownloadQueue(file);
+                    return;
+                }
+            }
         }
 
         try {

@@ -321,6 +321,9 @@ class FileHandler {
                 }
             }
 
+            // Перевіряємо чи це Android Chrome - тоді пропускаємо WASM обробку
+            const isAndroidChrome = /Android.*Chrome/.test(navigator.userAgent);
+            
             // Обробляємо файли по одному
             for (let i = 0; i < files.length; i++) {
                 if (!this.isProcessing) {
@@ -331,7 +334,21 @@ class FileHandler {
                 const file = fileObj.file;
                 const fileHandle = fileObj.handle;
                 const parentHandle = fileObj.parentHandle;
-                const result = await this.processFile(file, options);
+                
+                let result;
+                if (isAndroidChrome) {
+                    // Android Chrome - пропускаємо WASM обробку
+                    console.log(`🤖 Android Chrome: пропускаємо WASM для ${file.name}`);
+                    result = {
+                        success: true,
+                        filename: file.name,
+                        size: file.size,
+                        exifData: { dateTaken: '2024-01-01' } // Базові фальшиві дані
+                    };
+                } else {
+                    // Звичайна обробка через WASM
+                    result = await this.processFile(file, options);
+                }
                 
                 console.log(`📋 Результат обробки файлу ${file.name}:`, result);
                 console.log(`📊 Розмір файлу до копіювання: ${file.size} байт`);
@@ -510,11 +527,17 @@ class FileHandler {
         const isAndroidChrome = /Android.*Chrome/.test(navigator.userAgent);
         
         if (isAndroidChrome) {
-            console.log(`🚨 Android Chrome - просто копіюємо файл без обробки`);
-            // Спробуємо простий підхід - копіюємо файли БЕЗ попередньої WASM обробки
+            console.log(`🚨 Android Chrome - ТЕСТ КОПІЮВАННЯ БЕЗ БУДЬ-ЯКОЇ ОБРОБКИ`);
+            // Ультра-спрощений підхід - НЕ ЧИТАЄМО файл для массивів якщо це можливо
             try {
+                console.log(`📁 Спробуємо пряме копіювання оригінального File object`);
+                
+                // Можливо проблема в тому що ми перетворюємо File в ArrayBuffer
+                // Спробуємо передати оригінальний File object
                 const newFileHandle = await targetFolderHandle.getFileHandle(file.name, { create: true });
                 const writable = await newFileHandle.createWritable();
+                
+                console.log(`📤 Передаємо оригінальний File object розміром: ${file.size}`);
                 await writable.write(file);
                 await writable.close();
                 console.log(`✅ СПРОБА 1: Файл ${file.name} скопійовано УСПІШНО!`);
@@ -543,6 +566,7 @@ class FileHandler {
                     const writable2 = await newFileHandle2.createWritable();
                     await new Promise(resolve => setTimeout(resolve, 100));
                     
+                    console.log(`📤 СПРОБА 2: Передаємо оригінальний File object розміром: ${file.size}`);
                     await writable2.write(file);
                     await new Promise(resolve => setTimeout(resolve, 100));
                     

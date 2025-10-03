@@ -17,6 +17,8 @@ class FileHandler {
         this.totalFiles = 0;
         this.errors = 0;
         this.skipped = 0;
+        this.downloadQueue = []; // Черга для скачування на Android Chrome
+        this.isAndroidChromeMode = false;
     }
 
     /**
@@ -315,7 +317,7 @@ class FileHandler {
                 // Спеціальна перевірка для Android Chrome
                 if (/Android.*Chrome/.test(navigator.userAgent)) {
                     console.log('🤖 Android Chrome detected - активуємо обхід InvalidStateError');
-                    console.log('💡 Буде використано showSaveFilePicker замість createWritable');
+                    console.log('💡 Файли будуть автоматично завантажениі після обробки');
                 }
             }
 
@@ -352,6 +354,12 @@ class FileHandler {
 
                 // Невелика затримка для UI
                 await new Promise(resolve => setTimeout(resolve, 10));
+            }
+
+            // Якщо це Android Chrome і є файли в черзі - обробляємо їх
+            if (/Android.*Chrome/.test(navigator.userAgent) && this.downloadQueue.length > 0) {
+                console.log(`📱 Android Chrome: обробляємо чергу скачувань`);
+                await this.processDownloadQueue();
             }
 
             return {
@@ -498,12 +506,13 @@ class FileHandler {
             throw new Error(`Оригінальний файл ${file.name} має розмір 0 байт!`);
         }
         
-        // Перевіряємо чи це Android Chrome з проблемами
+        // Перевіряємо чи цe Android Chrome з проблемами
         const isAndroidChrome = /Android.*Chrome/.test(navigator.userAgent);
         
         if (isAndroidChrome) {
-            console.log(`🚨 Виявлено Android Chrome - використовуємо альтернативний метод`);
-            await this.androidChromeWorkaround(file, targetFolderHandle);
+            console.log(`🚨 Виявлено Android Chrome - файл буде додано до черги скачування`);
+            this.addFileToDownloadQueue(file);
+            // Не завершуємо виконання, а чекаємо на пакетне оброблення
             return;
         }
 
@@ -657,6 +666,121 @@ class FileHandler {
         }
         
         console.log(`✅ Всі chunks записані успішно`);
+    }
+
+    /**
+     * Додає файл до черги для скачування на Android Chrome
+     * @param {File} file - Файл для скачування
+     */
+    addFileToDownloadQueue(file) {
+        console.log(`📥 Додано файл до черги: ${file.name} (${file.size} байт)`);
+        this.downloadQueue.push({
+            file: file,
+            fileName: file.name,
+            fileSize: file.size,
+            downloadURL: null
+        });
+    }
+
+    /**
+     * Обробляє всю чергу скачувань для Android Chrome
+     */
+    async processDownloadQueue() {
+        if (this.downloadQueue.length === 0) {
+            console.log(`📥 Черга скачувань порожня`);
+            return;
+        }
+
+        console.log(`📥 Обробляємо чергу скачувань: ${this.downloadQueue.length} файлів`);
+
+        try {
+            // Створюємо ZIP архів з усіма файлами якщо їх багато
+            if (this.downloadQueue.length > 3) {
+                await this.createAndDownloadZipArchive();
+            } else {
+                // Якщо файлів мало - скачуємо по одному
+                await this.downloadFilesIndividually();
+            }
+        } catch (error) {
+            console.error(`❌ Помилка обробки черги скачувань:`, error);
+            this.showUserMessage(`Помилка скачування файлів: ${error.message}`);
+        }
+    }
+
+    /**
+     * Створює ZIP архів і скачує його
+     */
+    async createAndDownloadZipArchive() {
+        console.log(`📦 Створюємо ZIP архів з ${this.downloadQueue.length} файлів`);
+        
+        // Використовуємо JSZip якщо доступний, якщо ні - скачуємо окремо
+        if (typeof JSZip !== 'undefined') {
+            // TODO: Реалізувати ZIP створення якщо потрібно
+            await this.downloadFilesIndividually();
+        } else {
+            await this.downloadFilesIndividually();
+        }
+    }
+
+    /**
+     * Скачує файли по одному
+     */
+    async downloadFilesIndividually() {
+        console.log(`📥 Скачування ${this.downloadQueue.length} файлів по одному`);
+    
+        for (let i = 0; i < this.downloadQueue.length; i++) {
+            const item = this.downloadQueue[i];
+            
+            try {
+                // Створюємо URL для файлу
+                const fileURL = URL.createObjectURL(item.file);
+                
+                // Створюємо прихований якорний елемент для скачування
+                const downloadLink = document.createElement('a');
+                downloadLink.href = fileURL;
+                downloadLink.download = item.fileName;
+                downloadLink.style.display = 'none';
+                
+                // Додаємо до DOM та клікаємо
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                
+                // Видаляємо з DOM та очищуємо URL
+                document.body.removeChild(downloadLink);
+                URL.revokeObjectURL(fileURL);
+                
+                console.log(`✅ Завантажено: ${item.fileName}`);
+                
+                // Невелика пауза між скачуваннями
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+            } catch (error) {
+                console.error(`❌ Помилка скачування ${item.fileName}:`, error);
+            }
+        }
+        
+        // Показуємо повідомлення користувачу
+        this.showAndroidDownloadComplete();
+        
+        // Очищуємо чергу
+        this.downloadQueue = [];
+    }
+
+    /**
+     * Показує повідомлення про завершення скачування на Android
+     */
+    showAndroidDownloadComplete() {
+        const count = this.downloadQueue.length;
+        const message = `📥 ${count} файлів завантажено у папку Downloads на вашому пристрої. 
+        
+Організуйте файли вручну:
+• Відкрийте папку Downloads  
+• Створіть папку з датою (наприклад: "2024-07-03")
+• Перемістіть зображення в цю папку
+        
+Дякуємо за використання програми! 📱`;
+
+        this.showUserMessage(message);
     }
 
     /**
@@ -850,6 +974,7 @@ class FileHandler {
         this.errors = 0;
         this.skipped = 0;
         this.isProcessing = false;
+        this.downloadQueue = []; // Очищуємо чергу скачувань
 
         if (window.wasmLoader && window.wasmLoader.isModuleLoaded()) {
             window.wasmLoader.clearMetadata();

@@ -29,6 +29,12 @@ class PhotoSorterApp {
         try {
             console.log('🚀 Ініціалізація Photo Sorter WASM...');
             
+            // Перевіряємо чи це мобільний пристрій
+            this.isAndroidDevice = /Android/i.test(navigator.userAgent);
+            if (this.isAndroidDevice) {
+                console.log('📱 Виявлено Android пристрій');
+            }
+            
             // Показуємо loading overlay
             this.showLoadingOverlay();
             
@@ -309,9 +315,19 @@ class PhotoSorterApp {
         document.getElementById('errorCount').textContent = progress.errors;
         document.getElementById('skippedCount').textContent = progress.skipped;
         
-        // Додаємо запис в лог
-        this.addLogEntry(progress.result.success ? 'success' : 'error', 
-            `${progress.currentFile}: ${progress.result.success ? 'успішно' : progress.result.error}`);
+        // Додаємо детальний запис в лог з розміром файлу
+        let logMessage = `${progress.currentFile}`;
+        if (progress.result.success && progress.result.size) {
+            logMessage += ` (${this.formatFileSize(progress.result.size)})`;
+        }
+        logMessage += `: ${progress.result.success ? 'успішно' : progress.result.error}`;
+        
+        this.addLogEntry(progress.result.success ? 'success' : 'error', logMessage);
+        
+        // Додаткова діагностика для мобільних пристроїв
+        if (/Android|iPhone|iPad|BlackBerry|Windows Phone/.test(navigator.userAgent)) {
+            console.log(`📱 Мобільний пристрій: оброблено ${progress.current} з ${progress.total}`);
+        }
     }
 
     /**
@@ -389,6 +405,21 @@ class PhotoSorterApp {
         } catch (error) {
             console.error('Помилка завантаження налаштувань:', error);
         }
+    }
+
+    /**
+     * Форматує розмір файлу
+     * @param {number} bytes - Розмір в байтах
+     * @returns {string} Відформатований розмір
+     */
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
     /**

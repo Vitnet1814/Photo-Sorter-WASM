@@ -301,6 +301,12 @@ class FileHandler {
             }
 
             console.log(`📊 Знайдено ${files.length} зображень для обробки`);
+            
+            // Діагностична інформація для мобільних пристроїв
+            if (/Android|iPhone|iPad|BlackBerry|Windows Phone/.test(navigator.userAgent)) {
+                console.log('📱 Мобільний режим: увімкнено пококращене логування');
+                console.log('📱 User Agent:', navigator.userAgent);
+            }
 
             // Обробляємо файли по одному
             for (let i = 0; i < files.length; i++) {
@@ -468,20 +474,61 @@ class FileHandler {
      */
     async copyFileToFolder(file, targetFolderHandle) {
         try {
-            const arrayBuffer = await file.arrayBuffer();
-            const uint8Array = new Uint8Array(arrayBuffer);
-            
             // Створюємо новий файл у цільовій папці
             const fileName = file.name;
             const newFileHandle = await targetFolderHandle.getFileHandle(fileName, { create: true });
             const writable = await newFileHandle.createWritable();
             
-            await writable.write(uint8Array);
+            // Для місткості з мобільними пристроями використовуємо Blob замість Uint8Array
+            await writable.write(file);
+            
+            // Переконуємося, що дані записані повністю
             await writable.close();
+            
+            console.log(`✅ Записано файл: ${fileName} (${file.size} байт)`);
             
         } catch (error) {
             console.error('Помилка копіювання файлу:', error);
-            throw error;
+            
+            // Якщо записи Blob не працює, пробуємо через ArrayBuffer
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const newFileHandle = await targetFolderHandle.getFileHandle(file.name, { create: true });
+                const writable = await newFileHandle.createWritable();
+                
+                // Записуємо по чанках для мобільних пристроїв
+                await this.writeInChunks(writable, arrayBuffer);
+                await writable.close();
+                
+                console.log(`✅ Записано файл (через fallback): ${file.name} (${file.size} байт)`);
+                
+            } catch (fallbackError) {
+                console.error('Помилка fallback запису:', fallbackError);
+                throw fallbackError;
+            }
+        }
+    }
+    
+    /**
+     * Записує дані по чанках для кращої сумісності з мобільними пристроями
+     * @param {FileSystemWritableFileTransform} writable - Writable поток
+     * @param {ArrayBuffer} arrayBuffer - Дані для запису
+     */
+    async writeInChunks(writable, arrayBuffer) {
+        const chunkSize = 1024 * 1024; // 1MB чанки
+        const uint8Array = new Uint8Array(arrayBuffer);
+        
+        for (let offset = 0; offset < uint8Array.length; offset += chunkSize) {
+            const chunk = uint8Array.slice(offset, offset + chunkSize);
+            await writable.write({
+                type: 'write',
+                data: chunk
+            });
+            
+            // Невелика пауза між чанками для UI
+            if (offset % (chunkSize * 10) === 0) {
+                await new Promise(resolve => setTimeout(resolve, 1));
+            }
         }
     }
 
@@ -491,7 +538,6 @@ class FileHandler {
      * @param {FileSystemDirectoryHandle} targetFolderHandle - Handle папки призначення
      * @param {FileSystemFileHandle} originalFileHandle - Handle оригінального файлу (для видалення)
      * @param {FileSystemDirectoryHandle} parentHandle - Handle батьківської папки оригінального файлу
-     */
     async moveFileToFolder(file, targetFolderHandle, originalFileHandle = null, parentHandle = null) {
         try {
             // Спочатку копіюємо

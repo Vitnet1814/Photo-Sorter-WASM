@@ -76,6 +76,29 @@ body {
 .header-actions {
     display: flex;
     gap: 0.75rem;
+    align-items: center;
+}
+
+.env-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    background: var(--background-color);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    font-size: 0.75rem;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.env-info.ready {
+    opacity: 1;
+}
+
+.env-detail {
+    color: var(--text-secondary);
+    line-height: 1.2;
 }
 
 /* Buttons */
@@ -643,6 +666,17 @@ body {
         flex-direction: column;
         gap: 1rem;
         text-align: center;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .env-info {
+        text-align: center;
+        opacity: 0.8;
     }
     
     .welcome-content h2 {

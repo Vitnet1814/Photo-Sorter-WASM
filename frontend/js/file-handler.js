@@ -122,6 +122,7 @@ class FileHandler {
                     if (this.supportedFormats.includes(extension)) {
                         try {
                             const file = await handle.getFile();
+                            console.log(`📄 Прочитано файл ${name}: ${file.size} байт, тип: ${file.type}`);
                             files.push({ file, handle, parentHandle: folderHandle });
                         } catch (error) {
                             console.warn(`Не вдалося прочитати файл ${name}:`, error);
@@ -238,6 +239,7 @@ class FileHandler {
 
             // Обробляємо через WASM модуль
             if (window.wasmLoader && window.wasmLoader.isModuleLoaded()) {
+                console.log(`🔬 WASM обробка файлу ${file.name} з розміром ${file.size} байт`);
                 window.wasmLoader.processPhoto(
                     file.name,
                     uint8Array,
@@ -250,6 +252,9 @@ class FileHandler {
                     exifData.width,
                     exifData.height
                 );
+                console.log(`✅ WASM обробка завершена для ${file.name}`);
+            } else {
+                console.log(`⚠️ WASM модуль не завантажений для ${file.name}`);
             }
 
             this.processedFiles++;
@@ -306,6 +311,12 @@ class FileHandler {
             if (/Android|iPhone|iPad|BlackBerry|Windows Phone/.test(navigator.userAgent)) {
                 console.log('📱 Мобільний режим: увімкнено пококращене логування');
                 console.log('📱 User Agent:', navigator.userAgent);
+                
+                // Спеціальна перевірка для Android Chrome
+                if (/Android.*Chrome/.test(navigator.userAgent)) {
+                    console.log('🤖 Android Chrome detected - можливі проблеми з File System Access API');
+                    console.log('💡 Рекомендації: перезапустіть Chrome, перевірте версію браузера');
+                }
             }
 
             // Обробляємо файли по одному
@@ -319,6 +330,9 @@ class FileHandler {
                 const fileHandle = fileObj.handle;
                 const parentHandle = fileObj.parentHandle;
                 const result = await this.processFile(file, options);
+                
+                console.log(`📋 Результат обробки файлу ${file.name}:`, result);
+                console.log(`📊 Розмір файлу до копіювання: ${file.size} байт`);
 
                 // Копіюємо або переміщуємо файл
                 await this.copyOrMoveFile(file, options.processingMode || 'copy', fileHandle, parentHandle);
@@ -473,38 +487,106 @@ class FileHandler {
      * @param {FileSystemDirectoryHandle} targetFolderHandle - Handle папки призначення
      */
     async copyFileToFolder(file, targetFolderHandle) {
+        console.log(`🔍 ДЕТАЛЬНИЙ DEBUG: Початок копіювання ${file.name}`);
+        console.log(`📊 Розмір оригінального файлу: ${file.size} байт`);
+        console.log(`📱 User Agent: ${navigator.userAgent}`);
+        console.log(`📁 Тип файлу: ${file.type}`);
+        console.log(`📅 Дата модифікації: ${file.lastModified}`);
+        
+        // Перевіряємо чи файл взагалі читабельний
+        if (file.size === 0) {
+            throw new Error(`Оригінальний файл ${file.name} має розмір 0 байт!`);
+        }
+        
         try {
             // Створюємо новий файл у цільовій папці
             const fileName = file.name;
+            console.log(`📁 Створюємо файл: ${fileName} в папці: ${targetFolderHandle.name}`);
+            
             const newFileHandle = await targetFolderHandle.getFileHandle(fileName, { create: true });
+            console.log(`✅ Файл handle створено для: ${fileName}`);
+            
             const writable = await newFileHandle.createWritable();
+            console.log(`✅ Writable stream створено`);
             
             // Для місткості з мобільними пристроями використовуємо Blob замість Uint8Array
+            console.log(`📝 Записуємо Blob з розміром: ${file.size} байт`);
             await writable.write(file);
+            console.log(`✅ Blob записано`);
             
             // Переконуємося, що дані записані повністю
             await writable.close();
+            console.log(`✅ Writable stream closed`);
             
-            console.log(`✅ Записано файл: ${fileName} (${file.size} байт)`);
+            // Перевіряємо розмір записаного файлу
+            const writtenFile = await newFileHandle.getFile();
+            console.log(`📏 Перевірка розміру записаного файлу: ${writtenFile.size} байт`);
+            
+            if (writtenFile.size === 0) {
+                console.error(`❌ КРИТИЧНА ПОМИЛКА: Записаний файл має розмір 0 байт!`);
+                throw new Error('Файл записався з розміром 0 байт');
+            }
+            
+            console.log(`✅ УСПІШНО записано файл: ${fileName} (${writtenFile.size} байт)`);
             
         } catch (error) {
-            console.error('Помилка копіювання файлу:', error);
+            console.error('❌ Помилка копіювання файлу:', error);
+            console.error(`❌ Деталі помилки: name="${error.name}", message="${error.message}"`);
             
             // Якщо записи Blob не працює, пробуємо через ArrayBuffer
             try {
+                console.log(`🔄 ПОЧАТОК FALLBACK методу для ${file.name}`);
+                
                 const arrayBuffer = await file.arrayBuffer();
+                console.log(`📊 ArrayBuffer розмір: ${arrayBuffer.byteLength} байт`);
+                
                 const newFileHandle = await targetFolderHandle.getFileHandle(file.name, { create: true });
                 const writable = await newFileHandle.createWritable();
                 
                 // Записуємо по чанках для мобільних пристроїв
+                console.log(`📝 Записуємо через chunks метод...`);
                 await this.writeInChunks(writable, arrayBuffer);
                 await writable.close();
                 
-                console.log(`✅ Записано файл (через fallback): ${file.name} (${file.size} байт)`);
+                // Перевіряємо розмір записаного файлу
+                const writtenFile = await newFileHandle.getFile();
+                console.log(`📏 FALLBACK перевірка розміру: ${writtenFile.size} байт`);
+                
+                if (writtenFile.size === 0) {
+                    console.error(`❌ FALLBACK ТАКОЖ ПРОЙШОВ: Файл все ще 0 байт!`);
+                    throw new Error('Fallback метод також дає 0 байт');
+                }
+                
+                console.log(`✅ FALLBACK УСПІШНО: ${file.name} (${writtenFile.size} байт)`);
                 
             } catch (fallbackError) {
-                console.error('Помилка fallback запису:', fallbackError);
-                throw fallbackError;
+                console.error('❌ FALLBACK ПОВНІСТЮ ПРОВАЛИВСЯ:', fallbackError);
+                
+                // Спробуємо останній варіант - пряма передача buffer
+                try {
+                    console.log(`🔄 ОСТАННЯ СПРОБА пряма передача буфера для ${file.name}`);
+                    
+                    const arrayBuffer = await file.arrayBuffer();
+                    const newFileHandle = await targetFolderHandle.getFileHandle(file.name, { create: true });
+                    const writable = await newFileHandle.createWritable();
+                    
+                    // Пишемо передавая буфер напряму
+                    await writable.write(arrayBuffer);
+                    await writable.close();
+                    
+                    const writtenFile = await newFileHandle.getFile();
+                    console.log(`📏 ОСТАННЯ СПРОБА розмір: ${writtenFile.size} байт`);
+                    
+                    if (writtenFile.size === 0) {
+                        throw new Error('Навіть пряма передача buffer не працює');
+                    }
+                    
+                    console.log(`✅ ОСТАННЯ СПРОБА УСПІШНА!`);
+                    
+                } catch (lastTryError) {
+                    console.error('❌ ВСІ СПРОБИ ПРОВАЛИЛИСЯ!');
+                    throw new Error(`Всі методи запису не працюють: ${lastTryError.message}`);
+                }
             }
         }
     }
@@ -515,21 +597,29 @@ class FileHandler {
      * @param {ArrayBuffer} arrayBuffer - Дані для запису
      */
     async writeInChunks(writable, arrayBuffer) {
-        const chunkSize = 1024 * 1024; // 1MB чанки
+        const chunkSize = 256 * 1024; // 256KB чанки (менше для Android)
         const uint8Array = new Uint8Array(arrayBuffer);
+        
+        console.log(`🔄 Запис по чанках: ${uint8Array.length} байт, розмір chunk: ${chunkSize}`);
+        
+        const totalChunks = Math.ceil(uint8Array.length/chunkSize);
         
         for (let offset = 0; offset < uint8Array.length; offset += chunkSize) {
             const chunk = uint8Array.slice(offset, offset + chunkSize);
+            const chunkNumber = Math.floor(offset/chunkSize) + 1;
+            
+            console.log(`📦 Записуємо chunk ${chunkNumber}/${totalChunks} (${chunk.length} байт)`);
+            
             await writable.write({
                 type: 'write',
                 data: chunk
             });
             
-            // Невелика пауза між чанками для UI
-            if (offset % (chunkSize * 10) === 0) {
-                await new Promise(resolve => setTimeout(resolve, 1));
-            }
+            // Пауза між чанками для Android стабільності
+            await new Promise(resolve => setTimeout(resolve, 10));
         }
+        
+        console.log(`✅ Всі chunks записані успішно`);
     }
 
     /**

@@ -23,6 +23,90 @@ class PhotoSorterApp {
     }
 
     /**
+     * Детектує інформацію про середовище (ОС та браузер)
+     * @returns {Object} Інформація про середовище
+     */
+    getEnvironmentInfo() {
+        const userAgent = navigator.userAgent;
+        const platform = navigator.platform;
+        
+        // Детекція операційної системи
+        let os = 'Unknown';
+        if (userAgent.includes('Windows NT 10.0')) os = 'Windows 11';
+        else if (userAgent.includes('Windows NT 6.3')) os = 'Windows 8.1';
+        else if (userAgent.includes('Windows NT 6.2')) os = 'Windows 8';
+        else if (userAgent.includes('Windows NT 6.1')) os = 'Windows 7';
+        else if (userAgent.includes('Windows')) os = 'Windows';
+        else if (userAgent.includes('Mac OS X')) {
+            const match = userAgent.match(/Mac OS X (\d+)_(\d+)/);
+            if (match) {
+                const major = parseInt(match[1]);
+                const minor = parseInt(match[2]);
+                if (major >= 12) os = 'macOS 12+';
+                else if (major === 11) os = 'macOS 11 (Big Sur)';
+                else if (major === 10 && minor >= 15) os = 'macOS 10.15+ (Catalina)';
+                else os = `macOS ${major}.${minor}`;
+            } else os = 'macOS';
+        }
+        else if (userAgent.includes('iPhone')) os = 'iOS iPhone';
+        else if (userAgent.includes('iPad')) os = 'iOS iPad';
+        else if (userAgent.includes('Android')) os = 'Android';
+        else if (platform.includes('Linux')) os = 'Linux';
+        
+        // Детекція браузера
+        let browser = 'Unknown';
+        let version = '';
+        if (userAgent.includes('Edg/')) {
+            browser = 'Edge';
+            const match = userAgent.match(/Edg\/(\d+\.\d+)/);
+            version = match ? match[1] : '';
+        }
+        else if (userAgent.includes('Chrome/') && !userAgent.includes('Edg')) {
+            browser = 'Chrome';
+            const match = userAgent.match(/Chrome\/(\d+\.\d+)/);
+            version = match ? match[1] : '';
+        }
+        else if (userAgent.includes('Firefox/')) {
+            browser = 'Firefox';
+            const match = userAgent.match(/Firefox\/(\d+\.\d+)/);
+            version = match ? match[1] : '';
+        }
+        else if (userAgent.includes('Safari/') && !userAgent.includes('Chrome')) {
+            browser = 'Safari';
+            const match = userAgent.match(/Version\/(\d+\.\d+)/);
+            version = match ? match[1] : '';
+        }
+        else if (userAgent.includes('Opera/')) {
+            browser = 'Opera';
+            const match = userAgent.match(/Opera\/(\d+\.\d+)/);
+            version = match ? match[1] : '';
+        }
+        
+        return {
+            os: os,
+            browser: browser,
+            version: version,
+            fullBrowser: version ? `${browser} ${version}` : browser
+        };
+    }
+
+    /**
+     * Оновлює інформацію про середовище в UI
+     */
+    updateEnvironmentDisplay() {
+        const envInfo = this.getEnvironmentInfo();
+        
+        // Оновлюємо тексти в хедері
+        document.querySelector('.env-os').textContent = `OS: ${envInfo.os}`;
+        document.querySelector('.env-browser').textContent = `Browser: ${envInfo.fullBrowser}`;
+        
+        // Додаємо CSS класи для стилізації
+        document.querySelector('.env-info').classList.add('ready');
+        
+        console.log('🌍 Середовище:', envInfo);
+    }
+
+    /**
      * Ініціалізує додаток
      */
     async init() {
@@ -40,6 +124,9 @@ class PhotoSorterApp {
             
             // Завантажуємо WASM модуль
             await this.wasmLoader.load();
+            
+            // Відображуємо інформацію про середовище
+            this.updateEnvironmentDisplay();
             
             // Ініціалізуємо UI
             this.initializeUI();

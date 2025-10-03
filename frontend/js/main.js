@@ -70,11 +70,9 @@ class PhotoSorterApp {
         
         // Модальні вікна
         document.getElementById('settingsBtn').addEventListener('click', () => this.showSettingsModal());
-        document.getElementById('premiumBtn').addEventListener('click', () => this.showPremiumModal());
         
         // Закриття модальних вікон
         document.getElementById('closeSettingsBtn').addEventListener('click', () => this.hideSettingsModal());
-        document.getElementById('closePremiumBtn').addEventListener('click', () => this.hidePremiumModal());
         
         // Збереження налаштувань
         document.getElementById('saveSettingsBtn').addEventListener('click', () => this.saveSettings());
@@ -264,7 +262,6 @@ class PhotoSorterApp {
             
             // Показуємо секцію прогресу
             document.getElementById('progressSection').style.display = 'block';
-            document.getElementById('statisticsSection').style.display = 'none';
             
             // Очищаємо попередні дані
             this.fileHandler.clear();
@@ -276,8 +273,6 @@ class PhotoSorterApp {
                 (progress) => this.updateProgress(progress)
             );
             
-            // Показуємо статистику
-            this.showStatistics(result);
             this.showSuccess(`Обробку завершено! Оброблено: ${result.processed}, помилок: ${result.errors}`);
             
         } catch (error) {
@@ -341,20 +336,6 @@ class PhotoSorterApp {
         document.getElementById('logContent').innerHTML = '';
     }
 
-    /**
-     * Показує статистику обробки
-     * @param {Object} result - Результат обробки
-     */
-    showStatistics(result) {
-        const stats = this.fileHandler.getStatistics();
-        
-        document.getElementById('totalPhotos').textContent = stats.total_photos;
-        document.getElementById('validPhotos').textContent = stats.valid_photos;
-        document.getElementById('withExif').textContent = stats.with_exif;
-        document.getElementById('totalSize').textContent = this.fileHandler.formatFileSize(stats.total_size);
-        
-        document.getElementById('statisticsSection').style.display = 'block';
-    }
 
     /**
      * Показує модальне вікно налаштувань
@@ -370,19 +351,6 @@ class PhotoSorterApp {
         document.getElementById('settingsModal').classList.remove('active');
     }
 
-    /**
-     * Показує модальне вікно преміум
-     */
-    showPremiumModal() {
-        document.getElementById('premiumModal').classList.add('active');
-    }
-
-    /**
-     * Приховує модальне вікно преміум
-     */
-    hidePremiumModal() {
-        document.getElementById('premiumModal').classList.remove('active');
-    }
 
     /**
      * Зберігає налаштування

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photo Sorter WASM - Сортування фотографій</title>
-    <link rel="stylesheet" href="frontend/css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -23,6 +23,10 @@
                     <button class="btn btn-outline" id="settingsBtn">
                         <i class="fas fa-cog"></i>
                         Налаштування
+                    </button>
+                    <button class="btn btn-primary" id="premiumBtn">
+                        <i class="fas fa-crown"></i>
+                        Преміум
                     </button>
                 </div>
             </div>
@@ -170,6 +174,48 @@
                 </div>
             </section>
 
+            <!-- Statistics Section -->
+            <section class="statistics-section" id="statisticsSection" style="display: none;">
+                <h3>Статистика обробки</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-images"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="totalPhotos">0</div>
+                            <div class="stat-label">Всього фото</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="validPhotos">0</div>
+                            <div class="stat-label">Валідних</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="withExif">0</div>
+                            <div class="stat-label">З EXIF</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-hdd"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number" id="totalSize">0</div>
+                            <div class="stat-label">Загальний розмір</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             <!-- Start Button -->
             <section class="start-section">
@@ -217,6 +263,45 @@
         </div>
     </div>
 
+    <!-- Premium Modal -->
+    <div class="modal" id="premiumModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Преміум версія</h3>
+                <button class="modal-close" id="closePremiumBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="premium-features">
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Безліміт фото на сесію</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Розширені опції сортування</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Геолокація та метадані</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Пріоритетна підтримка</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check"></i>
+                        <span>Без реклами</span>
+                    </div>
+                </div>
+                <div class="pricing">
+                    <div class="price">$5<span>/місяць</span></div>
+                    <button class="btn btn-primary btn-large">Отримати преміум</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay" style="display: none;">
@@ -227,8 +312,8 @@
     </div>
 
     <!-- Scripts -->
-    <script src="frontend/js/wasm-loader.js"></script>
-    <script src="frontend/js/file-handler.js"></script>
-    <script src="frontend/js/main.js"></script>
+    <script src="js/wasm-loader.js"></script>
+    <script src="js/file-handler.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

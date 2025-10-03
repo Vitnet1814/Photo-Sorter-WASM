@@ -518,8 +518,11 @@ class FileHandler {
             await writable.close();
             console.log(`✅ Writable stream closed`);
             
+            // ВАЖЛИВО: Отримуємо новий handle після записи для Android Chrome
+            const finalFileHandle = await targetFolderHandle.getFileHandle(fileName);
+            
             // Перевіряємо розмір записаного файлу
-            const writtenFile = await newFileHandle.getFile();
+            const writtenFile = await finalFileHandle.getFile();
             console.log(`📏 Перевірка розміру записаного файлу: ${writtenFile.size} байт`);
             
             if (writtenFile.size === 0) {
@@ -533,12 +536,25 @@ class FileHandler {
             console.error('❌ Помилка копіювання файлу:', error);
             console.error(`❌ Деталі помилки: name="${error.name}", message="${error.message}"`);
             
+            // Спеціальна обробка InvalidStateError для Android Chrome
+            if (error.name === 'InvalidStateError') {
+                console.log(`🤖 Виявлено Android Chrome InvalidStateError - використовуємо особливий підхід`);
+            }
+            
             // Якщо записи Blob не працює, пробуємо через ArrayBuffer
             try {
                 console.log(`🔄 ПОЧАТОК FALLBACK методу для ${file.name}`);
                 
                 const arrayBuffer = await file.arrayBuffer();
                 console.log(`📊 ArrayBuffer розмір: ${arrayBuffer.byteLength} байт`);
+                
+                // Видаляємо старий файл з неправильним state на Android Chrome
+                try {
+                    await targetFolderHandle.removeEntry(file.name);
+                    console.log(`🗑️ Видалено старий файл перед fallback`);
+                } catch (removeError) {
+                    console.log(`⚠️ Не можу видалити файл: ${removeError.message}`);
+                }
                 
                 const newFileHandle = await targetFolderHandle.getFileHandle(file.name, { create: true });
                 const writable = await newFileHandle.createWritable();
@@ -548,8 +564,9 @@ class FileHandler {
                 await this.writeInChunks(writable, arrayBuffer);
                 await writable.close();
                 
-                // Перевіряємо розмір записаного файлу
-                const writtenFile = await newFileHandle.getFile();
+                // Отримуємо новий handle після close() для Android
+                const finalFileHandle = await targetFolderHandle.getFileHandle(file.name);
+                const writtenFile = await finalFileHandle.getFile();
                 console.log(`📏 FALLBACK перевірка розміру: ${writtenFile.size} байт`);
                 
                 if (writtenFile.size === 0) {
@@ -567,6 +584,15 @@ class FileHandler {
                     console.log(`🔄 ОСТАННЯ СПРОБА пряма передача буфера для ${file.name}`);
                     
                     const arrayBuffer = await file.arrayBuffer();
+                    
+                    // Видаляємо старий файл перед останньою спробою
+                    try {
+                        await targetFolderHandle.removeEntry(file.name);
+                        console.log(`🗑️ Видалено файл перед останньою спробою`);
+                    } catch (removeError) {
+                        console.log(`⚠️ Не можу видалити файл: ${removeError.message}`);
+                    }
+                    
                     const newFileHandle = await targetFolderHandle.getFileHandle(file.name, { create: true });
                     const writable = await newFileHandle.createWritable();
                     
@@ -574,7 +600,9 @@ class FileHandler {
                     await writable.write(arrayBuffer);
                     await writable.close();
                     
-                    const writtenFile = await newFileHandle.getFile();
+                    // Отримати новий handle після close() для Android
+                    const finalFileHandle = await targetFolderHandle.getFileHandle(file.name);
+                    const writtenFile = await finalFileHandle.getFile();
                     console.log(`📏 ОСТАННЯ СПРОБА розмір: ${writtenFile.size} байт`);
                     
                     if (writtenFile.size === 0) {

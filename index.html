@@ -24,6 +24,41 @@
     
     <title data-i18n="app.title">Photo Sorter - Сортування фотографій</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Приховані заголовки для доступності - не впливають на візуальний вигляд */
+        .sr-only {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        
+        /* Семантичні fieldset та legend - виглядають як оригінальні div */
+        fieldset.option-group {
+            border: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: block !important;
+        }
+        
+        legend {
+            display: block !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+        }
+        
+        legend h3 {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -102,29 +137,30 @@
     <main class="main">
         <div class="container">
             <!-- Welcome Section -->
-            <section class="welcome-section">
+            <section class="welcome-section" role="banner" aria-labelledby="welcome-title">
                 <div class="welcome-content">
-                    <h2 data-i18n="app.subtitle">Автоматичне сортування фотографій</h2>
+                    <h2 id="welcome-title" data-i18n="app.subtitle">Автоматичне сортування фотографій</h2>
                     <p data-i18n="app.description">Використовуйте простий і потужний інструмент для швидкого та точного сортування ваших фото за датою.</p>
                 </div>
             </section>
 
             <!-- Folder Selection -->
-            <section class="folder-selection">
+            <section class="folder-selection" role="main" aria-labelledby="folder-selection-title">
+                <h2 id="folder-selection-title" class="sr-only">Вибір папок для сортування</h2>
                 <div class="folder-cards">
-                    <div class="folder-card" id="inputFolderCard">
-                        <div class="folder-icon">
+                    <div class="folder-card" id="inputFolderCard" role="region" aria-labelledby="input-folders-title">
+                        <div class="folder-icon" aria-hidden="true">
                             <i class="fas fa-folder-open"></i>
                         </div>
-                        <h3 data-i18n="folders.inputFolders">Вхідні папки</h3>
+                        <h3 id="input-folders-title" data-i18n="folders.inputFolders">Вхідні папки</h3>
                         <p data-i18n="folders.inputFoldersDesc">Виберіть папки з невідсортованими фото</p>
                         <div class="folder-buttons">
-                            <button class="btn btn-primary" id="selectInputBtn">
-                                <i class="fas fa-folder-plus"></i>
+                            <button class="btn btn-primary" id="selectInputBtn" aria-describedby="input-folders-title">
+                                <i class="fas fa-folder-plus" aria-hidden="true"></i>
                                 <span data-i18n="folders.addFolder">Додати папку</span>
                             </button>
-                            <button class="btn btn-outline btn-sm" id="clearInputBtn" style="display: none;">
-                                <i class="fas fa-trash"></i>
+                            <button class="btn btn-outline btn-sm" id="clearInputBtn" style="display: none;" aria-describedby="input-folders-title">
+                                <i class="fas fa-trash" aria-hidden="true"></i>
                                 <span data-i18n="folders.clearAll">Очистити всі</span>
                             </button>
                         </div>
@@ -140,14 +176,14 @@
                         </div>
                     </div>
 
-                    <div class="folder-card" id="outputFolderCard">
-                        <div class="folder-icon">
+                    <div class="folder-card" id="outputFolderCard" role="region" aria-labelledby="output-folder-title">
+                        <div class="folder-icon" aria-hidden="true">
                             <i class="fas fa-folder-plus"></i>
                         </div>
-                        <h3 data-i18n="folders.outputFolder">Вихідна папка</h3>
+                        <h3 id="output-folder-title" data-i18n="folders.outputFolder">Вихідна папка</h3>
                         <p data-i18n="folders.outputFolderDesc">Папка для відсортованих фото</p>
-                        <button class="btn btn-primary" id="selectOutputBtn">
-                            <i class="fas fa-folder-plus"></i>
+                        <button class="btn btn-primary" id="selectOutputBtn" aria-describedby="output-folder-title">
+                            <i class="fas fa-folder-plus" aria-hidden="true"></i>
                             <span data-i18n="folders.selectFolder">Вибрати папку</span>
                         </button>
                         <div class="folder-info" id="outputFolderInfo" style="display: none;">
@@ -159,43 +195,44 @@
             </section>
 
             <!-- Processing Options -->
-            <section class="processing-options">
+            <section class="processing-options" role="region" aria-labelledby="processing-title">
+                <h2 id="processing-title" class="sr-only">Налаштування обробки</h2>
                 <div class="options-grid">
-                    <div class="option-group">
-                        <h3 data-i18n="processing.mode">Режим обробки</h3>
-                        <div class="radio-group">
+                    <fieldset class="option-group">
+                        <legend><h3 id="processing-mode-title" data-i18n="processing.mode">Режим обробки</h3></legend>
+                        <div class="radio-group" role="radiogroup" aria-labelledby="processing-mode-title">
                             <label class="radio-label">
-                                <input type="radio" name="processingMode" value="copy" checked>
-                                <span class="radio-custom"></span>
+                                <input type="radio" name="processingMode" value="copy" checked aria-describedby="copy-desc">
+                                <span class="radio-custom" aria-hidden="true"></span>
                                 <div class="radio-content">
                                     <strong data-i18n="processing.copy">Копіювання</strong>
-                                    <small data-i18n="processing.copyDesc">Створює дублікати фото</small>
+                                    <small id="copy-desc" data-i18n="processing.copyDesc">Створює дублікати фото</small>
                                 </div>
                             </label>
                             <label class="radio-label">
-                                <input type="radio" name="processingMode" value="move">
-                                <span class="radio-custom"></span>
+                                <input type="radio" name="processingMode" value="move" aria-describedby="move-desc">
+                                <span class="radio-custom" aria-hidden="true"></span>
                                 <div class="radio-content">
                                     <strong data-i18n="processing.move">Переміщення</strong>
-                                    <small data-i18n="processing.moveDesc">Переносить оригінали (економія місця)</small>
+                                    <small id="move-desc" data-i18n="processing.moveDesc">Переносить оригінали (економія місця)</small>
                                 </div>
                             </label>
                         </div>
                     </div>
 
 
-                    <div class="option-group">
-                        <h3 data-i18n="processing.options">Додаткові опції</h3>
-                        <div class="checkbox-group">
+                    <fieldset class="option-group">
+                        <legend><h3 id="processing-options-title" data-i18n="processing.options">Додаткові опції</h3></legend>
+                        <div class="checkbox-group" role="group" aria-labelledby="processing-options-title">
                             <label class="checkbox-label" title="Структура папок: Рік/Місяць/День (активний) або Рік/Місяць (неактивний)">
-                                <input type="checkbox" id="createSubfolders">
-                                <span class="checkbox-custom"></span>
-                                <span data-i18n="processing.createSubfolders">Створювати підпапки за днями</span>
+                                <input type="checkbox" id="createSubfolders" aria-describedby="subfolders-desc">
+                                <span class="checkbox-custom" aria-hidden="true"></span>
+                                <span id="subfolders-desc" data-i18n="processing.createSubfolders">Створювати підпапки за днями</span>
                             </label>
                             <label class="checkbox-label">
-                                <input type="checkbox" id="handleDuplicates">
-                                <span class="checkbox-custom"></span>
-                                <span data-i18n="processing.handleDuplicates">Обробляти дублікати</span>
+                                <input type="checkbox" id="handleDuplicates" aria-describedby="duplicates-desc">
+                                <span class="checkbox-custom" aria-hidden="true"></span>
+                                <span id="duplicates-desc" data-i18n="processing.handleDuplicates">Обробляти дублікати</span>
                             </label>
                         </div>
                     </div>
@@ -281,9 +318,10 @@
             </section>
 
             <!-- Start Button -->
-            <section class="start-section">
-                <button class="btn btn-success btn-large" id="startBtn" disabled>
-                    <i class="fas fa-play"></i>
+            <section class="start-section" role="region" aria-labelledby="start-section-title">
+                <h2 id="start-section-title" class="sr-only">Запуск обробки</h2>
+                <button class="btn btn-success btn-large" id="startBtn" disabled aria-describedby="start-section-title">
+                    <i class="fas fa-play" aria-hidden="true"></i>
                     <span data-i18n="buttons.startSorting">Почати сортування</span>
                 </button>
             </section>

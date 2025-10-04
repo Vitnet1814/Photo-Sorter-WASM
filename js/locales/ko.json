@@ -75,8 +75,8 @@
     "mobileNotSupported": "모바일 기기는 현재 지원되지 않습니다",
     "safariNotSupported": "Safari는 File System Access API를 지원하지 않습니다",
     "browserNotSupported": "귀하의 브라우저는 필요한 기능을 지원하지 않습니다",
-    "useDesktopBrowser": "<strong>데스크톱 브라우저</strong>(Windows/Mac/Linux의 Chrome, Edge 또는 Firefox)를 사용해 주세요",
-    "useChromeEdgeFirefox": "<strong>Chrome</strong>, <strong>Edge</strong> 또는 <strong>Firefox</strong>를 사용해 주세요"
+    "useDesktopBrowser": "<strong>데스크톱 브라우저</strong>(Windows/Mac/Linux의 Chrome, Edge 또는 Opera)를 사용해 주세요",
+    "useChromeEdgeFirefox": "<strong>Chrome</strong>, <strong>Edge</strong> 또는 <strong>Opera</strong>를 사용해 주세요"
   },
   "environment": {
     "os": "OS: {{os}}",
@@ -95,6 +95,10 @@
     "10": "10_10월",
     "11": "11_11월",
     "12": "12_12월"
+  },
+  "tooltips": {
+    "createSubfoldersActive": "폴더 구조: 년/월/일",
+    "createSubfoldersInactive": "폴더 구조: 년/월"
   },
   "errors": {
     "fileSystemNotSupported": "이 브라우저에서는 File System Access API가 지원되지 않습니다",

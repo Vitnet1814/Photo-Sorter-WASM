@@ -74,8 +74,8 @@
     "mobileNotSupported": "目前不支持移动设备",
     "safariNotSupported": "Safari不支持File System Access API",
     "browserNotSupported": "您的浏览器不支持所需功能",
-    "useDesktopBrowser": "请使用<strong>桌面浏览器</strong>（Windows/Mac/Linux上的Chrome、Edge或Firefox）",
-    "useChromeEdgeFirefox": "请使用<strong>Chrome</strong>、<strong>Edge</strong>或<strong>Firefox</strong>"
+    "useDesktopBrowser": "请使用<strong>桌面浏览器</strong>（Windows/Mac/Linux上的Chrome、Edge或Opera）",
+    "useChromeEdgeFirefox": "请使用<strong>Chrome</strong>、<strong>Edge</strong>或<strong>Opera</strong>"
   },
   "environment": {
     "os": "操作系统：{{os}}",
@@ -94,6 +94,10 @@
     "10": "10_十月",
     "11": "11_十一月",
     "12": "12_十二月"
+  },
+  "tooltips": {
+    "createSubfoldersActive": "文件夹结构：年/月/日",
+    "createSubfoldersInactive": "文件夹结构：年/月"
   },
   "errors": {
     "fileSystemNotSupported": "此浏览器不支持File System Access API",

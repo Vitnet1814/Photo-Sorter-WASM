@@ -75,8 +75,8 @@
     "mobileNotSupported": "モバイルデバイスは現在サポートされていません",
     "safariNotSupported": "SafariはFile System Access APIをサポートしていません",
     "browserNotSupported": "お使いのブラウザは必要な機能をサポートしていません",
-    "useDesktopBrowser": "<strong>デスクトップブラウザ</strong>（Windows/Mac/LinuxのChrome、Edge、Firefox）をご使用ください",
-    "useChromeEdgeFirefox": "<strong>Chrome</strong>、<strong>Edge</strong>、<strong>Firefox</strong>をご使用ください"
+    "useDesktopBrowser": "<strong>デスクトップブラウザ</strong>（Windows/Mac/LinuxのChrome、Edge、Opera）をご使用ください",
+    "useChromeEdgeFirefox": "<strong>Chrome</strong>、<strong>Edge</strong>、<strong>Opera</strong>をご使用ください"
   },
   "environment": {
     "os": "OS：{{os}}",
@@ -95,6 +95,10 @@
     "10": "10_10月",
     "11": "11_11月",
     "12": "12_12月"
+  },
+  "tooltips": {
+    "createSubfoldersActive": "フォルダ構造：年/月/日",
+    "createSubfoldersInactive": "フォルダ構造：年/月"
   },
   "errors": {
     "fileSystemNotSupported": "このブラウザではFile System Access APIがサポートされていません",

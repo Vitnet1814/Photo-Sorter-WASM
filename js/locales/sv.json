@@ -75,8 +75,8 @@
     "mobileNotSupported": "Mobila enheter stöds inte för närvarande",
     "safariNotSupported": "Safari stöder inte File System Access API",
     "browserNotSupported": "Din webbläsare stöder inte de nödvändiga funktionerna",
-    "useDesktopBrowser": "Vänligen använd en <strong>desktop-webbläsare</strong> (Chrome, Edge eller Firefox på Windows/Mac/Linux)",
-    "useChromeEdgeFirefox": "Vänligen använd <strong>Chrome</strong>, <strong>Edge</strong> eller <strong>Firefox</strong>"
+    "useDesktopBrowser": "Vänligen använd en <strong>desktop-webbläsare</strong> (Chrome, Edge eller Opera på Windows/Mac/Linux)",
+    "useChromeEdgeFirefox": "Vänligen använd <strong>Chrome</strong>, <strong>Edge</strong> eller <strong>Opera</strong>"
   },
   "environment": {
     "os": "OS: {{os}}",
@@ -95,6 +95,10 @@
     "10": "10_oktober",
     "11": "11_november",
     "12": "12_december"
+  },
+  "tooltips": {
+    "createSubfoldersActive": "Mappstruktur: År/Månad/Dag",
+    "createSubfoldersInactive": "Mappstruktur: År/Månad"
   },
   "errors": {
     "fileSystemNotSupported": "File System Access API stöds inte i denna webbläsare",

@@ -13,8 +13,8 @@ class PhotoSorterApp {
             folderFormat: 'monthNames',
             maxFileSize: 100,
             processingMode: 'copy',
-            createSubfolders: true,
-            handleDuplicates: true
+            createSubfolders: false,
+            handleDuplicates: false
         };
         this.isProcessing = false;
         this.progressInterval = null;
@@ -185,6 +185,25 @@ class PhotoSorterApp {
                 window.location.reload();
             }, 1000);
         };
+    }
+
+    /**
+     * Оновлює підказки після зміни мови
+     */
+    updateTooltips() {
+        const createSubfoldersCheckbox = document.getElementById('createSubfolders');
+        if (createSubfoldersCheckbox) {
+            const createSubfoldersLabel = createSubfoldersCheckbox.closest('.checkbox-label');
+            if (createSubfoldersLabel) {
+                const isChecked = createSubfoldersCheckbox.checked;
+                const tooltipKey = isChecked 
+                    ? 'tooltips.createSubfoldersActive' 
+                    : 'tooltips.createSubfoldersInactive';
+                const tooltip = window.i18n ? window.i18n.t(tooltipKey) : 
+                    (isChecked ? "Структура папок: Рік/Місяць/День" : "Структура папок: Рік/Місяць");
+                createSubfoldersLabel.title = tooltip;
+            }
+        }
     }
 
     /**
@@ -359,6 +378,8 @@ class PhotoSorterApp {
                 await window.i18n.setLanguage(e.target.value);
                 // Оновлюємо інформацію про середовище після зміни мови
                 this.updateEnvironmentDisplay();
+                // Оновлюємо підказки після зміни мови
+                this.updateTooltips();
             });
         }
         
@@ -377,8 +398,28 @@ class PhotoSorterApp {
         const handleDuplicatesCheckbox = document.getElementById('handleDuplicates');
         
         if (createSubfoldersCheckbox) {
+            // Знаходимо label елемент
+            const createSubfoldersLabel = createSubfoldersCheckbox.closest('.checkbox-label');
+            
+            // Функція для оновлення підказки
+            const updateTooltip = () => {
+                const isChecked = createSubfoldersCheckbox.checked;
+                const tooltipKey = isChecked 
+                    ? 'tooltips.createSubfoldersActive' 
+                    : 'tooltips.createSubfoldersInactive';
+                const tooltip = window.i18n ? window.i18n.t(tooltipKey) : 
+                    (isChecked ? "Структура папок: Рік/Місяць/День" : "Структура папок: Рік/Місяць");
+                if (createSubfoldersLabel) {
+                    createSubfoldersLabel.title = tooltip;
+                }
+            };
+            
+            // Встановлюємо початкову підказку
+            updateTooltip();
+            
             createSubfoldersCheckbox.addEventListener('change', (e) => {
                 this.currentSettings.createSubfolders = e.target.checked;
+                updateTooltip();
             });
         }
         

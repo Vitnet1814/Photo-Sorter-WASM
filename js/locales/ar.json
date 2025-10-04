@@ -75,8 +75,8 @@
     "mobileNotSupported": "الأجهزة المحمولة غير مدعومة حالياً",
     "safariNotSupported": "Safari لا يدعم File System Access API",
     "browserNotSupported": "متصفحك لا يدعم الوظائف المطلوبة",
-    "useDesktopBrowser": "يرجى استخدام <strong>متصفح سطح المكتب</strong> (Chrome أو Edge أو Firefox على Windows/Mac/Linux)",
-    "useChromeEdgeFirefox": "يرجى استخدام <strong>Chrome</strong> أو <strong>Edge</strong> أو <strong>Firefox</strong>"
+    "useDesktopBrowser": "يرجى استخدام <strong>متصفح سطح المكتب</strong> (Chrome أو Edge أو Opera على Windows/Mac/Linux)",
+    "useChromeEdgeFirefox": "يرجى استخدام <strong>Chrome</strong> أو <strong>Edge</strong> أو <strong>Opera</strong>"
   },
   "environment": {
     "os": "نظام التشغيل: {{os}}",
@@ -95,6 +95,10 @@
     "10": "10_أكتوبر",
     "11": "11_نوفمبر",
     "12": "12_ديسمبر"
+  },
+  "tooltips": {
+    "createSubfoldersActive": "هيكل المجلدات: السنة/الشهر/اليوم",
+    "createSubfoldersInactive": "هيكل المجلدات: السنة/الشهر"
   },
   "errors": {
     "fileSystemNotSupported": "File System Access API غير مدعوم في هذا المتصفح",

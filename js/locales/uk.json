@@ -74,8 +74,8 @@
     "mobileNotSupported": "Мобільні пристрої поки що не підтримуються",
     "safariNotSupported": "Safari не підтримує File System Access API",
     "browserNotSupported": "Ваш браузер не підтримує необхідні функції",
-    "useDesktopBrowser": "Будь ласка, використовуйте <strong>Desktop браузер</strong> (Chrome, Edge або Firefox на Windows/Mac/Linux)",
-    "useChromeEdgeFirefox": "Будь ласка, використовуйте <strong>Chrome</strong>, <strong>Edge</strong> або <strong>Firefox</strong>"
+    "useDesktopBrowser": "Будь ласка, використовуйте <strong>Desktop браузер</strong> (Chrome, Edge або Opera на Windows/Mac/Linux)",
+    "useChromeEdgeFirefox": "Будь ласка, використовуйте <strong>Chrome</strong>, <strong>Edge</strong> або <strong>Opera</strong>"
   },
   "environment": {
     "os": "ОС: {{os}}",
@@ -94,6 +94,10 @@
     "10": "10_жовтень",
     "11": "11_листопад",
     "12": "12_грудень"
+  },
+  "tooltips": {
+    "createSubfoldersActive": "Структура папок: Рік/Місяць/День",
+    "createSubfoldersInactive": "Структура папок: Рік/Місяць"
   },
   "errors": {
     "fileSystemNotSupported": "File System Access API не підтримується в цьому браузері",

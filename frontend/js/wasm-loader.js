@@ -60,10 +60,14 @@ class WASMLoader {
             return new Promise((resolve, reject) => {
                 script.onload = () => {
                     try {
-                        const module = new PhotoProcessor();
-                        console.log('✅ WebAssembly модуль завантажено успішно');
-                        console.log('📊 Розмір модуля:', module.buffer.byteLength, 'байт');
-                        resolve(module);
+                        // Справжній WASM модуль експортується як функція
+                        PhotoProcessor().then(module => {
+                            console.log('✅ WebAssembly модуль завантажено успішно');
+                            console.log('📊 Розмір модуля:', module.buffer ? module.buffer.byteLength : 'N/A', 'байт');
+                            resolve(module);
+                        }).catch(error => {
+                            reject(error);
+                        });
                     } catch (error) {
                         reject(error);
                     }

@@ -229,7 +229,11 @@ class FileHandler {
             
             // Використовуємо WASM модуль для читання EXIF
             if (window.wasmLoader && window.wasmLoader.isModuleLoaded()) {
-                const readerPtr = window.wasmLoader.createExifReader(uint8Array);
+                // Обмежуємо розмір даних для WASM (тільки перші 64KB для EXIF парсингу)
+                const maxSize = 64 * 1024; // 64KB
+                const dataToProcess = uint8Array.length > maxSize ? uint8Array.slice(0, maxSize) : uint8Array;
+                
+                const readerPtr = window.wasmLoader.createExifReader(dataToProcess);
                 
                 if (readerPtr) {
                     const exifData = {
@@ -303,9 +307,14 @@ class FileHandler {
             // Обробляємо через WASM модуль
             if (window.wasmLoader && window.wasmLoader.isModuleLoaded()) {
                 console.log(`🔬 WASM обробка файлу ${file.name} з розміром ${file.size} байт`);
+                
+                // Обмежуємо розмір даних для WASM (тільки перші 64KB)
+                const maxSize = 64 * 1024; // 64KB
+                const dataToProcess = uint8Array.length > maxSize ? uint8Array.slice(0, maxSize) : uint8Array;
+                
                 window.wasmLoader.processPhoto(
                     file.name,
-                    uint8Array,
+                    dataToProcess,
                     exifData.dateTaken,
                     new Date(file.lastModified).toISOString().split('T')[0],
                     exifData.cameraMake,
@@ -466,7 +475,7 @@ class FileHandler {
      * @returns {Object} Метадані
      */
     getFileMetadata(file) {
-        // Симуляція метаданих для тестування
+        // Використовуємо тільки дату модифікації файлу для створення структури папок
         const date = new Date(file.lastModified);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -474,8 +483,8 @@ class FileHandler {
         
         return {
             dateTaken: `${year}-${month}-${day}`,
-            cameraMake: 'Test Camera',
-            cameraModel: 'Test Model',
+            cameraMake: '',
+            cameraModel: '',
             fileSize: file.size,
             format: file.name.split('.').pop().toLowerCase()
         };

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WASM Photo Processor Test</title>
+</head>
+<body>
+    <h1>WebAssembly Photo Processor Test</h1>
+    <div id="output"></div>
+    
+    <script src="photo-processor.js"></script>
+    <script>
+        PhotoProcessor().then(Module => {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>✅ WASM модуль завантажено успішно!</p>';
+            output.innerHTML += '<p>Версія: ' + Module.ccall('getVersion', 'string', [], []) + '</p>';
+        }).catch(err => {
+            document.getElementById('output').innerHTML = '<p>❌ Помилка завантаження: ' + err + '</p>';
+        });
+    </script>
+</body>
+</html>

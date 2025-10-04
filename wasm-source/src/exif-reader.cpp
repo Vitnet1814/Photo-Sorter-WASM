@@ -46,6 +46,26 @@ private:
         return result;
     }
     
+    // Читання значення з урахуванням byte order
+    uint16_t readUint16(size_t offset, bool is_big_endian) {
+        if (offset + 1 >= data.size()) return 0;
+        if (is_big_endian) {
+            return readUint16BE(offset);
+        } else {
+            return data[offset] | (data[offset + 1] << 8);
+        }
+    }
+    
+    uint32_t readUint32(size_t offset, bool is_big_endian) {
+        if (offset + 3 >= data.size()) return 0;
+        if (is_big_endian) {
+            return readUint32BE(offset);
+        } else {
+            return data[offset] | (data[offset + 1] << 8) | 
+                   (data[offset + 2] << 16) | (data[offset + 3] << 24);
+        }
+    }
+    
     // Форматування дати з EXIF
     std::string formatExifDate(const std::string& date_str) {
         if (date_str.length() >= 19) {
@@ -55,6 +75,20 @@ private:
                    date_str.substr(8, 2);
         }
         return "";
+    }
+    
+    // Очищення рядка від зайвих символів
+    std::string cleanString(const std::string& str) {
+        std::string result = str;
+        // Видаляємо NULL символи та зайві пробіли
+        result.erase(std::remove(result.begin(), result.end(), '\0'), result.end());
+        // Обрізаємо пробіли на початку та в кінці
+        size_t start = result.find_first_not_of(" \t\r\n");
+        if (start != std::string::npos) {
+            size_t end = result.find_last_not_of(" \t\r\n");
+            result = result.substr(start, end - start + 1);
+        }
+        return result;
     }
 
 public:
@@ -83,6 +117,7 @@ public:
         
         // Перевіряємо чи це JPEG файл
         if (data.size() < 4 || data[0] != 0xFF || data[1] != 0xD8) {
+            // DEBUG: Не JPEG файл
             return result;
         }
         
@@ -119,14 +154,16 @@ public:
         
         // Перевіряємо byte order
         bool is_big_endian = (data[tiff_start] == 0x4D && data[tiff_start + 1] == 0x4D);
+        bool is_little_endian = (data[tiff_start] == 0x49 && data[tiff_start + 1] == 0x49);
+        
+        if (!is_big_endian && !is_little_endian) {
+            return result; // Невідомий byte order
+        }
         
         // Читаємо IFD offset
-        uint32_t ifd_offset = is_big_endian ? 
-            readUint32BE(tiff_start + 4) : 
-            (data[tiff_start + 7] << 24) | (data[tiff_start + 6] << 16) | 
-            (data[tiff_start + 5] << 8) | data[tiff_start + 4];
+        uint32_t ifd_offset = readUint32(tiff_start + 4, is_big_endian);
         
-        // Простий парсинг основних тегів
+        // Парсимо основні теги
         result = parseBasicTags(tiff_start, ifd_offset, is_big_endian);
         
         return result;
@@ -137,19 +174,162 @@ private:
         ExifData result;
         result.has_exif = true;
         
-        // Базові значення для тестів
-        result.date_taken = "2024-01-15";           // DateTimeOriginal
-        result.date_time = "2024-01-15 14:30:25";    // DateTime
-        result.date_digitized = "2024-01-15 14:30:25"; // DateTimeDigitized
-        result.gps_date_stamp = "2024:01:15";        // GPSDateStamp
-        result.gps_time_stamp = "14:30:25";          // GPSTimeStamp
-        result.camera_make = "Canon";
-        result.camera_model = "EOS R5";
+        // Ініціалізуємо порожніми значеннями
+        result.date_taken = "";
+        result.date_time = "";
+        result.date_digitized = "";
+        result.gps_date_stamp = "";
+        result.gps_time_stamp = "";
+        result.camera_make = "";
+        result.camera_model = "";
         result.location = "";
-        result.width = 8192;
-        result.height = 5464;
+        result.width = 0;
+        result.height = 0;
+        
+        // Парсимо основні IFD теги
+        parseIFD(tiff_start, ifd_offset, is_big_endian, result);
         
         return result;
+    }
+    
+    // Парсинг IFD (Image File Directory)
+    void parseIFD(size_t tiff_start, uint32_t ifd_offset, bool is_big_endian, ExifData& result) {
+        size_t ifd_start = tiff_start + ifd_offset;
+        
+        // Читаємо кількість записів в IFD
+        uint16_t entry_count = readUint16(ifd_start, is_big_endian);
+        if (ifd_start + 2 + entry_count * 12 > data.size()) {
+            return; // Недостатньо даних
+        }
+        
+        // Парсимо кожен запис в IFD
+        for (uint16_t i = 0; i < entry_count; i++) {
+            size_t entry_offset = ifd_start + 2 + i * 12;
+            parseIFDEntry(entry_offset, tiff_start, is_big_endian, result);
+        }
+        
+        // Читаємо наступний IFD offset (якщо є)
+        size_t next_ifd_offset = ifd_start + 2 + entry_count * 12;
+        if (next_ifd_offset + 4 <= data.size()) {
+            uint32_t next_offset = readUint32(next_ifd_offset, is_big_endian);
+            if (next_offset != 0) {
+                parseIFD(tiff_start, next_offset, is_big_endian, result);
+            }
+        }
+    }
+    
+    // Парсинг одного запису IFD
+    void parseIFDEntry(size_t entry_offset, size_t tiff_start, bool is_big_endian, ExifData& result) {
+        if (entry_offset + 12 > data.size()) return;
+        
+        uint16_t tag = readUint16(entry_offset, is_big_endian);
+        uint16_t type = readUint16(entry_offset + 2, is_big_endian);
+        uint32_t count = readUint32(entry_offset + 4, is_big_endian);
+        uint32_t value_offset = readUint32(entry_offset + 8, is_big_endian);
+        
+        // Обробляємо тільки цікаві нам теги
+        switch (tag) {
+            case 0x0132: // DateTime
+                if (type == 2 && count > 0) { // ASCII string
+                    result.date_time = cleanString(readAsciiString(tiff_start + value_offset, count));
+                }
+                break;
+                
+            case 0x9003: // DateTimeOriginal
+                if (type == 2 && count > 0) {
+                    std::string raw_date = cleanString(readAsciiString(tiff_start + value_offset, count));
+                    result.date_taken = formatExifDate(raw_date);
+                }
+                break;
+                
+            case 0x9004: // DateTimeDigitized
+                if (type == 2 && count > 0) {
+                    result.date_digitized = cleanString(readAsciiString(tiff_start + value_offset, count));
+                }
+                break;
+                
+            case 0x010F: // Make
+                if (type == 2 && count > 0) {
+                    result.camera_make = cleanString(readAsciiString(tiff_start + value_offset, count));
+                }
+                break;
+                
+            case 0x0110: // Model
+                if (type == 2 && count > 0) {
+                    result.camera_model = cleanString(readAsciiString(tiff_start + value_offset, count));
+                }
+                break;
+                
+            case 0x0100: // ImageWidth
+                if (type == 3 && count == 1) { // SHORT
+                    result.width = readUint16(entry_offset + 8, is_big_endian);
+                } else if (type == 4 && count == 1) { // LONG
+                    result.width = readUint32(entry_offset + 8, is_big_endian);
+                }
+                break;
+                
+            case 0x0101: // ImageLength
+                if (type == 3 && count == 1) { // SHORT
+                    result.height = readUint16(entry_offset + 8, is_big_endian);
+                } else if (type == 4 && count == 1) { // LONG
+                    result.height = readUint32(entry_offset + 8, is_big_endian);
+                }
+                break;
+                
+            case 0x8825: // GPS IFD
+                // Парсимо GPS IFD якщо є
+                parseGPSIFD(tiff_start, value_offset, is_big_endian, result);
+                break;
+        }
+    }
+    
+    // Парсинг GPS IFD
+    void parseGPSIFD(size_t tiff_start, uint32_t gps_offset, bool is_big_endian, ExifData& result) {
+        size_t gps_ifd_start = tiff_start + gps_offset;
+        
+        if (gps_ifd_start + 2 > data.size()) return;
+        
+        uint16_t entry_count = readUint16(gps_ifd_start, is_big_endian);
+        if (gps_ifd_start + 2 + entry_count * 12 > data.size()) {
+            return;
+        }
+        
+        for (uint16_t i = 0; i < entry_count; i++) {
+            size_t entry_offset = gps_ifd_start + 2 + i * 12;
+            
+            uint16_t tag = readUint16(entry_offset, is_big_endian);
+            uint16_t type = readUint16(entry_offset + 2, is_big_endian);
+            uint32_t count = readUint32(entry_offset + 4, is_big_endian);
+            uint32_t value_offset = readUint32(entry_offset + 8, is_big_endian);
+            
+            switch (tag) {
+                case 0x001D: // GPSDateStamp
+                    if (type == 2 && count > 0) {
+                        result.gps_date_stamp = cleanString(readAsciiString(tiff_start + value_offset, count));
+                    }
+                    break;
+                    
+                case 0x0007: // GPSTimeStamp
+                    if (type == 5 && count == 3) { // RATIONAL array
+                        // Читаємо години, хвилини, секунди як раціональні числа
+                        std::string time_str = "";
+                        for (uint32_t j = 0; j < 3; j++) {
+                            size_t rational_offset = tiff_start + value_offset + j * 8;
+                            uint32_t numerator = readUint32(rational_offset, is_big_endian);
+                            uint32_t denominator = readUint32(rational_offset + 4, is_big_endian);
+                            
+                            if (denominator != 0) {
+                                uint32_t value = numerator / denominator;
+                                if (j > 0) time_str += ":";
+                                if (value < 10) time_str += "0";
+                                time_str += std::to_string(value);
+                            }
+                        }
+                        result.gps_time_stamp = time_str;
+                    }
+                    break;
+            }
+        }
     }
 };
 

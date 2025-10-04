@@ -35,7 +35,11 @@ emcc src/main.cpp src/exif-reader.cpp \
         '_readCameraModel',
         '_readImageWidth',
         '_readImageHeight',
-        '_hasExifData'
+        '_hasExifData',
+        '_readExifDateTime',
+        '_readExifDateTimeDigitized',
+        '_readExifGpsDateStamp',
+        '_readExifGpsTimeStamp'
     ]" \
     -s EXPORTED_RUNTIME_METHODS="[
         'ccall',

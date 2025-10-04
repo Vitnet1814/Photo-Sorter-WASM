@@ -37,27 +37,6 @@
             white-space: nowrap !important;
             border: 0 !important;
         }
-        
-        /* Семантичні fieldset та legend - виглядають як оригінальні div */
-        fieldset.option-group {
-            border: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            display: block !important;
-        }
-        
-        legend {
-            display: block !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: none !important;
-        }
-        
-        legend h3 {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -198,8 +177,8 @@
             <section class="processing-options" role="region" aria-labelledby="processing-title">
                 <h2 id="processing-title" class="sr-only">Налаштування обробки</h2>
                 <div class="options-grid">
-                    <fieldset class="option-group">
-                        <legend><h3 id="processing-mode-title" data-i18n="processing.mode">Режим обробки</h3></legend>
+                    <div class="option-group">
+                        <h3 id="processing-mode-title" data-i18n="processing.mode">Режим обробки</h3>
                         <div class="radio-group" role="radiogroup" aria-labelledby="processing-mode-title">
                             <label class="radio-label">
                                 <input type="radio" name="processingMode" value="copy" checked aria-describedby="copy-desc">
@@ -221,8 +200,8 @@
                     </div>
 
 
-                    <fieldset class="option-group">
-                        <legend><h3 id="processing-options-title" data-i18n="processing.options">Додаткові опції</h3></legend>
+                    <div class="option-group">
+                        <h3 id="processing-options-title" data-i18n="processing.options">Додаткові опції</h3>
                         <div class="checkbox-group" role="group" aria-labelledby="processing-options-title">
                             <label class="checkbox-label" title="Структура папок: Рік/Місяць/День (активний) або Рік/Місяць (неактивний)">
                                 <input type="checkbox" id="createSubfolders" aria-describedby="subfolders-desc">

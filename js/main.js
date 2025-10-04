@@ -157,34 +157,7 @@ class PhotoSorterApp {
             envInfoElement.classList.add('ready');
         }
         
-        console.log('🌍 Середовище:', envInfo);
-        console.log(`📱 Підтримується: ${envInfo.isSupported}`);
-        console.log(`🔍 File System Access API: ${'showOpenFilePicker' in window && 'showDirectoryPicker' in window}`);
-        console.log(`🍎 Safari: ${envInfo.browser === 'Safari'}`);
         
-        // Додаємо функції тестування в глобальну область
-        window.testBrowserSupport = () => {
-            const testEnv = this.getEnvironmentInfo();
-            console.log('🧪 Тест підтримки браузера:');
-            console.log('OS:', testEnv.os);
-            console.log('Browser:', testEnv.browser);
-            console.log('File System Access API:', 'showOpenFilePicker' in window && 'showDirectoryPicker' in window);
-            console.log('Підтримується:', testEnv.isSupported);
-            return testEnv;
-        };
-        
-        // Функція для симуляції Safari (для тестування)
-        window.simulateSafari = () => {
-            console.log('🍎 Симуляція Safari...');
-            Object.defineProperty(navigator, 'userAgent', {
-                writable: true,
-                value: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15'
-            });
-            // Перезавантажуємо сторінку для застосування змін
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
-        };
     }
 
     /**
@@ -293,13 +266,8 @@ class PhotoSorterApp {
      */
     async init() {
         try {
-            console.log('🚀 Ініціалізація Photo Sorter WASM...');
-            
             // Перевіряємо чи це мобільний пристрій
             this.isAndroidDevice = /Android/i.test(navigator.userAgent);
-            if (this.isAndroidDevice) {
-                console.log('📱 Виявлено Android пристрій');
-            }
             
             // Показуємо loading overlay
             this.showLoadingOverlay();
@@ -323,10 +291,8 @@ class PhotoSorterApp {
             this.hideLoadingOverlay();
             
             this.isInitialized = true;
-            console.log('✅ Додаток ініціалізовано успішно');
             
         } catch (error) {
-            console.error('❌ Помилка ініціалізації:', error);
             this.hideLoadingOverlay();
             this.showError(window.i18n.t('errors.initializationError', { error: error.message }));
         }
@@ -438,7 +404,6 @@ class PhotoSorterApp {
             });
         });
         
-        console.log('🎨 UI ініціалізовано');
     }
 
     /**
@@ -735,7 +700,6 @@ class PhotoSorterApp {
             }));
             
         } catch (error) {
-            console.error('Помилка обробки:', error);
             this.showError(window.i18n.t('errors.processingError', { error: error.message }));
         } finally {
             this.isProcessing = false;
@@ -783,10 +747,6 @@ class PhotoSorterApp {
         
         this.addLogEntry(progress.result.success ? 'success' : 'error', logMessage);
         
-        // Додаткова діагностика для мобільних пристроїв
-        if (/Android|iPhone|iPad|BlackBerry|Windows Phone/.test(navigator.userAgent)) {
-            console.log(`📱 Мобільний пристрій: оброблено ${progress.current} з ${progress.total}`);
-        }
     }
 
     /**
@@ -862,7 +822,6 @@ class PhotoSorterApp {
             this.fileHandler.setMaxFileSize(this.currentSettings.maxFileSize);
             
         } catch (error) {
-            console.error('Помилка завантаження налаштувань:', error);
         }
     }
 
@@ -907,17 +866,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Додаємо глобальний доступ до додатку
     window.photoSorterApp = app;
     
-    console.log('🎉 Photo Sorter WASM готовий до роботи!');
 });
 
-// Обробка помилок
-window.addEventListener('error', (event) => {
-    console.error('Глобальна помилка:', event.error);
-});
-
-window.addEventListener('unhandledrejection', (event) => {
-    console.error('Необроблена помилка Promise:', event.reason);
-});
 
 // Додаємо стилі для toast повідомлень
 const toastStyles = document.createElement('style');

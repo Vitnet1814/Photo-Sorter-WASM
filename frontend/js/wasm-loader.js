@@ -44,8 +44,6 @@ class WASMLoader {
      */
     async _loadModule() {
         try {
-            console.log('🔄 Завантаження WebAssembly модуля...');
-            
             // Перевіряємо підтримку WebAssembly
             if (!window.WebAssembly) {
                 throw new Error('WebAssembly не підтримується в цьому браузері');
@@ -54,7 +52,7 @@ class WASMLoader {
             // Завантажуємо модуль
             // Завантажуємо скрипт
             const script = document.createElement('script');
-            script.src = '../frontend/wasm/photo-processor.js';
+            script.src = 'wasm/photo-processor.js';
             script.type = 'text/javascript';
             
             return new Promise((resolve, reject) => {
@@ -62,8 +60,6 @@ class WASMLoader {
                     try {
                         // Справжній WASM модуль експортується як функція
                         PhotoProcessor().then(module => {
-                            console.log('✅ WebAssembly модуль завантажено успішно');
-                            console.log('📊 Розмір модуля:', module.buffer ? module.buffer.byteLength : 'N/A', 'байт');
                             resolve(module);
                         }).catch(error => {
                             reject(error);
@@ -78,7 +74,6 @@ class WASMLoader {
                 document.head.appendChild(script);
             });
         } catch (error) {
-            console.error('❌ Помилка завантаження WASM модуля:', error);
             throw new Error(`Не вдалося завантажити WASM модуль: ${error.message}`);
         }
     }
@@ -115,7 +110,6 @@ class WASMLoader {
         try {
             // Перевіряємо розмір даних перед передачею в WASM
             if (fileData.length > 32 * 1024) {
-                console.warn(`⚠️ Файл ${filename} занадто великий для WASM (${fileData.length} байт), обмежуємо до 32KB`);
                 fileData = fileData.slice(0, 32 * 1024);
             }
 
@@ -124,7 +118,6 @@ class WASMLoader {
                 [filename, fileData, fileData.length, dateTaken, dateModified, cameraMake, cameraModel, location, fileSize, width, height]
             );
         } catch (error) {
-            console.error('Помилка обробки фото:', error);
             throw error;
         }
     }
@@ -154,7 +147,6 @@ class WASMLoader {
             const metadataStr = this.module.ccall('getPhotoMetadata', 'string', ['number'], [index]);
             return JSON.parse(metadataStr);
         } catch (error) {
-            console.error('Помилка отримання метаданих:', error);
             return null;
         }
     }
@@ -173,7 +165,6 @@ class WASMLoader {
         try {
             return this.module.ccall('getFolderStructure', 'string', ['number', 'string'], [index, basePath]);
         } catch (error) {
-            console.error('Помилка отримання структури папок:', error);
             return basePath + '/Без дати';
         }
     }
@@ -189,7 +180,7 @@ class WASMLoader {
         try {
             this.module.ccall('clearMetadata', null, [], []);
         } catch (error) {
-            console.error('Помилка очищення метаданих:', error);
+            // Ігноруємо помилки очищення
         }
     }
 
@@ -206,7 +197,6 @@ class WASMLoader {
             const statsStr = this.module.ccall('getStatistics', 'string', [], []);
             return JSON.parse(statsStr);
         } catch (error) {
-            console.error('Помилка отримання статистики:', error);
             return {
                 total_photos: 0,
                 valid_photos: 0,
@@ -230,7 +220,7 @@ class WASMLoader {
         try {
             this.module.ccall('sortPhotos', null, ['number'], [criteria]);
         } catch (error) {
-            console.error('Помилка сортування фото:', error);
+            // Ігноруємо помилки сортування
         }
     }
 
@@ -247,13 +237,11 @@ class WASMLoader {
         try {
             // Перевіряємо розмір даних перед передачею в WASM
             if (fileData.length > 32 * 1024) {
-                console.warn(`⚠️ EXIF дані занадто великі (${fileData.length} байт), обмежуємо до 32KB`);
                 fileData = fileData.slice(0, 32 * 1024);
             }
 
             return this.module.ccall('createExifReader', 'number', ['array', 'number'], [fileData, fileData.length]);
         } catch (error) {
-            console.error('Помилка створення EXIF читача:', error);
             return 0;
         }
     }
@@ -270,7 +258,7 @@ class WASMLoader {
         try {
             this.module.ccall('destroyExifReader', null, ['number'], [readerPtr]);
         } catch (error) {
-            console.error('Помилка знищення EXIF читача:', error);
+            // Ігноруємо помилки знищення
         }
     }
 
@@ -287,7 +275,6 @@ class WASMLoader {
         try {
             return this.module.ccall('readExifDate', 'string', ['number'], [readerPtr]);
         } catch (error) {
-            console.error('Помилка читання дати з EXIF:', error);
             return '';
         }
     }
@@ -305,7 +292,6 @@ class WASMLoader {
         try {
             return this.module.ccall('readCameraMake', 'string', ['number'], [readerPtr]);
         } catch (error) {
-            console.error('Помилка читання виробника камери:', error);
             return '';
         }
     }
@@ -323,7 +309,6 @@ class WASMLoader {
         try {
             return this.module.ccall('readCameraModel', 'string', ['number'], [readerPtr]);
         } catch (error) {
-            console.error('Помилка читання моделі камери:', error);
             return '';
         }
     }
@@ -341,7 +326,6 @@ class WASMLoader {
         try {
             return this.module.ccall('readImageWidth', 'number', ['number'], [readerPtr]);
         } catch (error) {
-            console.error('Помилка читання ширини зображення:', error);
             return 0;
         }
     }
@@ -359,7 +343,6 @@ class WASMLoader {
         try {
             return this.module.ccall('readImageHeight', 'number', ['number'], [readerPtr]);
         } catch (error) {
-            console.error('Помилка читання висоти зображення:', error);
             return 0;
         }
     }
@@ -377,7 +360,6 @@ class WASMLoader {
         try {
             return this.module.ccall('hasExifData', 'boolean', ['number'], [readerPtr]);
         } catch (error) {
-            console.error('Помилка перевірки EXIF даних:', error);
             return false;
         }
     }
@@ -395,7 +377,6 @@ class WASMLoader {
         try {
             return this.module.ccall('readExifDateTime', 'string', ['number'], [readerPtr]);
         } catch (error) {
-            console.error('Помилка читання DateTime з EXIF:', error);
             return '';
         }
     }
@@ -413,7 +394,6 @@ class WASMLoader {
         try {
             return this.module.ccall('readExifDateTimeDigitized', 'string', ['number'], [readerPtr]);
         } catch (error) {
-            console.error('Помилка читання DateTimeDigitized з EXIF:', error);
             return '';
         }
     }
@@ -431,7 +411,6 @@ class WASMLoader {
         try {
             return this.module.ccall('readExifGpsDateStamp', 'string', ['number'], [readerPtr]);
         } catch (error) {
-            console.error('Помилка читання GPSDateStamp з EXIF:', error);
             return '';
         }
     }
@@ -449,7 +428,6 @@ class WASMLoader {
         try {
             return this.module.ccall('readExifGpsTimeStamp', 'string', ['number'], [readerPtr]);
         } catch (error) {
-            console.error('Помилка читання GPSTimeStamp з EXIF:', error);
             return '';
         }
     }

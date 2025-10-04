@@ -138,9 +138,6 @@ class PhotoSorterApp {
         
         // Додаємо CSS класи для стилізації
         document.querySelector('.env-info').classList.add('ready');
-        
-        console.log('🌍 Середовище:', envInfo);
-        console.log(`📱 Підтримується: ${envInfo.isSupported}`);
     }
 
     /**
@@ -209,13 +206,8 @@ class PhotoSorterApp {
      */
     async init() {
         try {
-            console.log('🚀 Ініціалізація Photo Sorter WASM...');
-            
             // Перевіряємо чи це мобільний пристрій
             this.isAndroidDevice = /Android/i.test(navigator.userAgent);
-            if (this.isAndroidDevice) {
-                console.log('📱 Виявлено Android пристрій');
-            }
             
             // Показуємо loading overlay
             this.showLoadingOverlay();
@@ -236,10 +228,8 @@ class PhotoSorterApp {
             this.hideLoadingOverlay();
             
             this.isInitialized = true;
-            console.log('✅ Додаток ініціалізовано успішно');
             
         } catch (error) {
-            console.error('❌ Помилка ініціалізації:', error);
             this.hideLoadingOverlay();
             this.showError('Помилка ініціалізації додатку: ' + error.message);
         }
@@ -295,8 +285,6 @@ class PhotoSorterApp {
                 }
             });
         });
-        
-        console.log('🎨 UI ініціалізовано');
     }
 
     /**
@@ -460,7 +448,6 @@ class PhotoSorterApp {
             this.showSuccess(`Обробку завершено! Оброблено: ${result.processed}, помилок: ${result.errors}`);
             
         } catch (error) {
-            console.error('Помилка обробки:', error);
             this.showError('Помилка обробки файлів: ' + error.message);
         } finally {
             this.isProcessing = false;
@@ -507,11 +494,6 @@ class PhotoSorterApp {
         logMessage += `: ${progress.result.success ? 'успішно' : progress.result.error}`;
         
         this.addLogEntry(progress.result.success ? 'success' : 'error', logMessage);
-        
-        // Додаткова діагностика для мобільних пристроїв
-        if (/Android|iPhone|iPad|BlackBerry|Windows Phone/.test(navigator.userAgent)) {
-            console.log(`📱 Мобільний пристрій: оброблено ${progress.current} з ${progress.total}`);
-        }
     }
 
     /**
@@ -587,7 +569,7 @@ class PhotoSorterApp {
             this.fileHandler.setMaxFileSize(this.currentSettings.maxFileSize);
             
         } catch (error) {
-            console.error('Помилка завантаження налаштувань:', error);
+            // Помилка завантаження налаштувань
         }
     }
 
@@ -631,17 +613,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Додаємо глобальний доступ до додатку
     window.photoSorterApp = app;
-    
-    console.log('🎉 Photo Sorter WASM готовий до роботи!');
-});
-
-// Обробка помилок
-window.addEventListener('error', (event) => {
-    console.error('Глобальна помилка:', event.error);
-});
-
-window.addEventListener('unhandledrejection', (event) => {
-    console.error('Необроблена помилка Promise:', event.reason);
 });
 
 // Додаємо стилі для toast повідомлень

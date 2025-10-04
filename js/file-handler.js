@@ -62,15 +62,11 @@ class FileHandler {
 
             this.inputFolderHandles.push(folderData);
 
-            console.log('📁 Вхідна папка додана:', folderHandle.name);
-            console.log('📁 Всього папок:', this.inputFolderHandles.length);
             return folderData;
         } catch (error) {
             if (error.name === 'AbortError') {
-                console.log('Вибір папки скасовано');
                 return null;
             }
-            console.error('Помилка вибору вхідної папки:', error);
             throw error;
         }
     }
@@ -83,8 +79,6 @@ class FileHandler {
         const index = this.inputFolderHandles.findIndex(folderData => folderData.name === folderName);
         if (index > -1) {
             this.inputFolderHandles.splice(index, 1);
-            console.log('📁 Папка видалена:', folderName);
-            console.log('📁 Всього папок:', this.inputFolderHandles.length);
         }
     }
 
@@ -93,7 +87,6 @@ class FileHandler {
      */
     clearInputFolders() {
         this.inputFolderHandles = [];
-        console.log('📁 Всі вхідні папки очищено');
     }
 
     /**
@@ -118,14 +111,11 @@ class FileHandler {
                 mode: 'readwrite'
             });
 
-            console.log('📁 Вихідна папка вибрана:', this.outputFolderHandle.name);
             return this.outputFolderHandle;
         } catch (error) {
             if (error.name === 'AbortError') {
-                console.log('Вибір папки скасовано');
                 return null;
             }
-            console.error('Помилка вибору вихідної папки:', error);
             throw error;
         }
     }
@@ -147,7 +137,6 @@ class FileHandler {
                 formattedSize: this.formatFileSize(totalSize)
             };
         } catch (error) {
-            console.error('Помилка отримання інформації про папку:', error);
             return {
                 name: folderHandle.name,
                 fileCount: 0,
@@ -178,7 +167,6 @@ class FileHandler {
                             
                             // Перевіряємо чи є файл дублікатом (тільки якщо увімкнено обробку дублікатів)
                             if (handleDuplicates && this.isDuplicateFile(file, name, processedFiles)) {
-                                console.log(`⚠️ Пропущено дублікат: ${name} (${file.size} байт, ${new Date(file.lastModified).toLocaleString()})`);
                                 continue;
                             }
                             
@@ -186,10 +174,9 @@ class FileHandler {
                             const fileId = `${file.size}_${file.lastModified}`;
                             processedFiles.add(fileId);
                             
-                            console.log(`📄 Прочитано файл ${name}: ${file.size} байт, тип: ${file.type}`);
                             files.push({ file, handle, parentHandle: folderHandle });
                         } catch (error) {
-                            console.warn(`Не вдалося прочитати файл ${name}:`, error);
+                            // Продовжуємо обробку інших файлів
                         }
                     }
                 } else if (handle.kind === 'directory') {
@@ -199,7 +186,7 @@ class FileHandler {
                 }
             }
         } catch (error) {
-            console.error('Помилка читання папки:', error);
+            // Продовжуємо обробку
         }
 
         return files;
@@ -356,7 +343,6 @@ class FileHandler {
                         return exifData;
                     }
                 } catch (wasmError) {
-                    console.warn(`WASM EXIF помилка для ${file.name}:`, wasmError.message);
                     // Продовжуємо з fallback даними
                 }
             }
@@ -375,7 +361,6 @@ class FileHandler {
                 hasExif: false
             };
         } catch (error) {
-            console.error('Помилка читання EXIF даних:', error);
             return {
                 dateTaken: '',
                 dateTime: '',
@@ -413,7 +398,6 @@ class FileHandler {
 
             // Обробляємо через WASM модуль
             if (window.wasmLoader && window.wasmLoader.isModuleLoaded()) {
-                console.log(`🔬 WASM обробка файлу ${file.name} з розміром ${file.size} байт`);
                 
                 try {
                     // Обмежуємо розмір даних для WASM (тільки перші 32KB для стабільності)
@@ -432,13 +416,9 @@ class FileHandler {
                         exifData.width,
                         exifData.height
                     );
-                    console.log(`✅ WASM обробка завершена для ${file.name}`);
                 } catch (wasmError) {
-                    console.warn(`⚠️ WASM помилка для ${file.name}:`, wasmError.message);
                     // Продовжуємо обробку без WASM
                 }
-            } else {
-                console.log(`⚠️ WASM модуль не завантажений для ${file.name}`);
             }
 
             this.processedFiles++;
@@ -452,7 +432,6 @@ class FileHandler {
             };
         } catch (error) {
             this.errors++;
-            console.error(`Помилка обробки файлу ${file.name}:`, error);
             
             return {
                 success: false,
@@ -489,7 +468,6 @@ class FileHandler {
 
             // Збираємо файли з усіх вхідних папок
             for (const folderData of this.inputFolderHandles) {
-                console.log(`📁 Обробляємо папку: ${folderData.name}`);
                 const files = await this.getImageFiles(folderData.handle, null, processedFiles, handleDuplicates);
                 allFiles.push(...files);
             }
@@ -499,16 +477,9 @@ class FileHandler {
             if (allFiles.length === 0) {
                 throw new Error('В папках не знайдено зображень');
             }
-
-            console.log(`📊 Знайдено ${allFiles.length} зображень для обробки з ${this.inputFolderHandles.length} папок`);
-            console.log(`🔧 Обробка дублікатів: ${handleDuplicates ? 'УВІМКНЕНО' : 'ВИМКНЕНО'}`);
-            console.log(`📁 Створення підпапок: ${options.createSubfolders !== false ? 'УВІМКНЕНО' : 'ВИМКНЕНО'}`);
             
             // Перевіряємо чи є дублікати
             const hasSameOutputFolder = this.inputFolderHandles.some(folderData => folderData.handle === this.outputFolderHandle);
-            if (hasSameOutputFolder) {
-                console.warn('⚠️ УВАГА: Одна з вхідних папок збігається з вихідною! Можливі дублікати файлів.');
-            }
             
             // Обробляємо файли по одному
             for (let i = 0; i < allFiles.length; i++) {
@@ -523,9 +494,6 @@ class FileHandler {
                 
                 // Обробляємо файл через WASM
                 const result = await this.processFile(file, options);
-                
-                console.log(`📋 Результат обробки файлу ${file.name}:`, result);
-                console.log(`📊 Розмір файлу до копіювання: ${file.size} байт`);
 
                 // Копіюємо або переміщуємо файл
                 await this.copyOrMoveFile(file, options.processingMode || 'copy', fileHandle, parentHandle, options, result.exifData);
@@ -555,7 +523,6 @@ class FileHandler {
                 skipped: this.skipped
             };
         } catch (error) {
-            console.error('Помилка обробки файлів:', error);
             throw error;
         } finally {
             this.isProcessing = false;
@@ -582,7 +549,6 @@ class FileHandler {
             const currentLanguage = options.language || 'uk';
             const folderPath = this.createFolderStructure(metadata, createSubfolders, folderFormat, currentLanguage);
             
-            console.log(`📅 Використано найранішу дату для ${file.name}: ${metadata.earliestDate.toLocaleDateString('uk-UA')}`);
             
             // Створюємо папки
             const targetFolderHandle = await this.createFolders(folderPath);
@@ -590,16 +556,13 @@ class FileHandler {
             // Копіюємо або переміщуємо файл
             if (mode === 'copy') {
                 await this.copyFileToFolder(file, targetFolderHandle);
-                console.log(`📋 Скопійовано: ${file.name} -> ${folderPath}`);
             } else {
                 await this.moveFileToFolder(file, targetFolderHandle, originalFileHandle, parentHandle);
-                console.log(`📦 Переміщено: ${file.name} -> ${folderPath}`);
             }
             
             this.processedFiles++;
             
         } catch (error) {
-            console.error(`Помилка обробки файлу ${file.name}:`, error);
             this.errors++;
         }
     }
@@ -875,7 +838,6 @@ class FileHandler {
                 } catch (error) {
                     if (error.name === 'NotFoundError') {
                         currentHandle = await currentHandle.getDirectoryHandle(part, { create: true });
-                        console.log(`📁 Створено папку: ${part}`);
                     } else {
                         throw error;
                     }
@@ -884,7 +846,6 @@ class FileHandler {
             
             return currentHandle;
         } catch (error) {
-            console.error('Помилка створення папок:', error);
             throw error;
         }
     }
@@ -895,12 +856,6 @@ class FileHandler {
      * @param {FileSystemDirectoryHandle} targetFolderHandle - Handle папки призначення
      */
     async copyFileToFolder(file, targetFolderHandle) {
-        console.log(`🔍 ДЕТАЛЬНИЙ DEBUG: Початок копіювання ${file.name}`);
-        console.log(`📊 Розмір оригінального файлу: ${file.size} байт`);
-        console.log(`📱 User Agent: ${navigator.userAgent}`);
-        console.log(`📁 Тип файлу: ${file.type}`);
-        console.log(`📅 Дата модифікації: ${file.lastModified}`);
-        
         // Перевіряємо чи файл взагалі читабельний
         if (file.size === 0) {
             throw new Error(`Оригінальний файл ${file.name} має розмір 0 байт!`);
@@ -910,96 +865,69 @@ class FileHandler {
         try {
             // Створюємо новий файл у цільовій папці
             const fileName = file.name;
-            console.log(`📁 Створюємо файл: ${fileName} в папці: ${targetFolderHandle.name}`);
             
             const newFileHandle = await targetFolderHandle.getFileHandle(fileName, { create: true });
-            console.log(`✅ Файл handle створено для: ${fileName}`);
             
             const writable = await newFileHandle.createWritable();
-            console.log(`✅ Writable stream створено`);
             
             // Для місткості з мобільними пристроями використовуємо Blob замість Uint8Array
-            console.log(`📝 Записуємо Blob з розміром: ${file.size} байт`);
             await writable.write(file);
-            console.log(`✅ Blob записано`);
             
             // Переконуємося, що дані записані повністю
             await writable.close();
-            console.log(`✅ Writable stream closed`);
             
             // ВАЖЛИВО: Отримуємо новий handle після записи для Android Chrome
             const finalFileHandle = await targetFolderHandle.getFileHandle(fileName);
             
             // Перевіряємо розмір записаного файлу
             const writtenFile = await finalFileHandle.getFile();
-            console.log(`📏 Перевірка розміру записаного файлу: ${writtenFile.size} байт`);
             
             if (writtenFile.size === 0) {
-                console.error(`❌ КРИТИЧНА ПОМИЛКА: Записаний файл має розмір 0 байт!`);
                 throw new Error('Файл записався з розміром 0 байт');
             }
             
-            console.log(`✅ УСПІШНО записано файл: ${fileName} (${writtenFile.size} байт)`);
-            
         } catch (error) {
-            console.error('❌ Помилка копіювання файлу:', error);
-            console.error(`❌ Деталі помилки: name="${error.name}", message="${error.message}"`);
-            
             // Спеціальна обробка InvalidStateError для Android Chrome
             if (error.name === 'InvalidStateError') {
-                console.log(`🤖 Виявлено Android Chrome InvalidStateError - використовуємо особливий підхід`);
+                // Використовуємо особливий підхід
             }
             
             // Якщо записи Blob не працює, пробуємо через ArrayBuffer
             try {
-                console.log(`🔄 ПОЧАТОК FALLBACK методу для ${file.name}`);
-                
                 const arrayBuffer = await file.arrayBuffer();
-                console.log(`📊 ArrayBuffer розмір: ${arrayBuffer.byteLength} байт`);
                 
                 // Видаляємо старий файл з неправильним state на Android Chrome
                 try {
                     await targetFolderHandle.removeEntry(file.name);
-                    console.log(`🗑️ Видалено старий файл перед fallback`);
                 } catch (removeError) {
-                    console.log(`⚠️ Не можу видалити файл: ${removeError.message}`);
+                    // Не можу видалити файл
                 }
                 
                 const newFileHandle = await targetFolderHandle.getFileHandle(file.name, { create: true });
                 const writable = await newFileHandle.createWritable();
                 
                 // Записуємо по чанках для мобільних пристроїв
-                console.log(`📝 Записуємо через chunks метод...`);
                 await this.writeInChunks(writable, arrayBuffer);
                 await writable.close();
                 
                 // Отримуємо новий handle після close() для Android
                 const finalFileHandle = await targetFolderHandle.getFileHandle(file.name);
                 const writtenFile = await finalFileHandle.getFile();
-                console.log(`📏 FALLBACK перевірка розміру: ${writtenFile.size} байт`);
                 
                 if (writtenFile.size === 0) {
-                    console.error(`❌ FALLBACK ТАКОЖ ПРОЙШОВ: Файл все ще 0 байт!`);
                     throw new Error('Fallback метод також дає 0 байт');
                 }
                 
-                console.log(`✅ FALLBACK УСПІШНО: ${file.name} (${writtenFile.size} байт)`);
-                
             } catch (fallbackError) {
-                console.error('❌ FALLBACK ПОВНІСТЮ ПРОВАЛИВСЯ:', fallbackError);
-                
                 // Спробуємо останній варіант - пряма передача buffer
                 try {
-                    console.log(`🔄 ОСТАННЯ СПРОБА пряма передача буфера для ${file.name}`);
-                    
                     const arrayBuffer = await file.arrayBuffer();
                     
                     // Видаляємо старий файл перед останньою спробою
                     try {
                         await targetFolderHandle.removeEntry(file.name);
-                        console.log(`🗑️ Видалено файл перед останньою спробою`);
                     } catch (removeError) {
-                        console.log(`⚠️ Не можу видалити файл: ${removeError.message}`);
+                        // Не можу видалити файл
                     }
                     
                     const newFileHandle = await targetFolderHandle.getFileHandle(file.name, { create: true });
@@ -1012,16 +940,12 @@ class FileHandler {
                     // Отримати новий handle після close() для Android
                     const finalFileHandle = await targetFolderHandle.getFileHandle(file.name);
                     const writtenFile = await finalFileHandle.getFile();
-                    console.log(`📏 ОСТАННЯ СПРОБА розмір: ${writtenFile.size} байт`);
                     
                     if (writtenFile.size === 0) {
                         throw new Error('Навіть пряма передача buffer не працює');
                     }
                     
-                    console.log(`✅ ОСТАННЯ СПРОБА УСПІШНА!`);
-                    
                 } catch (lastTryError) {
-                    console.error('❌ ВСІ СПРОБИ ПРОВАЛИЛИСЯ!');
                     throw new Error(`Всі методи запису не працюють: ${lastTryError.message}`);
                 }
             }
@@ -1037,15 +961,11 @@ class FileHandler {
         const chunkSize = 256 * 1024; // 256KB чанки (менше для Android)
         const uint8Array = new Uint8Array(arrayBuffer);
         
-        console.log(`🔄 Запис по чанках: ${uint8Array.length} байт, розмір chunk: ${chunkSize}`);
-        
         const totalChunks = Math.ceil(uint8Array.length/chunkSize);
         
         for (let offset = 0; offset < uint8Array.length; offset += chunkSize) {
             const chunk = uint8Array.slice(offset, offset + chunkSize);
             const chunkNumber = Math.floor(offset/chunkSize) + 1;
-            
-            console.log(`📦 Записуємо chunk ${chunkNumber}/${totalChunks} (${chunk.length} байт)`);
             
             await writable.write({
                 type: 'write',
@@ -1055,8 +975,6 @@ class FileHandler {
             // Пауза між чанками для Android стабільності
             await new Promise(resolve => setTimeout(resolve, 10));
         }
-        
-        console.log(`✅ Всі chunks записані успішно`);
     }
 
     /**
@@ -1064,7 +982,6 @@ class FileHandler {
      * @param {File} file - Файл для скачування
      */
     addFileToDownloadQueue(file) {
-        console.log(`📥 Додано файл до черги: ${file.name} (${file.size} байт)`);
         this.downloadQueue.push({
             file: file,
             fileName: file.name,
@@ -1078,11 +995,8 @@ class FileHandler {
      */
     async processDownloadQueue() {
         if (this.downloadQueue.length === 0) {
-            console.log(`📥 Черга скачувань порожня`);
             return;
         }
-
-        console.log(`📥 Обробляємо чергу скачувань: ${this.downloadQueue.length} файлів`);
 
         try {
             // Створюємо ZIP архів з усіма файлами якщо їх багато
@@ -1093,7 +1007,6 @@ class FileHandler {
                 await this.downloadFilesIndividually();
             }
         } catch (error) {
-            console.error(`❌ Помилка обробки черги скачувань:`, error);
             this.showUserMessage(`Помилка скачування файлів: ${error.message}`);
         }
     }
@@ -1102,8 +1015,6 @@ class FileHandler {
      * Створює ZIP архів і скачує його
      */
     async createAndDownloadZipArchive() {
-        console.log(`📦 Створюємо ZIP архів з ${this.downloadQueue.length} файлів`);
-        
         // Використовуємо JSZip якщо доступний, якщо ні - скачуємо окремо
         if (typeof JSZip !== 'undefined') {
             // TODO: Реалізувати ZIP створення якщо потрібно
@@ -1117,8 +1028,6 @@ class FileHandler {
      * Скачує файли по одному
      */
     async downloadFilesIndividually() {
-        console.log(`📥 Скачування ${this.downloadQueue.length} файлів по одному`);
-    
         for (let i = 0; i < this.downloadQueue.length; i++) {
             const item = this.downloadQueue[i];
             
@@ -1140,13 +1049,11 @@ class FileHandler {
                 document.body.removeChild(downloadLink);
                 URL.revokeObjectURL(fileURL);
                 
-                console.log(`✅ Завантажено: ${item.fileName}`);
-                
                 // Невелика пауза між скачуваннями
                 await new Promise(resolve => setTimeout(resolve, 500));
                 
             } catch (error) {
-                console.error(`❌ Помилка скачування ${item.fileName}:`, error);
+                // Продовжуємо з наступним файлом
             }
         }
         
@@ -1180,12 +1087,9 @@ class FileHandler {
      * @param {FileSystemDirectoryHandle} targetFolderHandle - Handle папки призначення
      */
     async androidChromeWorkaround(file, targetFolderHandle) {
-        console.log(`📱 ANDROID WORKAROUND для файлу: ${file.name}`);
-        
         try {
             // Спробуємо використати showSaveFilePicker замість createWritable
             if ('showSaveFilePicker' in window) {
-                console.log(`🎯 Використовуємо showSaveFilePicker для ${file.name}`);
                 
                 const fileHandle = await window.showSaveFilePicker({
                     suggestedName: file.name,
@@ -1201,13 +1105,11 @@ class FileHandler {
                 await writable.write(file);
                 await writable.close();
                 
-                console.log(`✅ УСПІШНО збережено через showSaveFilePicker: ${file.name}`);
                 this.showUserMessage(`✅ Файл ${file.name} збережено успішно!`);
                 return;
             }
             
             // Fallback: показуємо інструкції користувачу
-            console.log(`📥 Fallback: запропонуємо користувачу завантажити файл`);
             
             const fileURL = URL.createObjectURL(file);
             const downloadLink = document.createElement('a');
@@ -1223,8 +1125,6 @@ class FileHandler {
             this.showUserMessage(`Проблема з Android Chrome. Файл ${file.name} завантажується. Будь ласка, збережіть його в потрібну папку вручну.`);
             
         } catch (error) {
-            console.error(`❌ Android workaround не працює:`, error);
-            
             // Останній fallback - просто повідомляємо про проблему
             this.showUserMessage(`Помилка Android Chrome: ${file.name}. Спробуйте інший браузер або збережіть файли вручну.`);
         }
@@ -1300,17 +1200,14 @@ class FileHandler {
                 try {
                     // Видаляємо оригінальний файл
                     await parentHandle.removeEntry(originalFileHandle.name);
-                    console.log(`🗑️ Видалено оригінал: ${file.name}`);
                 } catch (deleteError) {
-                    console.warn('Не вдалося видалити оригінальний файл:', deleteError);
-                    console.log('⚠️ Файл скопійовано, але оригінал залишився');
+                    // Не вдалося видалити оригінальний файл
                 }
             } else {
-                console.log('⚠️ Переміщення: немає доступу до оригінального файлу для видалення');
+                // Переміщення: немає доступу до оригінального файлу для видалення
             }
             
         } catch (error) {
-            console.error('Помилка переміщення файлу:', error);
             throw error;
         }
     }
@@ -1320,7 +1217,6 @@ class FileHandler {
      */
     cancelProcessing() {
         this.isProcessing = false;
-        console.log('⏹️ Обробка скасована');
     }
 
     /**

@@ -502,11 +502,17 @@ class PhotoSorterApp {
         document.getElementById('errorCount').textContent = progress.errors;
         document.getElementById('skippedCount').textContent = progress.skipped;
         
-        // Додаємо детальний запис в лог з розміром файлу
+        // Додаємо детальний запис в лог з розміром файлу та датними параметрами
         let logMessage = `${progress.currentFile}`;
         if (progress.result.success && progress.result.size) {
             logMessage += ` (${this.formatFileSize(progress.result.size)})`;
         }
+        
+        // Додаємо датну інформацію якщо є
+        if (progress.result.success && progress.result.dateInfo) {
+            logMessage += ` - ${progress.result.dateInfo}`;
+        }
+        
         logMessage += `: ${progress.result.success ? 'успішно' : progress.result.error}`;
         
         this.addLogEntry(progress.result.success ? 'success' : 'error', logMessage);

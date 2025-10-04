@@ -64,7 +64,11 @@ public:
     
     // Читання основних EXIF даних
     struct ExifData {
-        std::string date_taken;
+        std::string date_taken;           // DateTimeOriginal - оригінальна дата/час знімка
+        std::string date_time;            // DateTime - дата та час створення фото
+        std::string date_digitized;       // DateTimeDigitized - дата/час оцифрування
+        std::string gps_date_stamp;       // GPSDateStamp - дата GPS координат
+        std::string gps_time_stamp;       // GPSTimeStamp - час GPS координат
         std::string camera_make;
         std::string camera_model;
         std::string location;
@@ -134,7 +138,11 @@ private:
         result.has_exif = true;
         
         // Базові значення для тестів
-        result.date_taken = "2024-01-15";
+        result.date_taken = "2024-01-15";           // DateTimeOriginal
+        result.date_time = "2024-01-15 14:30:25";    // DateTime
+        result.date_digitized = "2024-01-15 14:30:25"; // DateTimeDigitized
+        result.gps_date_stamp = "2024:01:15";        // GPSDateStamp
+        result.gps_time_stamp = "14:30:25";          // GPSTimeStamp
         result.camera_make = "Canon";
         result.camera_model = "EOS R5";
         result.location = "";
@@ -224,5 +232,57 @@ extern "C" {
             return data.has_exif;
         }
         return false;
+    }
+    
+    EMSCRIPTEN_KEEPALIVE
+    const char* readExifDateTime(void* reader) {
+        static std::string result;
+        ExifReader* exif_reader = static_cast<ExifReader*>(reader);
+        if (exif_reader) {
+            ExifReader::ExifData data = exif_reader->readExifData();
+            result = data.date_time;
+        } else {
+            result = "";
+        }
+        return result.c_str();
+    }
+    
+    EMSCRIPTEN_KEEPALIVE
+    const char* readExifDateTimeDigitized(void* reader) {
+        static std::string result;
+        ExifReader* exif_reader = static_cast<ExifReader*>(reader);
+        if (exif_reader) {
+            ExifReader::ExifData data = exif_reader->readExifData();
+            result = data.date_digitized;
+        } else {
+            result = "";
+        }
+        return result.c_str();
+    }
+    
+    EMSCRIPTEN_KEEPALIVE
+    const char* readExifGpsDateStamp(void* reader) {
+        static std::string result;
+        ExifReader* exif_reader = static_cast<ExifReader*>(reader);
+        if (exif_reader) {
+            ExifReader::ExifData data = exif_reader->readExifData();
+            result = data.gps_date_stamp;
+        } else {
+            result = "";
+        }
+        return result.c_str();
+    }
+    
+    EMSCRIPTEN_KEEPALIVE
+    const char* readExifGpsTimeStamp(void* reader) {
+        static std::string result;
+        ExifReader* exif_reader = static_cast<ExifReader*>(reader);
+        if (exif_reader) {
+            ExifReader::ExifData data = exif_reader->readExifData();
+            result = data.gps_time_stamp;
+        } else {
+            result = "";
+        }
+        return result.c_str();
     }
 }

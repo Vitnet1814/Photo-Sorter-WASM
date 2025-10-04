@@ -367,6 +367,78 @@ class WASMLoader {
     }
 
     /**
+     * Читає DateTime з EXIF
+     * @param {number} readerPtr - Покажчик на EXIF читач
+     * @returns {string} DateTime
+     */
+    readExifDateTime(readerPtr) {
+        if (!this.isLoaded) {
+            throw new Error('WASM модуль не завантажено');
+        }
+
+        try {
+            return this.module.ccall('readExifDateTime', 'string', ['number'], [readerPtr]);
+        } catch (error) {
+            console.error('Помилка читання DateTime з EXIF:', error);
+            return '';
+        }
+    }
+
+    /**
+     * Читає DateTimeDigitized з EXIF
+     * @param {number} readerPtr - Покажчик на EXIF читач
+     * @returns {string} DateTimeDigitized
+     */
+    readExifDateTimeDigitized(readerPtr) {
+        if (!this.isLoaded) {
+            throw new Error('WASM модуль не завантажено');
+        }
+
+        try {
+            return this.module.ccall('readExifDateTimeDigitized', 'string', ['number'], [readerPtr]);
+        } catch (error) {
+            console.error('Помилка читання DateTimeDigitized з EXIF:', error);
+            return '';
+        }
+    }
+
+    /**
+     * Читає GPSDateStamp з EXIF
+     * @param {number} readerPtr - Покажчик на EXIF читач
+     * @returns {string} GPSDateStamp
+     */
+    readExifGpsDateStamp(readerPtr) {
+        if (!this.isLoaded) {
+            throw new Error('WASM модуль не завантажено');
+        }
+
+        try {
+            return this.module.ccall('readExifGpsDateStamp', 'string', ['number'], [readerPtr]);
+        } catch (error) {
+            console.error('Помилка читання GPSDateStamp з EXIF:', error);
+            return '';
+        }
+    }
+
+    /**
+     * Читає GPSTimeStamp з EXIF
+     * @param {number} readerPtr - Покажчик на EXIF читач
+     * @returns {string} GPSTimeStamp
+     */
+    readExifGpsTimeStamp(readerPtr) {
+        if (!this.isLoaded) {
+            throw new Error('WASM модуль не завантажено');
+        }
+
+        try {
+            return this.module.ccall('readExifGpsTimeStamp', 'string', ['number'], [readerPtr]);
+        } catch (error) {
+            console.error('Помилка читання GPSTimeStamp з EXIF:', error);
+            return '';
+        }
+    }
+
+    /**
      * Перевіряє чи завантажено модуль
      * @returns {boolean} Статус завантаження
      */

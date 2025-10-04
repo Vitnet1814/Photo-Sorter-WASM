@@ -167,6 +167,57 @@ class FileHandler {
     }
 
     /**
+     * Форматує датні параметри для логування
+     * @param {Object} exifData - EXIF дані
+     * @param {File} file - Файл
+     * @returns {string} Відформатовані датні параметри
+     */
+    formatDateInfo(exifData, file) {
+        const dateInfo = [];
+        
+        // Дата зйомки (DateTimeOriginal)
+        if (exifData.dateTaken) {
+            dateInfo.push(`Дата зйомки - ${exifData.dateTaken}`);
+        } else {
+            dateInfo.push('Дата зйомки - не знайдено');
+        }
+        
+        // DateTime
+        if (exifData.dateTime) {
+            dateInfo.push(`DateTime - ${exifData.dateTime}`);
+        } else {
+            dateInfo.push('DateTime - не знайдено');
+        }
+        
+        // DateTimeDigitized
+        if (exifData.dateDigitized) {
+            dateInfo.push(`DateTimeDigitized - ${exifData.dateDigitized}`);
+        } else {
+            dateInfo.push('DateTimeDigitized - не знайдено');
+        }
+        
+        // GPS дати
+        if (exifData.gpsDateStamp) {
+            dateInfo.push(`GPSDateStamp - ${exifData.gpsDateStamp}`);
+        } else {
+            dateInfo.push('GPSDateStamp - не знайдено');
+        }
+        
+        if (exifData.gpsTimeStamp) {
+            dateInfo.push(`GPSTimeStamp - ${exifData.gpsTimeStamp}`);
+        } else {
+            dateInfo.push('GPSTimeStamp - не знайдено');
+        }
+        
+        // Дата модифікації файлу
+        const fileDate = new Date(file.lastModified);
+        const formattedFileDate = fileDate.toISOString().replace('T', ' ').substring(0, 19);
+        dateInfo.push(`Дата модифікації файлу - ${formattedFileDate}`);
+        
+        return dateInfo.join(' | ');
+    }
+
+    /**
      * Читає EXIF дані з файлу
      * @param {File} file - Файл
      * @returns {Promise<Object>} EXIF дані
@@ -183,6 +234,10 @@ class FileHandler {
                 if (readerPtr) {
                     const exifData = {
                         dateTaken: window.wasmLoader.readExifDate(readerPtr),
+                        dateTime: window.wasmLoader.readExifDateTime(readerPtr),
+                        dateDigitized: window.wasmLoader.readExifDateTimeDigitized(readerPtr),
+                        gpsDateStamp: window.wasmLoader.readExifGpsDateStamp(readerPtr),
+                        gpsTimeStamp: window.wasmLoader.readExifGpsTimeStamp(readerPtr),
                         cameraMake: window.wasmLoader.readCameraMake(readerPtr),
                         cameraModel: window.wasmLoader.readCameraModel(readerPtr),
                         width: window.wasmLoader.readImageWidth(readerPtr),
@@ -198,6 +253,10 @@ class FileHandler {
             // Fallback: повертаємо базові дані
             return {
                 dateTaken: '',
+                dateTime: '',
+                dateDigitized: '',
+                gpsDateStamp: '',
+                gpsTimeStamp: '',
                 cameraMake: '',
                 cameraModel: '',
                 width: 0,
@@ -208,6 +267,10 @@ class FileHandler {
             console.error('Помилка читання EXIF даних:', error);
             return {
                 dateTaken: '',
+                dateTime: '',
+                dateDigitized: '',
+                gpsDateStamp: '',
+                gpsTimeStamp: '',
                 cameraMake: '',
                 cameraModel: '',
                 width: 0,
@@ -263,7 +326,8 @@ class FileHandler {
                 success: true,
                 filename: file.name,
                 size: file.size,
-                exifData: exifData
+                exifData: exifData,
+                dateInfo: this.formatDateInfo(exifData, file)
             };
         } catch (error) {
             this.errors++;

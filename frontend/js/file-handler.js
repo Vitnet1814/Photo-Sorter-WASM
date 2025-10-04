@@ -946,6 +946,7 @@ class FileHandler {
      * @param {FileSystemDirectoryHandle} targetFolderHandle - Handle папки призначення
      * @param {FileSystemFileHandle} originalFileHandle - Handle оригінального файлу (для видалення)
      * @param {FileSystemDirectoryHandle} parentHandle - Handle батьківської папки оригінального файлу
+     */
     async moveFileToFolder(file, targetFolderHandle, originalFileHandle = null, parentHandle = null) {
         try {
             // Спочатку копіюємо

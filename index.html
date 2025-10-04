@@ -24,19 +24,6 @@
     
     <title data-i18n="app.title">Photo Sorter - Сортування фотографій</title>
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -115,22 +102,21 @@
     <main class="main">
         <div class="container">
             <!-- Welcome Section -->
-            <section class="welcome-section" role="banner" aria-labelledby="welcome-title">
+            <section class="welcome-section">
                 <div class="welcome-content">
-                    <h2 id="welcome-title" data-i18n="app.subtitle">Автоматичне сортування фотографій</h2>
+                    <h2 data-i18n="app.subtitle">Автоматичне сортування фотографій</h2>
                     <p data-i18n="app.description">Використовуйте простий і потужний інструмент для швидкого та точного сортування ваших фото за датою.</p>
                 </div>
             </section>
 
             <!-- Folder Selection -->
-            <section class="folder-selection" role="main" aria-labelledby="folder-selection-title">
-                <h2 id="folder-selection-title" class="sr-only">Вибір папок для сортування</h2>
+            <section class="folder-selection">
                 <div class="folder-cards">
-                    <article class="folder-card" id="inputFolderCard" role="region" aria-labelledby="input-folders-title">
-                        <div class="folder-icon" aria-hidden="true">
+                    <div class="folder-card" id="inputFolderCard">
+                        <div class="folder-icon">
                             <i class="fas fa-folder-open"></i>
                         </div>
-                        <h3 id="input-folders-title" data-i18n="folders.inputFolders">Вхідні папки</h3>
+                        <h3 data-i18n="folders.inputFolders">Вхідні папки</h3>
                         <p data-i18n="folders.inputFoldersDesc">Виберіть папки з невідсортованими фото</p>
                         <div class="folder-buttons">
                             <button class="btn btn-primary" id="selectInputBtn">
@@ -154,11 +140,11 @@
                         </div>
                     </div>
 
-                    <article class="folder-card" id="outputFolderCard" role="region" aria-labelledby="output-folder-title">
-                        <div class="folder-icon" aria-hidden="true">
+                    <div class="folder-card" id="outputFolderCard">
+                        <div class="folder-icon">
                             <i class="fas fa-folder-plus"></i>
                         </div>
-                        <h3 id="output-folder-title" data-i18n="folders.outputFolder">Вихідна папка</h3>
+                        <h3 data-i18n="folders.outputFolder">Вихідна папка</h3>
                         <p data-i18n="folders.outputFolderDesc">Папка для відсортованих фото</p>
                         <button class="btn btn-primary" id="selectOutputBtn">
                             <i class="fas fa-folder-plus"></i>
@@ -173,11 +159,10 @@
             </section>
 
             <!-- Processing Options -->
-            <section class="processing-options" role="region" aria-labelledby="processing-title">
-                <h2 id="processing-title" class="sr-only">Налаштування обробки</h2>
+            <section class="processing-options">
                 <div class="options-grid">
-                    <fieldset class="option-group">
-                        <legend><h3 data-i18n="processing.mode">Режим обробки</h3></legend>
+                    <div class="option-group">
+                        <h3 data-i18n="processing.mode">Режим обробки</h3>
                         <div class="radio-group">
                             <label class="radio-label">
                                 <input type="radio" name="processingMode" value="copy" checked>
@@ -199,8 +184,8 @@
                     </div>
 
 
-                    <fieldset class="option-group">
-                        <legend><h3 data-i18n="processing.options">Додаткові опції</h3></legend>
+                    <div class="option-group">
+                        <h3 data-i18n="processing.options">Додаткові опції</h3>
                         <div class="checkbox-group">
                             <label class="checkbox-label" title="Структура папок: Рік/Місяць/День (активний) або Рік/Місяць (неактивний)">
                                 <input type="checkbox" id="createSubfolders">

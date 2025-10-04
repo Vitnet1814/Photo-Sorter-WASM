@@ -1,0 +1,110 @@
+{
+  "app": {
+    "title": "Сортувальник Фото",
+    "subtitle": "Автоматичне сортування фотографій",
+    "description": "Використовуйте простий і потужний інструмент для швидкого та точного сортування ваших фото за датою."
+  },
+  "folders": {
+    "inputFolders": "Вхідні папки",
+    "inputFoldersDesc": "Виберіть папки з невідсортованими фото",
+    "addFolder": "Додати папку",
+    "clearAll": "Очистити всі",
+    "selectedFolders": "Вибрані папки:",
+    "outputFolder": "Вихідна папка",
+    "outputFolderDesc": "Папка для відсортованих фото",
+    "selectFolder": "Вибрати папку",
+    "totalFiles": "Всього: {{count}} файлів, {{size}}"
+  },
+  "processing": {
+    "mode": "Режим обробки",
+    "copy": "Копіювання",
+    "copyDesc": "Створює дублікати фото",
+    "move": "Переміщення",
+    "moveDesc": "Переносить оригінали (економія місця)",
+    "options": "Додаткові опції",
+    "createSubfolders": "Створювати підпапки за днями",
+    "handleDuplicates": "Обробляти дублікати"
+  },
+  "progress": {
+    "title": "Обробка фото",
+    "cancel": "Скасувати",
+    "processed": "Оброблено:",
+    "errors": "Помилки:",
+    "skipped": "Пропущено:",
+    "log": "Лог обробки"
+  },
+  "statistics": {
+    "title": "Статистика обробки",
+    "totalPhotos": "Всього фото",
+    "validPhotos": "Валідних",
+    "withExif": "З EXIF",
+    "totalSize": "Загальний розмір"
+  },
+  "buttons": {
+    "startSorting": "Почати сортування",
+    "settings": "Налаштування",
+    "save": "Зберегти",
+    "close": "Закрити"
+  },
+  "settings": {
+    "title": "Налаштування",
+    "language": "Мова інтерфейсу",
+    "folderFormat": "Формат назв папок",
+    "monthNames": "Назви місяців",
+    "numbersOnly": "Тільки цифри",
+    "maxFileSize": "Максимальний розмір файлу (MB)"
+  },
+  "messages": {
+    "folderSelected": "Папка вибрана",
+    "folderAdded": "Папка додана",
+    "folderRemoved": "Папка видалена",
+    "allFoldersCleared": "Всі папки очищено",
+    "processingStarted": "Обробку розпочато",
+    "processingComplete": "Обробку завершено! Оброблено: {{processed}}, помилок: {{errors}}",
+    "processingCancelled": "Обробку скасовано",
+    "settingsSaved": "Налаштування збережено",
+    "error": "Помилка",
+    "success": "Успіх",
+    "folderAlreadyAdded": "Ця папка вже додана до списку",
+    "noInputFolders": "Вхідні папки не вибрані",
+    "noOutputFolder": "Вихідна папка не вибрана",
+    "noImagesFound": "В папках не знайдено зображень",
+    "wasmLoading": "Завантаження WebAssembly модуля...",
+    "unsupportedDevice": "Ваш пристрій не підтримується",
+    "mobileNotSupported": "Мобільні пристрої поки що не підтримуються",
+    "safariNotSupported": "Safari не підтримує File System Access API",
+    "browserNotSupported": "Ваш браузер не підтримує необхідні функції",
+    "useDesktopBrowser": "Будь ласка, використовуйте <strong>Desktop браузер</strong> (Chrome, Edge або Firefox на Windows/Mac/Linux)",
+    "useChromeEdgeFirefox": "Будь ласка, використовуйте <strong>Chrome</strong>, <strong>Edge</strong> або <strong>Firefox</strong>"
+  },
+  "environment": {
+    "os": "ОС: {{os}}",
+    "browser": "Браузер: {{browser}}"
+  },
+  "months": {
+    "01": "01_січень",
+    "02": "02_лютий",
+    "03": "03_березень",
+    "04": "04_квітень",
+    "05": "05_травень",
+    "06": "06_червень",
+    "07": "07_липень",
+    "08": "08_серпень",
+    "09": "09_вересень",
+    "10": "10_жовтень",
+    "11": "11_листопад",
+    "12": "12_грудень"
+  },
+  "errors": {
+    "fileSystemNotSupported": "File System Access API не підтримується в цьому браузері",
+    "folderSelectionCancelled": "Вибір папки скасовано",
+    "inputFolderError": "Помилка вибору вхідної папки: {{error}}",
+    "outputFolderError": "Помилка вибору вихідної папки: {{error}}",
+    "processingError": "Помилка обробки файлів: {{error}}",
+    "initializationError": "Помилка ініціалізації додатку: {{error}}",
+    "fileTooLarge": "Файл занадто великий: {{size}}",
+    "duplicateFile": "Пропущено дублікат: {{filename}}",
+    "exifReadError": "Помилка читання EXIF даних: {{error}}",
+    "wasmError": "Помилка WASM обробки: {{error}}"
+  }
+}

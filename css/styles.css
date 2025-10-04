@@ -237,6 +237,127 @@ body {
     margin-bottom: 1.5rem;
 }
 
+/* Folder Buttons */
+.folder-buttons {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.folder-buttons .btn {
+    flex: 0 0 auto;
+}
+
+.folder-buttons .btn-sm {
+    flex: 0 0 auto;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* Folder List */
+.folder-list {
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.folder-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.folder-count {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.folder-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.folder-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.folder-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.folder-item-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.folder-item-icon {
+    color: var(--primary-color);
+    font-size: 1.125rem;
+    flex-shrink: 0;
+}
+
+.folder-item-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.folder-item-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.25rem;
+}
+
+.folder-item-stats {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.folder-item-remove {
+    background: var(--error-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.folder-item-remove:hover {
+    background: #dc2626;
+    transform: scale(1.05);
+}
+
+.folder-item-remove:active {
+    transform: scale(0.95);
+}
+
 .folder-info {
     margin-top: 1rem;
     padding-top: 1rem;
@@ -655,6 +776,101 @@ body {
 .loading-spinner p {
     font-size: 1.125rem;
     color: var(--text-secondary);
+}
+
+/* RTL Support */
+[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="rtl"] .header-content {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .header-actions {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .env-info {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .folder-buttons {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .folder-list-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .folder-item {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .folder-item-info {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .folder-item-details {
+    text-align: right;
+}
+
+[dir="rtl"] .progress-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .progress-stats {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .stat-item {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-footer {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .setting-group {
+    text-align: right;
+}
+
+[dir="rtl"] .setting-group label {
+    text-align: right;
+}
+
+[dir="rtl"] .radio-group {
+    flex-direction: column-reverse;
+}
+
+[dir="rtl"] .checkbox-group {
+    flex-direction: column-reverse;
+}
+
+[dir="rtl"] .radio-label,
+[dir="rtl"] .checkbox-label {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .radio-content,
+[dir="rtl"] .checkbox-content {
+    text-align: right;
+}
+
+[dir="rtl"] .options-grid {
+    direction: rtl;
+}
+
+[dir="rtl"] .option-group {
+    text-align: right;
+}
+
+[dir="rtl"] .option-group h3 {
+    text-align: right;
 }
 
 /* Responsive Design */

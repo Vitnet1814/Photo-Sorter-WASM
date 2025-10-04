@@ -1,0 +1,111 @@
+{
+  "app": {
+    "title": "사진 정리 도구",
+    "subtitle": "자동 사진 정렬",
+    "description": "날짜별로 사진을 빠르고 정확하게 정리하기 위한 간단하고 강력한 도구를 사용하세요."
+  },
+  "folders": {
+    "inputFolders": "입력 폴더",
+    "inputFoldersDesc": "정리되지 않은 사진이 있는 폴더를 선택하세요",
+    "addFolder": "폴더 추가",
+    "clearAll": "모두 지우기",
+    "selectedFolders": "선택된 폴더:",
+    "outputFolder": "출력 폴더",
+    "outputFolderDesc": "정리된 사진을 위한 폴더",
+    "selectFolder": "폴더 선택",
+    "totalFiles": "총계: {{count}}개 파일, {{size}}"
+  },
+  "processing": {
+    "mode": "처리 모드",
+    "copy": "복사",
+    "copyDesc": "사진 복사본 생성",
+    "move": "이동",
+    "moveDesc": "원본 이동 (공간 절약)",
+    "options": "추가 옵션",
+    "createSubfolders": "날짜별 하위 폴더 생성",
+    "handleDuplicates": "중복 처리"
+  },
+  "progress": {
+    "title": "사진 처리",
+    "cancel": "취소",
+    "processed": "처리됨:",
+    "errors": "오류:",
+    "skipped": "건너뜀:",
+    "log": "처리 로그"
+  },
+  "statistics": {
+    "title": "처리 통계",
+    "totalPhotos": "총 사진 수",
+    "validPhotos": "유효함",
+    "withExif": "EXIF 포함",
+    "totalSize": "총 크기"
+  },
+  "buttons": {
+    "startSorting": "정렬 시작",
+    "settings": "설정",
+    "save": "저장",
+    "close": "닫기"
+  },
+  "settings": {
+    "title": "설정",
+    "language": "인터페이스 언어",
+    "folderFormat": "폴더 이름 형식",
+    "ukrainianNames": "우크라이나어 이름",
+    "englishNames": "영어 이름",
+    "numbersOnly": "숫자만",
+    "maxFileSize": "최대 파일 크기 (MB)"
+  },
+  "messages": {
+    "folderSelected": "폴더가 선택되었습니다",
+    "folderAdded": "폴더가 추가되었습니다",
+    "folderRemoved": "폴더가 제거되었습니다",
+    "allFoldersCleared": "모든 폴더가 지워졌습니다",
+    "processingStarted": "처리가 시작되었습니다",
+    "processingComplete": "처리 완료! 처리됨: {{processed}}, 오류: {{errors}}",
+    "processingCancelled": "처리가 취소되었습니다",
+    "settingsSaved": "설정이 저장되었습니다",
+    "error": "오류",
+    "success": "성공",
+    "folderAlreadyAdded": "이 폴더는 이미 목록에 추가되었습니다",
+    "noInputFolders": "입력 폴더가 선택되지 않았습니다",
+    "noOutputFolder": "출력 폴더가 선택되지 않았습니다",
+    "noImagesFound": "폴더에서 이미지를 찾을 수 없습니다",
+    "wasmLoading": "WebAssembly 모듈 로딩 중...",
+    "unsupportedDevice": "귀하의 기기는 지원되지 않습니다",
+    "mobileNotSupported": "모바일 기기는 현재 지원되지 않습니다",
+    "safariNotSupported": "Safari는 File System Access API를 지원하지 않습니다",
+    "browserNotSupported": "귀하의 브라우저는 필요한 기능을 지원하지 않습니다",
+    "useDesktopBrowser": "<strong>데스크톱 브라우저</strong>(Windows/Mac/Linux의 Chrome, Edge 또는 Firefox)를 사용해 주세요",
+    "useChromeEdgeFirefox": "<strong>Chrome</strong>, <strong>Edge</strong> 또는 <strong>Firefox</strong>를 사용해 주세요"
+  },
+  "environment": {
+    "os": "OS: {{os}}",
+    "browser": "브라우저: {{browser}}"
+  },
+  "months": {
+    "01": "01_1월",
+    "02": "02_2월",
+    "03": "03_3월",
+    "04": "04_4월",
+    "05": "05_5월",
+    "06": "06_6월",
+    "07": "07_7월",
+    "08": "08_8월",
+    "09": "09_9월",
+    "10": "10_10월",
+    "11": "11_11월",
+    "12": "12_12월"
+  },
+  "errors": {
+    "fileSystemNotSupported": "이 브라우저에서는 File System Access API가 지원되지 않습니다",
+    "folderSelectionCancelled": "폴더 선택이 취소되었습니다",
+    "inputFolderError": "입력 폴더 선택 오류: {{error}}",
+    "outputFolderError": "출력 폴더 선택 오류: {{error}}",
+    "processingError": "파일 처리 오류: {{error}}",
+    "initializationError": "애플리케이션 초기화 오류: {{error}}",
+    "fileTooLarge": "파일이 너무 큽니다: {{size}}",
+    "duplicateFile": "중복 파일 건너뜀: {{filename}}",
+    "exifReadError": "EXIF 데이터 읽기 오류: {{error}}",
+    "wasmError": "WASM 처리 오류: {{error}}"
+  }
+}

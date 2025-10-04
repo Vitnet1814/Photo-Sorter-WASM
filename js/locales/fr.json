@@ -1,0 +1,110 @@
+{
+  "app": {
+    "title": "Organisateur de Photos",
+    "subtitle": "Tri automatique de photos",
+    "description": "Utilisez un outil simple et puissant pour trier rapidement et précisément vos photos par date."
+  },
+  "folders": {
+    "inputFolders": "Dossiers d'entrée",
+    "inputFoldersDesc": "Sélectionnez des dossiers avec des photos non triées",
+    "addFolder": "Ajouter un dossier",
+    "clearAll": "Tout effacer",
+    "selectedFolders": "Dossiers sélectionnés :",
+    "outputFolder": "Dossier de sortie",
+    "outputFolderDesc": "Dossier pour les photos triées",
+    "selectFolder": "Sélectionner un dossier",
+    "totalFiles": "Total : {{count}} fichiers, {{size}}"
+  },
+  "processing": {
+    "mode": "Mode de traitement",
+    "copy": "Copier",
+    "copyDesc": "Crée des doublons de photos",
+    "move": "Déplacer",
+    "moveDesc": "Déplace les originaux (économise l'espace)",
+    "options": "Options supplémentaires",
+    "createSubfolders": "Créer des sous-dossiers par jours",
+    "handleDuplicates": "Gérer les doublons"
+  },
+  "progress": {
+    "title": "Traitement des photos",
+    "cancel": "Annuler",
+    "processed": "Traitées :",
+    "errors": "Erreurs :",
+    "skipped": "Ignorées :",
+    "log": "Journal de traitement"
+  },
+  "statistics": {
+    "title": "Statistiques de traitement",
+    "totalPhotos": "Total des photos",
+    "validPhotos": "Valides",
+    "withExif": "Avec EXIF",
+    "totalSize": "Taille totale"
+  },
+  "buttons": {
+    "startSorting": "Commencer le tri",
+    "settings": "Paramètres",
+    "save": "Enregistrer",
+    "close": "Fermer"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue de l'interface",
+    "folderFormat": "Format des noms de dossiers",
+    "monthNames": "Noms des mois",
+    "numbersOnly": "Nombres seulement",
+    "maxFileSize": "Taille maximale du fichier (MB)"
+  },
+  "messages": {
+    "folderSelected": "Dossier sélectionné",
+    "folderAdded": "Dossier ajouté",
+    "folderRemoved": "Dossier supprimé",
+    "allFoldersCleared": "Tous les dossiers effacés",
+    "processingStarted": "Traitement commencé",
+    "processingComplete": "Traitement terminé ! Traitées : {{processed}}, erreurs : {{errors}}",
+    "processingCancelled": "Traitement annulé",
+    "settingsSaved": "Paramètres enregistrés",
+    "error": "Erreur",
+    "success": "Succès",
+    "folderAlreadyAdded": "Ce dossier est déjà ajouté à la liste",
+    "noInputFolders": "Aucun dossier d'entrée sélectionné",
+    "noOutputFolder": "Aucun dossier de sortie sélectionné",
+    "noImagesFound": "Aucune image trouvée dans les dossiers",
+    "wasmLoading": "Chargement du module WebAssembly...",
+    "unsupportedDevice": "Votre appareil n'est pas pris en charge",
+    "mobileNotSupported": "Les appareils mobiles ne sont pas pris en charge actuellement",
+    "safariNotSupported": "Safari ne prend pas en charge File System Access API",
+    "browserNotSupported": "Votre navigateur ne prend pas en charge les fonctionnalités requises",
+    "useDesktopBrowser": "Veuillez utiliser un <strong>navigateur de bureau</strong> (Chrome, Edge ou Firefox sur Windows/Mac/Linux)",
+    "useChromeEdgeFirefox": "Veuillez utiliser <strong>Chrome</strong>, <strong>Edge</strong> ou <strong>Firefox</strong>"
+  },
+  "environment": {
+    "os": "OS : {{os}}",
+    "browser": "Navigateur : {{browser}}"
+  },
+  "months": {
+    "01": "01_janvier",
+    "02": "02_février",
+    "03": "03_mars",
+    "04": "04_avril",
+    "05": "05_mai",
+    "06": "06_juin",
+    "07": "07_juillet",
+    "08": "08_août",
+    "09": "09_septembre",
+    "10": "10_octobre",
+    "11": "11_novembre",
+    "12": "12_décembre"
+  },
+  "errors": {
+    "fileSystemNotSupported": "File System Access API n'est pas pris en charge dans ce navigateur",
+    "folderSelectionCancelled": "Sélection de dossier annulée",
+    "inputFolderError": "Erreur lors de la sélection du dossier d'entrée : {{error}}",
+    "outputFolderError": "Erreur lors de la sélection du dossier de sortie : {{error}}",
+    "processingError": "Erreur lors du traitement des fichiers : {{error}}",
+    "initializationError": "Erreur d'initialisation de l'application : {{error}}",
+    "fileTooLarge": "Fichier trop volumineux : {{size}}",
+    "duplicateFile": "Fichier dupliqué ignoré : {{filename}}",
+    "exifReadError": "Erreur lors de la lecture des données EXIF : {{error}}",
+    "wasmError": "Erreur de traitement WASM : {{error}}"
+  }
+}

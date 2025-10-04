@@ -1,0 +1,111 @@
+{
+  "app": {
+    "title": "Organizator Zdjęć",
+    "subtitle": "Automatyczne sortowanie zdjęć",
+    "description": "Użyj prostego i potężnego narzędzia do szybkiego i precyzyjnego sortowania zdjęć według daty."
+  },
+  "folders": {
+    "inputFolders": "Foldery wejściowe",
+    "inputFoldersDesc": "Wybierz foldery z niesortowanymi zdjęciami",
+    "addFolder": "Dodaj folder",
+    "clearAll": "Wyczyść wszystkie",
+    "selectedFolders": "Wybrane foldery:",
+    "outputFolder": "Folder wyjściowy",
+    "outputFolderDesc": "Folder dla posortowanych zdjęć",
+    "selectFolder": "Wybierz folder",
+    "totalFiles": "Łącznie: {{count}} plików, {{size}}"
+  },
+  "processing": {
+    "mode": "Tryb przetwarzania",
+    "copy": "Kopiuj",
+    "copyDesc": "Tworzy duplikaty zdjęć",
+    "move": "Przenieś",
+    "moveDesc": "Przenosi oryginały (oszczędza miejsce)",
+    "options": "Dodatkowe opcje",
+    "createSubfolders": "Twórz podfoldery według dni",
+    "handleDuplicates": "Obsługuj duplikaty"
+  },
+  "progress": {
+    "title": "Przetwarzanie zdjęć",
+    "cancel": "Anuluj",
+    "processed": "Przetworzone:",
+    "errors": "Błędy:",
+    "skipped": "Pominięte:",
+    "log": "Log przetwarzania"
+  },
+  "statistics": {
+    "title": "Statystyki przetwarzania",
+    "totalPhotos": "Łącznie zdjęć",
+    "validPhotos": "Prawidłowe",
+    "withExif": "Z EXIF",
+    "totalSize": "Całkowity rozmiar"
+  },
+  "buttons": {
+    "startSorting": "Rozpocznij sortowanie",
+    "settings": "Ustawienia",
+    "save": "Zapisz",
+    "close": "Zamknij"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "language": "Język interfejsu",
+    "folderFormat": "Format nazw folderów",
+    "ukrainianNames": "Nazwy ukraińskie",
+    "englishNames": "Nazwy angielskie",
+    "numbersOnly": "Tylko cyfry",
+    "maxFileSize": "Maksymalny rozmiar pliku (MB)"
+  },
+  "messages": {
+    "folderSelected": "Folder wybrany",
+    "folderAdded": "Folder dodany",
+    "folderRemoved": "Folder usunięty",
+    "allFoldersCleared": "Wszystkie foldery wyczyszczone",
+    "processingStarted": "Przetwarzanie rozpoczęte",
+    "processingComplete": "Przetwarzanie zakończone! Przetworzone: {{processed}}, błędy: {{errors}}",
+    "processingCancelled": "Przetwarzanie anulowane",
+    "settingsSaved": "Ustawienia zapisane",
+    "error": "Błąd",
+    "success": "Sukces",
+    "folderAlreadyAdded": "Ten folder jest już dodany do listy",
+    "noInputFolders": "Nie wybrano folderów wejściowych",
+    "noOutputFolder": "Nie wybrano folderu wyjściowego",
+    "noImagesFound": "Nie znaleziono obrazów w folderach",
+    "wasmLoading": "Ładowanie modułu WebAssembly...",
+    "unsupportedDevice": "Twoje urządzenie nie jest obsługiwane",
+    "mobileNotSupported": "Urządzenia mobilne nie są obecnie obsługiwane",
+    "safariNotSupported": "Safari nie obsługuje File System Access API",
+    "browserNotSupported": "Twoja przeglądarka nie obsługuje wymaganych funkcji",
+    "useDesktopBrowser": "Proszę używać <strong>przeglądarki desktop</strong> (Chrome, Edge lub Firefox na Windows/Mac/Linux)",
+    "useChromeEdgeFirefox": "Proszę używać <strong>Chrome</strong>, <strong>Edge</strong> lub <strong>Firefox</strong>"
+  },
+  "environment": {
+    "os": "OS: {{os}}",
+    "browser": "Przeglądarka: {{browser}}"
+  },
+  "months": {
+    "01": "01_styczeń",
+    "02": "02_luty",
+    "03": "03_marzec",
+    "04": "04_kwiecień",
+    "05": "05_maj",
+    "06": "06_czerwiec",
+    "07": "07_lipiec",
+    "08": "08_sierpień",
+    "09": "09_wrzesień",
+    "10": "10_październik",
+    "11": "11_listopad",
+    "12": "12_grudzień"
+  },
+  "errors": {
+    "fileSystemNotSupported": "File System Access API nie jest obsługiwane w tej przeglądarce",
+    "folderSelectionCancelled": "Wybór folderu anulowany",
+    "inputFolderError": "Błąd wyboru folderu wejściowego: {{error}}",
+    "outputFolderError": "Błąd wyboru folderu wyjściowego: {{error}}",
+    "processingError": "Błąd przetwarzania plików: {{error}}",
+    "initializationError": "Błąd inicjalizacji aplikacji: {{error}}",
+    "fileTooLarge": "Plik za duży: {{size}}",
+    "duplicateFile": "Duplikat pliku pominięty: {{filename}}",
+    "exifReadError": "Błąd odczytu danych EXIF: {{error}}",
+    "wasmError": "Błąd przetwarzania WASM: {{error}}"
+  }
+}

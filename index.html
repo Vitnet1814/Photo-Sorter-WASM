@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Sorter - Сортування фотографій</title>
+    <title data-i18n="app.title">Photo Sorter - Сортування фотографій</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +17,7 @@
             <div class="header-content">
                 <div class="logo">
                     <i class="fas fa-images"></i>
-                    <h1>Photo Sorter WASM</h1>
+                    <h1 data-i18n="app.title">Photo Sorter</h1>
                 </div>
                 <div class="header-actions">
                     <div class="env-info">
@@ -26,7 +26,7 @@
                     </div>
                     <button class="btn btn-outline" id="settingsBtn">
                         <i class="fas fa-cog"></i>
-                        Налаштування
+                        <span data-i18n="buttons.settings">Налаштування</span>
                     </button>
                 </div>
             </div>
@@ -39,8 +39,8 @@
             <!-- Welcome Section -->
             <section class="welcome-section">
                 <div class="welcome-content">
-                    <h2>Автоматичне сортування фотографій</h2>
-                    <p>Використовуйте простий і потужний інструмент для швидкого та точного сортування ваших фото за датою.</p>
+                    <h2 data-i18n="app.subtitle">Автоматичне сортування фотографій</h2>
+                    <p data-i18n="app.description">Використовуйте простий і потужний інструмент для швидкого та точного сортування ваших фото за датою.</p>
                 </div>
             </section>
 
@@ -51,14 +51,26 @@
                         <div class="folder-icon">
                             <i class="fas fa-folder-open"></i>
                         </div>
-                        <h3>Вхідна папка</h3>
-                        <p>Виберіть папку з невідсортованими фото</p>
-                        <button class="btn btn-primary" id="selectInputBtn">
-                            <i class="fas fa-folder-plus"></i>
-                            Вибрати папку
-                        </button>
+                        <h3 data-i18n="folders.inputFolders">Вхідні папки</h3>
+                        <p data-i18n="folders.inputFoldersDesc">Виберіть папки з невідсортованими фото</p>
+                        <div class="folder-buttons">
+                            <button class="btn btn-primary" id="selectInputBtn">
+                                <i class="fas fa-folder-plus"></i>
+                                <span data-i18n="folders.addFolder">Додати папку</span>
+                            </button>
+                            <button class="btn btn-outline btn-sm" id="clearInputBtn" style="display: none;">
+                                <i class="fas fa-trash"></i>
+                                <span data-i18n="folders.clearAll">Очистити всі</span>
+                            </button>
+                        </div>
+                        <div class="folder-list" id="inputFolderList" style="display: none;">
+                            <div class="folder-list-header">
+                                <span>Вибрані папки:</span>
+                                <span class="folder-count" id="inputFolderCount">0</span>
+                            </div>
+                            <div class="folder-items" id="inputFolderItems"></div>
+                        </div>
                         <div class="folder-info" id="inputFolderInfo" style="display: none;">
-                            <div class="folder-path" id="inputFolderPath"></div>
                             <div class="folder-stats" id="inputFolderStats"></div>
                         </div>
                     </div>
@@ -67,11 +79,11 @@
                         <div class="folder-icon">
                             <i class="fas fa-folder-plus"></i>
                         </div>
-                        <h3>Вихідна папка</h3>
-                        <p>Папка для відсортованих фото</p>
+                        <h3 data-i18n="folders.outputFolder">Вихідна папка</h3>
+                        <p data-i18n="folders.outputFolderDesc">Папка для відсортованих фото</p>
                         <button class="btn btn-primary" id="selectOutputBtn">
                             <i class="fas fa-folder-plus"></i>
-                            Вибрати папку
+                            <span data-i18n="folders.selectFolder">Вибрати папку</span>
                         </button>
                         <div class="folder-info" id="outputFolderInfo" style="display: none;">
                             <div class="folder-path" id="outputFolderPath"></div>
@@ -85,22 +97,22 @@
             <section class="processing-options">
                 <div class="options-grid">
                     <div class="option-group">
-                        <h3>Режим обробки</h3>
+                        <h3 data-i18n="processing.mode">Режим обробки</h3>
                         <div class="radio-group">
                             <label class="radio-label">
                                 <input type="radio" name="processingMode" value="copy" checked>
                                 <span class="radio-custom"></span>
                                 <div class="radio-content">
-                                    <strong>Копіювання</strong>
-                                    <small>Створює дублікати фото</small>
+                                    <strong data-i18n="processing.copy">Копіювання</strong>
+                                    <small data-i18n="processing.copyDesc">Створює дублікати фото</small>
                                 </div>
                             </label>
                             <label class="radio-label">
                                 <input type="radio" name="processingMode" value="move">
                                 <span class="radio-custom"></span>
                                 <div class="radio-content">
-                                    <strong>Переміщення</strong>
-                                    <small>Переносить оригінали (економія місця)</small>
+                                    <strong data-i18n="processing.move">Переміщення</strong>
+                                    <small data-i18n="processing.moveDesc">Переносить оригінали (економія місця)</small>
                                 </div>
                             </label>
                         </div>
@@ -108,17 +120,17 @@
 
 
                     <div class="option-group">
-                        <h3>Додаткові опції</h3>
+                        <h3 data-i18n="processing.options">Додаткові опції</h3>
                         <div class="checkbox-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="createSubfolders" checked>
                                 <span class="checkbox-custom"></span>
-                                Створювати підпапки за днями
+                                <span data-i18n="processing.createSubfolders">Створювати підпапки за днями</span>
                             </label>
                             <label class="checkbox-label">
                                 <input type="checkbox" id="handleDuplicates" checked>
                                 <span class="checkbox-custom"></span>
-                                Обробляти дублікати
+                                <span data-i18n="processing.handleDuplicates">Обробляти дублікати</span>
                             </label>
                         </div>
                     </div>
@@ -128,10 +140,10 @@
             <!-- Progress Section -->
             <section class="progress-section" id="progressSection" style="display: none;">
                 <div class="progress-header">
-                    <h3>Обробка фото</h3>
+                    <h3 data-i18n="progress.title">Обробка фото</h3>
                     <button class="btn btn-outline btn-sm" id="cancelBtn">
                         <i class="fas fa-times"></i>
-                        Скасувати
+                        <span data-i18n="progress.cancel">Скасувати</span>
                     </button>
                 </div>
                 
@@ -141,15 +153,15 @@
                 
                 <div class="progress-stats">
                     <div class="stat-item">
-                        <span class="stat-label">Оброблено:</span>
+                        <span class="stat-label" data-i18n="progress.processed">Оброблено:</span>
                         <span class="stat-value" id="processedCount">0</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Помилки:</span>
+                        <span class="stat-label" data-i18n="progress.errors">Помилки:</span>
                         <span class="stat-value" id="errorCount">0</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Пропущено:</span>
+                        <span class="stat-label" data-i18n="progress.skipped">Пропущено:</span>
                         <span class="stat-value" id="skippedCount">0</span>
                     </div>
                 </div>
@@ -207,7 +219,7 @@
             <section class="start-section">
                 <button class="btn btn-success btn-large" id="startBtn" disabled>
                     <i class="fas fa-play"></i>
-                    Почати сортування
+                    <span data-i18n="buttons.startSorting">Почати сортування</span>
                 </button>
             </section>
         </div>
@@ -217,34 +229,47 @@
     <div class="modal" id="settingsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Налаштування</h3>
+                <h3 data-i18n="settings.title">Налаштування</h3>
                 <button class="modal-close" id="closeSettingsBtn">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="setting-group">
-                    <label>Мова інтерфейсу</label>
+                    <label data-i18n="settings.language">Мова інтерфейсу</label>
                     <select class="select-input" id="languageSelect">
                         <option value="uk">Українська</option>
                         <option value="en">English</option>
+                        <option value="zh">中文</option>
+                        <option value="es">Español</option>
+                        <option value="pt">Português</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="ru">Русский</option>
+                        <option value="ar">العربية</option>
+                        <option value="ja">日本語</option>
+                        <option value="ko">한국어</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="it">Italiano</option>
+                        <option value="nl">Nederlands</option>
+                        <option value="sv">Svenska</option>
+                        <option value="pl">Polski</option>
                     </select>
                 </div>
                 <div class="setting-group">
-                    <label>Формат назв папок</label>
+                    <label data-i18n="settings.folderFormat">Формат назв папок</label>
                     <select class="select-input" id="folderFormatSelect">
-                        <option value="ukrainian">Українські назви</option>
-                        <option value="english">English names</option>
-                        <option value="numbers">Тільки цифри</option>
+                        <option value="monthNames" data-i18n="settings.monthNames">Назви місяців</option>
+                        <option value="numbers" data-i18n="settings.numbersOnly">Тільки цифри</option>
                     </select>
                 </div>
                 <div class="setting-group">
-                    <label>Максимальний розмір файлу (MB)</label>
+                    <label data-i18n="settings.maxFileSize">Максимальний розмір файлу (MB)</label>
                     <input type="number" class="input-field" id="maxFileSize" value="100" min="1" max="1000">
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" id="saveSettingsBtn">Зберегти</button>
+                <button class="btn btn-primary" id="saveSettingsBtn" data-i18n="buttons.save">Зберегти</button>
             </div>
         </div>
     </div>
@@ -254,11 +279,12 @@
     <div class="loading-overlay" id="loadingOverlay" style="display: none;">
         <div class="loading-spinner">
             <i class="fas fa-spinner fa-spin"></i>
-            <p>Завантаження WebAssembly модуля...</p>
+            <p data-i18n="messages.wasmLoading">Завантаження WebAssembly модуля...</p>
         </div>
     </div>
 
     <!-- Scripts -->
+    <script src="js/i18n.js"></script>
     <script src="js/wasm-loader.js"></script>
     <script src="js/file-handler.js"></script>
     <script src="js/main.js"></script>

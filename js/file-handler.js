@@ -5,7 +5,7 @@
 
 class FileHandler {
     constructor() {
-        this.inputFolderHandle = null;
+        this.inputFolderHandles = []; // Масив для зберігання кількох вхідних папок
         this.outputFolderHandle = null;
         this.supportedFormats = [
             'jpg', 'jpeg', 'png', 'tiff', 'tif', 'heic', 'webp', 
@@ -28,8 +28,8 @@ class FileHandler {
     }
 
     /**
-     * Вибір вхідної папки
-     * @returns {Promise<FileSystemDirectoryHandle>} Handle папки
+     * Вибір вхідної папки (додає до списку)
+     * @returns {Promise<Object>} Об'єкт з handle та додатковою інформацією
      */
     async selectInputFolder() {
         try {
@@ -37,12 +37,34 @@ class FileHandler {
                 throw new Error('File System Access API не підтримується в цьому браузері');
             }
 
-            this.inputFolderHandle = await window.showDirectoryPicker({
+            const folderHandle = await window.showDirectoryPicker({
                 mode: 'read'
             });
 
-            console.log('📁 Вхідна папка вибрана:', this.inputFolderHandle.name);
-            return this.inputFolderHandle;
+            // Формуємо повний опис папки
+            const fullPath = folderHandle.name;
+
+            // Перевіряємо чи папка вже додана (за назвою)
+            const existingFolder = this.inputFolderHandles.find(handle => 
+                handle.name === folderHandle.name
+            );
+            if (existingFolder) {
+                throw new Error('Ця папка вже додана до списку');
+            }
+
+            // Зберігаємо об'єкт з додатковою інформацією
+            const folderData = {
+                handle: folderHandle,
+                name: folderHandle.name,
+                path: fullPath,
+                addedAt: new Date().toISOString()
+            };
+
+            this.inputFolderHandles.push(folderData);
+
+            console.log('📁 Вхідна папка додана:', folderHandle.name);
+            console.log('📁 Всього папок:', this.inputFolderHandles.length);
+            return folderData;
         } catch (error) {
             if (error.name === 'AbortError') {
                 console.log('Вибір папки скасовано');
@@ -51,6 +73,35 @@ class FileHandler {
             console.error('Помилка вибору вхідної папки:', error);
             throw error;
         }
+    }
+
+    /**
+     * Видаляє папку зі списку вхідних папок
+     * @param {string} folderName - Назва папки для видалення
+     */
+    removeInputFolder(folderName) {
+        const index = this.inputFolderHandles.findIndex(folderData => folderData.name === folderName);
+        if (index > -1) {
+            this.inputFolderHandles.splice(index, 1);
+            console.log('📁 Папка видалена:', folderName);
+            console.log('📁 Всього папок:', this.inputFolderHandles.length);
+        }
+    }
+
+    /**
+     * Очищає всі вхідні папки
+     */
+    clearInputFolders() {
+        this.inputFolderHandles = [];
+        console.log('📁 Всі вхідні папки очищено');
+    }
+
+    /**
+     * Отримує список вхідних папок
+     * @returns {Array} Масив handle папок
+     */
+    getInputFolders() {
+        return [...this.inputFolderHandles];
     }
 
     /**
@@ -412,14 +463,14 @@ class FileHandler {
     }
 
     /**
-     * Обробляє всі файли в папці
+     * Обробляє всі файли в папках
      * @param {Object} options - Опції обробки
      * @param {Function} progressCallback - Callback для прогресу
      * @returns {Promise<Object>} Результат обробки
      */
     async processAllFiles(options = {}, progressCallback = null) {
-        if (!this.inputFolderHandle) {
-            throw new Error('Вхідна папка не вибрана');
+        if (this.inputFolderHandles.length === 0) {
+            throw new Error('Вхідні папки не вибрані');
         }
 
         if (!this.outputFolderHandle) {
@@ -434,30 +485,38 @@ class FileHandler {
         try {
             const processedFiles = new Set();
             const handleDuplicates = options.handleDuplicates !== undefined ? options.handleDuplicates : true;
-            const files = await this.getImageFiles(this.inputFolderHandle, null, processedFiles, handleDuplicates);
-            this.totalFiles = files.length;
+            const allFiles = [];
 
-            if (files.length === 0) {
-                throw new Error('В папці не знайдено зображень');
+            // Збираємо файли з усіх вхідних папок
+            for (const folderData of this.inputFolderHandles) {
+                console.log(`📁 Обробляємо папку: ${folderData.name}`);
+                const files = await this.getImageFiles(folderData.handle, null, processedFiles, handleDuplicates);
+                allFiles.push(...files);
             }
 
-            console.log(`📊 Знайдено ${files.length} зображень для обробки`);
+            this.totalFiles = allFiles.length;
+
+            if (allFiles.length === 0) {
+                throw new Error('В папках не знайдено зображень');
+            }
+
+            console.log(`📊 Знайдено ${allFiles.length} зображень для обробки з ${this.inputFolderHandles.length} папок`);
             console.log(`🔧 Обробка дублікатів: ${handleDuplicates ? 'УВІМКНЕНО' : 'ВИМКНЕНО'}`);
             console.log(`📁 Створення підпапок: ${options.createSubfolders !== false ? 'УВІМКНЕНО' : 'ВИМКНЕНО'}`);
             
             // Перевіряємо чи є дублікати
-            if (this.inputFolderHandle === this.outputFolderHandle) {
-                console.warn('⚠️ УВАГА: Вхідна та вихідна папки однакові! Можливі дублікати файлів.');
+            const hasSameOutputFolder = this.inputFolderHandles.some(folderData => folderData.handle === this.outputFolderHandle);
+            if (hasSameOutputFolder) {
+                console.warn('⚠️ УВАГА: Одна з вхідних папок збігається з вихідною! Можливі дублікати файлів.');
             }
             
-            
             // Обробляємо файли по одному
-            for (let i = 0; i < files.length; i++) {
+            for (let i = 0; i < allFiles.length; i++) {
                 if (!this.isProcessing) {
                     break; // Скасовано користувачем
                 }
 
-                const fileObj = files[i];
+                const fileObj = allFiles[i];
                 const file = fileObj.file;
                 const fileHandle = fileObj.handle;
                 const parentHandle = fileObj.parentHandle;
@@ -475,7 +534,7 @@ class FileHandler {
                 if (progressCallback) {
                     progressCallback({
                         current: i + 1,
-                        total: files.length,
+                        total: allFiles.length,
                         processed: this.processedFiles,
                         errors: this.errors,
                         skipped: this.skipped,
@@ -488,10 +547,9 @@ class FileHandler {
                 await new Promise(resolve => setTimeout(resolve, 10));
             }
 
-
             return {
                 success: true,
-                total: files.length,
+                total: allFiles.length,
                 processed: this.processedFiles,
                 errors: this.errors,
                 skipped: this.skipped
@@ -520,7 +578,9 @@ class FileHandler {
             
             // Створюємо структуру папок
             const createSubfolders = options.createSubfolders !== undefined ? options.createSubfolders : true;
-            const folderPath = this.createFolderStructure(metadata, createSubfolders);
+            const folderFormat = options.folderFormat || 'monthNames';
+            const currentLanguage = options.language || 'uk';
+            const folderPath = this.createFolderStructure(metadata, createSubfolders, folderFormat, currentLanguage);
             
             console.log(`📅 Використано найранішу дату для ${file.name}: ${metadata.earliestDate.toLocaleDateString('uk-UA')}`);
             
@@ -613,26 +673,22 @@ class FileHandler {
      * Створює структуру папок для файлу
      * @param {Object} metadata - Метадані файлу
      * @param {boolean} createSubfolders - Чи створювати підпапки за днями
+     * @param {string} folderFormat - Формат назв папок ('monthNames' або 'numbers')
+     * @param {string} currentLanguage - Поточна мова інтерфейсу
      * @returns {string} Шлях до папки
      */
-    createFolderStructure(metadata, createSubfolders = true) {
+    createFolderStructure(metadata, createSubfolders = true, folderFormat = 'monthNames', currentLanguage = 'uk') {
         const basePath = this.outputFolderHandle.name;
         
         if (!metadata.dateTaken) {
-            return `${basePath}/Без дати`;
+            const noDateFolder = this.getNoDateFolderName(folderFormat, currentLanguage);
+            return `${basePath}/${noDateFolder}`;
         }
         
         const [year, month, day] = metadata.dateTaken.split('-');
         
-        // Мапи місяців українською
-        const monthNames = {
-            '01': '01_січень', '02': '02_лютий', '03': '03_березень',
-            '04': '04_квітень', '05': '05_травень', '06': '06_червень',
-            '07': '07_липень', '08': '08_серпень', '09': '09_вересень',
-            '10': '10_жовтень', '11': '11_листопад', '12': '12_грудень'
-        };
-        
-        const monthName = monthNames[month] || month;
+        // Отримуємо назву місяця відповідно до формату та мови
+        const monthName = this.getMonthName(month, folderFormat, currentLanguage);
         
         // Різні рівні деталізації
         if (createSubfolders) {
@@ -642,6 +698,166 @@ class FileHandler {
             // Менша деталізація: Рік/Місяць
             return `${basePath}/${year}/${monthName}`;
         }
+    }
+
+    /**
+     * Отримує назву місяця відповідно до формату та поточної мови
+     * @param {string} month - Номер місяця (01-12)
+     * @param {string} folderFormat - Формат назв папок ('monthNames' або 'numbers')
+     * @param {string} currentLanguage - Поточна мова інтерфейсу
+     * @returns {string} Назва місяця
+     */
+    getMonthName(month, folderFormat, currentLanguage = 'uk') {
+        if (folderFormat === 'numbers') {
+            return month;
+        }
+        
+        // Для 'monthNames' використовуємо назви відповідно до поточної мови
+        const monthNames = this.getMonthNamesForLanguage(currentLanguage);
+        return monthNames[month] || month;
+    }
+
+    /**
+     * Отримує назви місяців для конкретної мови
+     * @param {string} language - Код мови
+     * @returns {Object} Об'єкт з назвами місяців
+     */
+    getMonthNamesForLanguage(language) {
+        const monthNamesByLanguage = {
+            'uk': {
+                '01': '01_січень', '02': '02_лютий', '03': '03_березень',
+                '04': '04_квітень', '05': '05_травень', '06': '06_червень',
+                '07': '07_липень', '08': '08_серпень', '09': '09_вересень',
+                '10': '10_жовтень', '11': '11_листопад', '12': '12_грудень'
+            },
+            'en': {
+                '01': '01_january', '02': '02_february', '03': '03_march',
+                '04': '04_april', '05': '05_may', '06': '06_june',
+                '07': '07_july', '08': '08_august', '09': '09_september',
+                '10': '10_october', '11': '11_november', '12': '12_december'
+            },
+            'ru': {
+                '01': '01_январь', '02': '02_февраль', '03': '03_март',
+                '04': '04_апрель', '05': '05_май', '06': '06_июнь',
+                '07': '07_июль', '08': '08_август', '09': '09_сентябрь',
+                '10': '10_октябрь', '11': '11_ноябрь', '12': '12_декабрь'
+            },
+            'de': {
+                '01': '01_januar', '02': '02_februar', '03': '03_märz',
+                '04': '04_april', '05': '05_mai', '06': '06_juni',
+                '07': '07_juli', '08': '08_august', '09': '09_september',
+                '10': '10_oktober', '11': '11_november', '12': '12_dezember'
+            },
+            'es': {
+                '01': '01_enero', '02': '02_febrero', '03': '03_marzo',
+                '04': '04_abril', '05': '05_mayo', '06': '06_junio',
+                '07': '07_julio', '08': '08_agosto', '09': '09_septiembre',
+                '10': '10_octubre', '11': '11_noviembre', '12': '12_diciembre'
+            },
+            'fr': {
+                '01': '01_janvier', '02': '02_février', '03': '03_mars',
+                '04': '04_avril', '05': '05_mai', '06': '06_juin',
+                '07': '07_juillet', '08': '08_août', '09': '09_septembre',
+                '10': '10_octobre', '11': '11_novembre', '12': '12_décembre'
+            },
+            'zh': {
+                '01': '01_一月', '02': '02_二月', '03': '03_三月',
+                '04': '04_四月', '05': '05_五月', '06': '06_六月',
+                '07': '07_七月', '08': '08_八月', '09': '09_九月',
+                '10': '10_十月', '11': '11_十一月', '12': '12_十二月'
+            },
+            'ja': {
+                '01': '01_一月', '02': '02_二月', '03': '03_三月',
+                '04': '04_四月', '05': '05_五月', '06': '06_六月',
+                '07': '07_七月', '08': '08_八月', '09': '09_九月',
+                '10': '10_十月', '11': '11_十一月', '12': '12_十二月'
+            },
+            'ko': {
+                '01': '01_일월', '02': '02_이월', '03': '03_삼월',
+                '04': '04_사월', '05': '05_오월', '06': '06_유월',
+                '07': '07_칠월', '08': '08_팔월', '09': '09_구월',
+                '10': '10_시월', '11': '11_십일월', '12': '12_십이월'
+            },
+            'ar': {
+                '01': '01_يناير', '02': '02_فبراير', '03': '03_مارس',
+                '04': '04_أبريل', '05': '05_مايو', '06': '06_يونيو',
+                '07': '07_يوليو', '08': '08_أغسطس', '09': '09_سبتمبر',
+                '10': '10_أكتوبر', '11': '11_نوفمبر', '12': '12_ديسمبر'
+            },
+            'hi': {
+                '01': '01_जनवरी', '02': '02_फरवरी', '03': '03_मार्च',
+                '04': '04_अप्रैल', '05': '05_मई', '06': '06_जून',
+                '07': '07_जुलाई', '08': '08_अगस्त', '09': '09_सितंबर',
+                '10': '10_अक्टूबर', '11': '11_नवंबर', '12': '12_दिसंबर'
+            },
+            'it': {
+                '01': '01_gennaio', '02': '02_febbraio', '03': '03_marzo',
+                '04': '04_aprile', '05': '05_maggio', '06': '06_giugno',
+                '07': '07_luglio', '08': '08_agosto', '09': '09_settembre',
+                '10': '10_ottobre', '11': '11_novembre', '12': '12_dicembre'
+            },
+            'nl': {
+                '01': '01_januari', '02': '02_februari', '03': '03_maart',
+                '04': '04_april', '05': '05_mei', '06': '06_juni',
+                '07': '07_juli', '08': '08_augustus', '09': '09_september',
+                '10': '10_oktober', '11': '11_november', '12': '12_december'
+            },
+            'sv': {
+                '01': '01_januari', '02': '02_februari', '03': '03_mars',
+                '04': '04_april', '05': '05_maj', '06': '06_juni',
+                '07': '07_juli', '08': '08_augusti', '09': '09_september',
+                '10': '10_oktober', '11': '11_november', '12': '12_december'
+            },
+            'pl': {
+                '01': '01_styczeń', '02': '02_luty', '03': '03_marzec',
+                '04': '04_kwiecień', '05': '05_maj', '06': '06_czerwiec',
+                '07': '07_lipiec', '08': '08_sierpień', '09': '09_wrzesień',
+                '10': '10_październik', '11': '11_listopad', '12': '12_grudzień'
+            },
+            'pt': {
+                '01': '01_janeiro', '02': '02_fevereiro', '03': '03_março',
+                '04': '04_abril', '05': '05_maio', '06': '06_junho',
+                '07': '07_julho', '08': '08_agosto', '09': '09_setembro',
+                '10': '10_outubro', '11': '11_novembro', '12': '12_dezembro'
+            }
+        };
+        
+        // Fallback до англійської мови якщо мова не знайдена
+        return monthNamesByLanguage[language] || monthNamesByLanguage['en'];
+    }
+
+    /**
+     * Отримує назву папки для файлів без дати
+     * @param {string} folderFormat - Формат назв папок
+     * @param {string} currentLanguage - Поточна мова інтерфейсу
+     * @returns {string} Назва папки
+     */
+    getNoDateFolderName(folderFormat, currentLanguage = 'uk') {
+        if (folderFormat === 'numbers') {
+            return '00_no_date';
+        }
+        
+        // Для 'monthNames' використовуємо назву відповідно до поточної мови
+        const noDateNames = {
+            'uk': 'Без дати',
+            'en': 'No Date',
+            'ru': 'Без даты',
+            'de': 'Kein Datum',
+            'es': 'Sin Fecha',
+            'fr': 'Sans Date',
+            'zh': '无日期',
+            'ja': '日付なし',
+            'ko': '날짜 없음',
+            'ar': 'بدون تاريخ',
+            'hi': 'कोई तारीख नहीं',
+            'it': 'Nessuna Data',
+            'nl': 'Geen Datum',
+            'sv': 'Inget Datum',
+            'pl': 'Bez Daty',
+            'pt': 'Sem Data'
+        };
+        
+        return noDateNames[currentLanguage] || noDateNames['en'];
     }
 
     /**

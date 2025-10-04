@@ -1,0 +1,111 @@
+{
+  "app": {
+    "title": "फोटो सॉर्टर",
+    "subtitle": "स्वचालित फोटो छँटाई",
+    "description": "तिथि के अनुसार अपने फोटो को तेज़ और सटीक रूप से छाँटने के लिए एक सरल और शक्तिशाली उपकरण का उपयोग करें।"
+  },
+  "folders": {
+    "inputFolders": "इनपुट फोल्डर",
+    "inputFoldersDesc": "अव्यवस्थित फोटो वाले फोल्डर चुनें",
+    "addFolder": "फोल्डर जोड़ें",
+    "clearAll": "सभी साफ़ करें",
+    "selectedFolders": "चयनित फोल्डर:",
+    "outputFolder": "आउटपुट फोल्डर",
+    "outputFolderDesc": "व्यवस्थित फोटो के लिए फोल्डर",
+    "selectFolder": "फोल्डर चुनें",
+    "totalFiles": "कुल: {{count}} फ़ाइलें, {{size}}"
+  },
+  "processing": {
+    "mode": "प्रसंस्करण मोड",
+    "copy": "कॉपी",
+    "copyDesc": "फोटो की प्रतियां बनाता है",
+    "move": "स्थानांतरित करें",
+    "moveDesc": "मूल फाइलों को स्थानांतरित करता है (स्थान बचाता है)",
+    "options": "अतिरिक्त विकल्प",
+    "createSubfolders": "दिनों के अनुसार उप-फोल्डर बनाएं",
+    "handleDuplicates": "डुप्लिकेट को संभालें"
+  },
+  "progress": {
+    "title": "फोटो प्रसंस्करण",
+    "cancel": "रद्द करें",
+    "processed": "प्रसंस्कृत:",
+    "errors": "त्रुटियां:",
+    "skipped": "छोड़ा गया:",
+    "log": "प्रसंस्करण लॉग"
+  },
+  "statistics": {
+    "title": "प्रसंस्करण आंकड़े",
+    "totalPhotos": "कुल फोटो",
+    "validPhotos": "वैध",
+    "withExif": "EXIF के साथ",
+    "totalSize": "कुल आकार"
+  },
+  "buttons": {
+    "startSorting": "छँटाई शुरू करें",
+    "settings": "सेटिंग्स",
+    "save": "सहेजें",
+    "close": "बंद करें"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "language": "इंटरफेस भाषा",
+    "folderFormat": "फोल्डर नाम प्रारूप",
+    "ukrainianNames": "यूक्रेनी नाम",
+    "englishNames": "अंग्रेजी नाम",
+    "numbersOnly": "केवल संख्याएं",
+    "maxFileSize": "अधिकतम फ़ाइल आकार (MB)"
+  },
+  "messages": {
+    "folderSelected": "फोल्डर चुना गया",
+    "folderAdded": "फोल्डर जोड़ा गया",
+    "folderRemoved": "फोल्डर हटाया गया",
+    "allFoldersCleared": "सभी फोल्डर साफ़ किए गए",
+    "processingStarted": "प्रसंस्करण शुरू हुआ",
+    "processingComplete": "प्रसंस्करण पूरा! प्रसंस्कृत: {{processed}}, त्रुटियां: {{errors}}",
+    "processingCancelled": "प्रसंस्करण रद्द किया गया",
+    "settingsSaved": "सेटिंग्स सहेजी गईं",
+    "error": "त्रुटि",
+    "success": "सफलता",
+    "folderAlreadyAdded": "यह फोल्डर पहले से सूची में जोड़ा गया है",
+    "noInputFolders": "कोई इनपुट फोल्डर चुना नहीं गया",
+    "noOutputFolder": "कोई आउटपुट फोल्डर चुना नहीं गया",
+    "noImagesFound": "फोल्डर में कोई छवि नहीं मिली",
+    "wasmLoading": "WebAssembly मॉड्यूल लोड हो रहा है...",
+    "unsupportedDevice": "आपका डिवाइस समर्थित नहीं है",
+    "mobileNotSupported": "मोबाइल डिवाइस वर्तमान में समर्थित नहीं हैं",
+    "safariNotSupported": "Safari File System Access API का समर्थन नहीं करता",
+    "browserNotSupported": "आपका ब्राउज़र आवश्यक सुविधाओं का समर्थन नहीं करता",
+    "useDesktopBrowser": "कृपया <strong>डेस्कटॉप ब्राउज़र</strong> (Windows/Mac/Linux पर Chrome, Edge या Firefox) का उपयोग करें",
+    "useChromeEdgeFirefox": "कृपया <strong>Chrome</strong>, <strong>Edge</strong> या <strong>Firefox</strong> का उपयोग करें"
+  },
+  "environment": {
+    "os": "OS: {{os}}",
+    "browser": "ब्राउज़र: {{browser}}"
+  },
+  "months": {
+    "01": "01_जनवरी",
+    "02": "02_फरवरी",
+    "03": "03_मार्च",
+    "04": "04_अप्रैल",
+    "05": "05_मई",
+    "06": "06_जून",
+    "07": "07_जुलाई",
+    "08": "08_अगस्त",
+    "09": "09_सितंबर",
+    "10": "10_अक्टूबर",
+    "11": "11_नवंबर",
+    "12": "12_दिसंबर"
+  },
+  "errors": {
+    "fileSystemNotSupported": "इस ब्राउज़र में File System Access API समर्थित नहीं है",
+    "folderSelectionCancelled": "फोल्डर चयन रद्द किया गया",
+    "inputFolderError": "इनपुट फोल्डर चुनने में त्रुटि: {{error}}",
+    "outputFolderError": "आउटपुट फोल्डर चुनने में त्रुटि: {{error}}",
+    "processingError": "फ़ाइलों को प्रसंस्कृत करने में त्रुटि: {{error}}",
+    "initializationError": "एप्लिकेशन प्रारंभीकरण त्रुटि: {{error}}",
+    "fileTooLarge": "फ़ाइल बहुत बड़ी है: {{size}}",
+    "duplicateFile": "डुप्लिकेट फ़ाइल छोड़ी गई: {{filename}}",
+    "exifReadError": "EXIF डेटा पढ़ने में त्रुटि: {{error}}",
+    "wasmError": "WASM प्रसंस्करण त्रुटि: {{error}}"
+  }
+}

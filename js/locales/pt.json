@@ -1,0 +1,111 @@
+{
+  "app": {
+    "title": "Organizador de Fotos",
+    "subtitle": "Classificação automática de fotos",
+    "description": "Use uma ferramenta simples e poderosa para classificar rápida e precisamente suas fotos por data."
+  },
+  "folders": {
+    "inputFolders": "Pastas de entrada",
+    "inputFoldersDesc": "Selecione pastas com fotos não classificadas",
+    "addFolder": "Adicionar pasta",
+    "clearAll": "Limpar tudo",
+    "selectedFolders": "Pastas selecionadas:",
+    "outputFolder": "Pasta de saída",
+    "outputFolderDesc": "Pasta para fotos classificadas",
+    "selectFolder": "Selecionar pasta",
+    "totalFiles": "Total: {{count}} arquivos, {{size}}"
+  },
+  "processing": {
+    "mode": "Modo de processamento",
+    "copy": "Copiar",
+    "copyDesc": "Cria duplicatas de fotos",
+    "move": "Mover",
+    "moveDesc": "Move originais (economiza espaço)",
+    "options": "Opções adicionais",
+    "createSubfolders": "Criar subpastas por dias",
+    "handleDuplicates": "Gerenciar duplicatas"
+  },
+  "progress": {
+    "title": "Processamento de fotos",
+    "cancel": "Cancelar",
+    "processed": "Processados:",
+    "errors": "Erros:",
+    "skipped": "Ignorados:",
+    "log": "Log de processamento"
+  },
+  "statistics": {
+    "title": "Estatísticas de processamento",
+    "totalPhotos": "Total de fotos",
+    "validPhotos": "Válidas",
+    "withExif": "Com EXIF",
+    "totalSize": "Tamanho total"
+  },
+  "buttons": {
+    "startSorting": "Iniciar classificação",
+    "settings": "Configurações",
+    "save": "Salvar",
+    "close": "Fechar"
+  },
+  "settings": {
+    "title": "Configurações",
+    "language": "Idioma da interface",
+    "folderFormat": "Formato de nomes de pastas",
+    "ukrainianNames": "Nomes ucranianos",
+    "englishNames": "Nomes em inglês",
+    "numbersOnly": "Apenas números",
+    "maxFileSize": "Tamanho máximo do arquivo (MB)"
+  },
+  "messages": {
+    "folderSelected": "Pasta selecionada",
+    "folderAdded": "Pasta adicionada",
+    "folderRemoved": "Pasta removida",
+    "allFoldersCleared": "Todas as pastas limpas",
+    "processingStarted": "Processamento iniciado",
+    "processingComplete": "Processamento concluído! Processados: {{processed}}, erros: {{errors}}",
+    "processingCancelled": "Processamento cancelado",
+    "settingsSaved": "Configurações salvas",
+    "error": "Erro",
+    "success": "Sucesso",
+    "folderAlreadyAdded": "Esta pasta já está adicionada à lista",
+    "noInputFolders": "Nenhuma pasta de entrada selecionada",
+    "noOutputFolder": "Nenhuma pasta de saída selecionada",
+    "noImagesFound": "Nenhuma imagem encontrada nas pastas",
+    "wasmLoading": "Carregando módulo WebAssembly...",
+    "unsupportedDevice": "Seu dispositivo não é compatível",
+    "mobileNotSupported": "Dispositivos móveis não são suportados atualmente",
+    "safariNotSupported": "Safari não suporta File System Access API",
+    "browserNotSupported": "Seu navegador não suporta as funções necessárias",
+    "useDesktopBrowser": "Por favor use um <strong>navegador desktop</strong> (Chrome, Edge ou Firefox no Windows/Mac/Linux)",
+    "useChromeEdgeFirefox": "Por favor use <strong>Chrome</strong>, <strong>Edge</strong> ou <strong>Firefox</strong>"
+  },
+  "environment": {
+    "os": "SO: {{os}}",
+    "browser": "Navegador: {{browser}}"
+  },
+  "months": {
+    "01": "01_janeiro",
+    "02": "02_fevereiro",
+    "03": "03_março",
+    "04": "04_abril",
+    "05": "05_maio",
+    "06": "06_junho",
+    "07": "07_julho",
+    "08": "08_agosto",
+    "09": "09_setembro",
+    "10": "10_outubro",
+    "11": "11_novembro",
+    "12": "12_dezembro"
+  },
+  "errors": {
+    "fileSystemNotSupported": "File System Access API não é suportado neste navegador",
+    "folderSelectionCancelled": "Seleção de pasta cancelada",
+    "inputFolderError": "Erro ao selecionar pasta de entrada: {{error}}",
+    "outputFolderError": "Erro ao selecionar pasta de saída: {{error}}",
+    "processingError": "Erro ao processar arquivos: {{error}}",
+    "initializationError": "Erro de inicialização da aplicação: {{error}}",
+    "fileTooLarge": "Arquivo muito grande: {{size}}",
+    "duplicateFile": "Arquivo duplicado ignorado: {{filename}}",
+    "exifReadError": "Erro ao ler dados EXIF: {{error}}",
+    "wasmError": "Erro de processamento WASM: {{error}}"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "app": {
+    "title": "Organizzatore Foto",
+    "subtitle": "Ordinamento automatico delle foto",
+    "description": "Usa uno strumento semplice e potente per ordinare rapidamente e accuratamente le tue foto per data."
+  },
+  "folders": {
+    "inputFolders": "Cartelle di input",
+    "inputFoldersDesc": "Seleziona cartelle con foto non ordinate",
+    "addFolder": "Aggiungi cartella",
+    "clearAll": "Cancella tutto",
+    "selectedFolders": "Cartelle selezionate:",
+    "outputFolder": "Cartella di output",
+    "outputFolderDesc": "Cartella per foto ordinate",
+    "selectFolder": "Seleziona cartella",
+    "totalFiles": "Totale: {{count}} file, {{size}}"
+  },
+  "processing": {
+    "mode": "Modalità di elaborazione",
+    "copy": "Copia",
+    "copyDesc": "Crea duplicati delle foto",
+    "move": "Sposta",
+    "moveDesc": "Sposta gli originali (risparmia spazio)",
+    "options": "Opzioni aggiuntive",
+    "createSubfolders": "Crea sottocartelle per giorni",
+    "handleDuplicates": "Gestisci duplicati"
+  },
+  "progress": {
+    "title": "Elaborazione foto",
+    "cancel": "Annulla",
+    "processed": "Elaborate:",
+    "errors": "Errori:",
+    "skipped": "Saltate:",
+    "log": "Log di elaborazione"
+  },
+  "statistics": {
+    "title": "Statistiche di elaborazione",
+    "totalPhotos": "Totale foto",
+    "validPhotos": "Valide",
+    "withExif": "Con EXIF",
+    "totalSize": "Dimensione totale"
+  },
+  "buttons": {
+    "startSorting": "Inizia ordinamento",
+    "settings": "Impostazioni",
+    "save": "Salva",
+    "close": "Chiudi"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "language": "Lingua dell'interfaccia",
+    "folderFormat": "Formato nomi cartelle",
+    "ukrainianNames": "Nomi ucraini",
+    "englishNames": "Nomi inglesi",
+    "numbersOnly": "Solo numeri",
+    "maxFileSize": "Dimensione massima file (MB)"
+  },
+  "messages": {
+    "folderSelected": "Cartella selezionata",
+    "folderAdded": "Cartella aggiunta",
+    "folderRemoved": "Cartella rimossa",
+    "allFoldersCleared": "Tutte le cartelle cancellate",
+    "processingStarted": "Elaborazione iniziata",
+    "processingComplete": "Elaborazione completata! Elaborate: {{processed}}, errori: {{errors}}",
+    "processingCancelled": "Elaborazione annullata",
+    "settingsSaved": "Impostazioni salvate",
+    "error": "Errore",
+    "success": "Successo",
+    "folderAlreadyAdded": "Questa cartella è già stata aggiunta alla lista",
+    "noInputFolders": "Nessuna cartella di input selezionata",
+    "noOutputFolder": "Nessuna cartella di output selezionata",
+    "noImagesFound": "Nessuna immagine trovata nelle cartelle",
+    "wasmLoading": "Caricamento modulo WebAssembly...",
+    "unsupportedDevice": "Il tuo dispositivo non è supportato",
+    "mobileNotSupported": "I dispositivi mobili non sono attualmente supportati",
+    "safariNotSupported": "Safari non supporta File System Access API",
+    "browserNotSupported": "Il tuo browser non supporta le funzionalità richieste",
+    "useDesktopBrowser": "Si prega di utilizzare un <strong>browser desktop</strong> (Chrome, Edge o Firefox su Windows/Mac/Linux)",
+    "useChromeEdgeFirefox": "Si prega di utilizzare <strong>Chrome</strong>, <strong>Edge</strong> o <strong>Firefox</strong>"
+  },
+  "environment": {
+    "os": "OS: {{os}}",
+    "browser": "Browser: {{browser}}"
+  },
+  "months": {
+    "01": "01_gennaio",
+    "02": "02_febbraio",
+    "03": "03_marzo",
+    "04": "04_aprile",
+    "05": "05_maggio",
+    "06": "06_giugno",
+    "07": "07_luglio",
+    "08": "08_agosto",
+    "09": "09_settembre",
+    "10": "10_ottobre",
+    "11": "11_novembre",
+    "12": "12_dicembre"
+  },
+  "errors": {
+    "fileSystemNotSupported": "File System Access API non è supportato in questo browser",
+    "folderSelectionCancelled": "Selezione cartella annullata",
+    "inputFolderError": "Errore nella selezione della cartella di input: {{error}}",
+    "outputFolderError": "Errore nella selezione della cartella di output: {{error}}",
+    "processingError": "Errore nell'elaborazione dei file: {{error}}",
+    "initializationError": "Errore di inizializzazione dell'applicazione: {{error}}",
+    "fileTooLarge": "File troppo grande: {{size}}",
+    "duplicateFile": "File duplicato saltato: {{filename}}",
+    "exifReadError": "Errore nella lettura dei dati EXIF: {{error}}",
+    "wasmError": "Errore di elaborazione WASM: {{error}}"
+  }
+}

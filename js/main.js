@@ -10,7 +10,7 @@ class PhotoSorterApp {
         this.isInitialized = false;
         this.currentSettings = {
             language: 'uk',
-            folderFormat: 'ukrainian',
+            folderFormat: 'monthNames',
             maxFileSize: 100,
             processingMode: 'copy',
             createSubfolders: true,
@@ -98,15 +98,22 @@ class PhotoSorterApp {
      * @returns {boolean} Чи підтримується
      */
     isDeviceSupported(os, browser, userAgent) {
-        // Desktop версії завжди підтримувані
-        const isDesktop = !/Android|iPhone|iPad|BlackBerry|Windows Phone/i.test(userAgent);
-        
-        if (isDesktop) {
-            return true;
+        // Мобільні пристрої поки що не підтримуються
+        const isMobile = /Android|iPhone|iPad|BlackBerry|Windows Phone/i.test(userAgent);
+        if (isMobile) {
+            return false;
         }
         
-        // Мобільні пристрої поки що не підтримуються
-        return false;
+        // Перевіряємо підтримку File System Access API
+        const hasFileSystemAccess = 'showOpenFilePicker' in window && 'showDirectoryPicker' in window;
+        
+        // Safari не підтримує File System Access API
+        if (browser === 'Safari' || !hasFileSystemAccess) {
+            return false;
+        }
+        
+        // Desktop версії з підтримкою File System Access API
+        return true;
     }
 
     /**
@@ -120,10 +127,10 @@ class PhotoSorterApp {
         const browserElement = document.querySelector('.env-browser');
         
         if (osElement) {
-            osElement.textContent = `OS: ${envInfo.os}`;
+            osElement.textContent = window.i18n.t('environment.os', { os: envInfo.os });
         }
         if (browserElement) {
-            browserElement.textContent = `Browser: ${envInfo.fullBrowser}`;
+            browserElement.textContent = window.i18n.t('environment.browser', { browser: envInfo.fullBrowser });
         }
         
         // Якщо пристрій не підтримується - додавайте червоний стиль
@@ -152,12 +159,42 @@ class PhotoSorterApp {
         
         console.log('🌍 Середовище:', envInfo);
         console.log(`📱 Підтримується: ${envInfo.isSupported}`);
+        console.log(`🔍 File System Access API: ${'showOpenFilePicker' in window && 'showDirectoryPicker' in window}`);
+        console.log(`🍎 Safari: ${envInfo.browser === 'Safari'}`);
+        
+        // Додаємо функції тестування в глобальну область
+        window.testBrowserSupport = () => {
+            const testEnv = this.getEnvironmentInfo();
+            console.log('🧪 Тест підтримки браузера:');
+            console.log('OS:', testEnv.os);
+            console.log('Browser:', testEnv.browser);
+            console.log('File System Access API:', 'showOpenFilePicker' in window && 'showDirectoryPicker' in window);
+            console.log('Підтримується:', testEnv.isSupported);
+            return testEnv;
+        };
+        
+        // Функція для симуляції Safari (для тестування)
+        window.simulateSafari = () => {
+            console.log('🍎 Симуляція Safari...');
+            Object.defineProperty(navigator, 'userAgent', {
+                writable: true,
+                value: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15'
+            });
+            // Перезавантажуємо сторінку для застосування змін
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        };
     }
 
     /**
      * Показує повідомлення про непідтримуваний пристрій
      */
     showUnsupportedDeviceMessage() {
+        const envInfo = this.getEnvironmentInfo();
+        const isMobile = /Android|iPhone|iPad|BlackBerry|Windows Phone/i.test(navigator.userAgent);
+        const isSafari = envInfo.browser === 'Safari';
+        
         // Створюємо повідомлення поверх всього контенту
         const warningBlock = document.createElement('div');
         warningBlock.style.cssText = `
@@ -174,14 +211,26 @@ class PhotoSorterApp {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         `;
         
+        let title, message;
+        
+        if (isMobile) {
+            title = '📱 ' + window.i18n.t('messages.mobileNotSupported');
+            message = window.i18n.t('messages.mobileNotSupported') + '. ' + window.i18n.t('messages.useDesktopBrowser');
+        } else if (isSafari) {
+            title = '🍎 ' + window.i18n.t('messages.safariNotSupported');
+            message = window.i18n.t('messages.safariNotSupported') + '. ' + window.i18n.t('messages.useChromeEdgeFirefox');
+        } else {
+            title = '⚠️ ' + window.i18n.t('messages.browserNotSupported');
+            message = window.i18n.t('messages.browserNotSupported') + '. ' + window.i18n.t('messages.useChromeEdgeFirefox');
+        }
+        
         warningBlock.innerHTML = `
             <div style="max-width: 800px; margin: 0 auto;">
                 <h3 style="margin: 0 0 0.5rem 0; font-size: 1.2rem;">
-                    📱 Мобільні пристрої поки що не підтримуються
+                    ${title}
                 </h3>
                 <p style="margin: 0; opacity: 0.9;">
-                    На Android та iOS мають обмеження з доступом до файлів. 
-                    Будь ласка, використовуйте <strong>Desktop браузер</strong> (Chrome, Edge або Firefox на Windows/Mac/Linux)
+                    ${message}
                 </p>
             </div>
         `;
@@ -198,12 +247,17 @@ class PhotoSorterApp {
     blockUIForUnsupportedDevice() {
         // Блокуємо кнопки вибору папок
         const selectInputBtn = document.getElementById('selectInputBtn');
+        const clearInputBtn = document.getElementById('clearInputBtn');
         const selectOutputBtn = document.getElementById('selectOutputBtn');
         const startBtn = document.getElementById('startBtn');
         
         if (selectInputBtn) {
             selectInputBtn.disabled = true;
             selectInputBtn.style.opacity = '0.5';
+        }
+        if (clearInputBtn) {
+            clearInputBtn.disabled = true;
+            clearInputBtn.style.opacity = '0.5';
         }
         if (selectOutputBtn) {
             selectOutputBtn.disabled = true;
@@ -231,6 +285,9 @@ class PhotoSorterApp {
             // Показуємо loading overlay
             this.showLoadingOverlay();
             
+            // Ініціалізуємо локалізацію
+            await window.i18n.init();
+            
             // Завантажуємо WASM модуль
             await this.wasmLoader.load();
             
@@ -252,7 +309,7 @@ class PhotoSorterApp {
         } catch (error) {
             console.error('❌ Помилка ініціалізації:', error);
             this.hideLoadingOverlay();
-            this.showError('Помилка ініціалізації додатку: ' + error.message);
+            this.showError(window.i18n.t('errors.initializationError', { error: error.message }));
         }
     }
 
@@ -262,6 +319,7 @@ class PhotoSorterApp {
     initializeUI() {
         // Кнопки вибору папок
         const selectInputBtn = document.getElementById('selectInputBtn');
+        const clearInputBtn = document.getElementById('clearInputBtn');
         const selectOutputBtn = document.getElementById('selectOutputBtn');
         const startBtn = document.getElementById('startBtn');
         const cancelBtn = document.getElementById('cancelBtn');
@@ -271,6 +329,9 @@ class PhotoSorterApp {
         
         if (selectInputBtn) {
             selectInputBtn.addEventListener('click', () => this.selectInputFolder());
+        }
+        if (clearInputBtn) {
+            clearInputBtn.addEventListener('click', () => this.clearInputFolders());
         }
         if (selectOutputBtn) {
             selectOutputBtn.addEventListener('click', () => this.selectOutputFolder());
@@ -289,6 +350,16 @@ class PhotoSorterApp {
         }
         if (saveSettingsBtn) {
             saveSettingsBtn.addEventListener('click', () => this.saveSettings());
+        }
+        
+        // Обробник зміни мови
+        const languageSelect = document.getElementById('languageSelect');
+        if (languageSelect) {
+            languageSelect.addEventListener('change', async (e) => {
+                await window.i18n.setLanguage(e.target.value);
+                // Оновлюємо інформацію про середовище після зміни мови
+                this.updateEnvironmentDisplay();
+            });
         }
         
         // Зміна опцій обробки
@@ -394,19 +465,153 @@ class PhotoSorterApp {
     }
 
     /**
-     * Вибір вхідної папки
+     * Вибір вхідної папки (додає до списку)
      */
     async selectInputFolder() {
         try {
-            const folderHandle = await this.fileHandler.selectInputFolder();
-            if (folderHandle) {
-                const folderInfo = await this.fileHandler.getFolderInfo(folderHandle);
-                this.updateInputFolderInfo(folderInfo);
+            const folderData = await this.fileHandler.selectInputFolder();
+            if (folderData) {
+                const folderInfo = await this.fileHandler.getFolderInfo(folderData.handle);
+                this.addInputFolderToList(folderData, folderInfo);
                 this.updateStartButton();
             }
         } catch (error) {
-            this.showError('Помилка вибору вхідної папки: ' + error.message);
+            if (error.message.includes('вже додана')) {
+                this.showError(window.i18n.t('messages.folderAlreadyAdded'));
+            } else {
+                this.showError(window.i18n.t('errors.inputFolderError', { error: error.message }));
+            }
         }
+    }
+
+    /**
+     * Додає папку до списку вхідних папок
+     * @param {Object} folderData - Дані папки (handle, name, path)
+     * @param {Object} folderInfo - Інформація про папку
+     */
+    addInputFolderToList(folderData, folderInfo) {
+        const folderList = document.getElementById('inputFolderList');
+        const folderItems = document.getElementById('inputFolderItems');
+        const folderCount = document.getElementById('inputFolderCount');
+        const clearBtn = document.getElementById('clearInputBtn');
+        const folderInfoDiv = document.getElementById('inputFolderInfo');
+        const folderStats = document.getElementById('inputFolderStats');
+
+        // Показуємо список папок
+        folderList.style.display = 'block';
+        clearBtn.style.display = 'block';
+
+        // Створюємо елемент папки
+        const folderItem = document.createElement('div');
+        folderItem.className = 'folder-item';
+        folderItem.innerHTML = `
+            <div class="folder-item-info">
+                <i class="fas fa-folder folder-item-icon"></i>
+                <div class="folder-item-details">
+                    <div class="folder-item-name">${folderData.path}</div>
+                    <div class="folder-item-stats">${folderInfo.fileCount} файлів, ${folderInfo.formattedSize}</div>
+                </div>
+            </div>
+            <button class="folder-item-remove" onclick="photoSorterApp.removeInputFolder('${folderData.name}')">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+
+        folderItems.appendChild(folderItem);
+
+        // Оновлюємо лічильник
+        const currentCount = this.fileHandler.getInputFolders().length;
+        folderCount.textContent = currentCount;
+
+        // Оновлюємо загальну статистику
+        this.updateInputFoldersStats();
+
+        // Показуємо загальну інформацію
+        folderInfoDiv.style.display = 'block';
+    }
+
+    /**
+     * Видаляє папку зі списку вхідних папок
+     * @param {string} folderName - Назва папки для видалення
+     */
+    removeInputFolder(folderName) {
+        this.fileHandler.removeInputFolder(folderName);
+        
+        // Видаляємо елемент з UI
+        const folderItems = document.getElementById('inputFolderItems');
+        const items = folderItems.querySelectorAll('.folder-item');
+        
+        for (const item of items) {
+            const nameElement = item.querySelector('.folder-item-name');
+            if (nameElement && nameElement.textContent === folderName) {
+                item.remove();
+                break;
+            }
+        }
+
+        // Оновлюємо лічильник
+        const folderCount = document.getElementById('inputFolderCount');
+        const currentCount = this.fileHandler.getInputFolders().length;
+        folderCount.textContent = currentCount;
+
+        // Якщо папок не залишилося, приховуємо список
+        if (currentCount === 0) {
+            const folderList = document.getElementById('inputFolderList');
+            const clearBtn = document.getElementById('clearInputBtn');
+            const folderInfoDiv = document.getElementById('inputFolderInfo');
+            
+            folderList.style.display = 'none';
+            clearBtn.style.display = 'none';
+            folderInfoDiv.style.display = 'none';
+        } else {
+            // Оновлюємо статистику
+            this.updateInputFoldersStats();
+        }
+
+        this.updateStartButton();
+    }
+
+    /**
+     * Очищає всі вхідні папки
+     */
+    clearInputFolders() {
+        this.fileHandler.clearInputFolders();
+        
+        // Очищаємо UI
+        const folderList = document.getElementById('inputFolderList');
+        const folderItems = document.getElementById('inputFolderItems');
+        const clearBtn = document.getElementById('clearInputBtn');
+        const folderInfoDiv = document.getElementById('inputFolderInfo');
+        
+        folderItems.innerHTML = '';
+        folderList.style.display = 'none';
+        clearBtn.style.display = 'none';
+        folderInfoDiv.style.display = 'none';
+        
+        this.updateStartButton();
+    }
+
+    /**
+     * Оновлює загальну статистику вхідних папок
+     */
+    async updateInputFoldersStats() {
+        const folders = this.fileHandler.getInputFolders();
+        if (folders.length === 0) return;
+
+        let totalFiles = 0;
+        let totalSize = 0;
+
+        for (const folderData of folders) {
+            const folderInfo = await this.fileHandler.getFolderInfo(folderData.handle);
+            totalFiles += folderInfo.fileCount;
+            totalSize += folderInfo.totalSize;
+        }
+
+        const folderStats = document.getElementById('inputFolderStats');
+        folderStats.textContent = window.i18n.t('folders.totalFiles', { 
+            count: totalFiles, 
+            size: this.formatFileSize(totalSize) 
+        });
     }
 
     /**
@@ -421,25 +626,10 @@ class PhotoSorterApp {
                 this.updateStartButton();
             }
         } catch (error) {
-            this.showError('Помилка вибору вихідної папки: ' + error.message);
+            this.showError(window.i18n.t('errors.outputFolderError', { error: error.message }));
         }
     }
 
-    /**
-     * Оновлює інформацію про вхідну папку
-     * @param {Object} folderInfo - Інформація про папку
-     */
-    updateInputFolderInfo(folderInfo) {
-        const card = document.getElementById('inputFolderCard');
-        const info = document.getElementById('inputFolderInfo');
-        const path = document.getElementById('inputFolderPath');
-        const stats = document.getElementById('inputFolderStats');
-        
-        card.classList.add('selected');
-        info.style.display = 'block';
-        path.textContent = folderInfo.name;
-        stats.textContent = `${folderInfo.fileCount} файлів, ${folderInfo.formattedSize}`;
-    }
 
     /**
      * Оновлює інформацію про вихідну папку
@@ -454,7 +644,10 @@ class PhotoSorterApp {
         card.classList.add('selected');
         info.style.display = 'block';
         path.textContent = folderInfo.name;
-        stats.textContent = `${folderInfo.fileCount} файлів, ${folderInfo.formattedSize}`;
+        stats.textContent = window.i18n.t('folders.totalFiles', { 
+            count: folderInfo.fileCount, 
+            size: folderInfo.formattedSize 
+        });
     }
 
     /**
@@ -464,10 +657,10 @@ class PhotoSorterApp {
         const startBtn = document.getElementById('startBtn');
         if (!startBtn) return;
         
-        const hasInputFolder = this.fileHandler.inputFolderHandle !== null;
+        const hasInputFolders = this.fileHandler.getInputFolders().length > 0;
         const hasOutputFolder = this.fileHandler.outputFolderHandle !== null;
         
-        startBtn.disabled = !hasInputFolder || !hasOutputFolder || this.isProcessing;
+        startBtn.disabled = !hasInputFolders || !hasOutputFolder || this.isProcessing;
     }
 
     /**
@@ -495,11 +688,14 @@ class PhotoSorterApp {
                 (progress) => this.updateProgress(progress)
             );
             
-            this.showSuccess(`Обробку завершено! Оброблено: ${result.processed}, помилок: ${result.errors}`);
+            this.showSuccess(window.i18n.t('messages.processingComplete', { 
+                processed: result.processed, 
+                errors: result.errors 
+            }));
             
         } catch (error) {
             console.error('Помилка обробки:', error);
-            this.showError('Помилка обробки файлів: ' + error.message);
+            this.showError(window.i18n.t('errors.processingError', { error: error.message }));
         } finally {
             this.isProcessing = false;
             this.updateStartButton();
@@ -513,7 +709,7 @@ class PhotoSorterApp {
         this.fileHandler.cancelProcessing();
         this.isProcessing = false;
         this.updateStartButton();
-        this.showSuccess('Обробку скасовано');
+        this.showSuccess(window.i18n.t('messages.processingCancelled'));
     }
 
     /**
@@ -594,7 +790,7 @@ class PhotoSorterApp {
      * Зберігає налаштування
      */
     saveSettings() {
-        this.currentSettings.language = document.getElementById('languageSelect').value;
+        this.currentSettings.language = window.i18n.getCurrentLanguage();
         this.currentSettings.folderFormat = document.getElementById('folderFormatSelect').value;
         this.currentSettings.maxFileSize = parseInt(document.getElementById('maxFileSize').value);
         
@@ -604,7 +800,7 @@ class PhotoSorterApp {
         localStorage.setItem('photoSorterSettings', JSON.stringify(this.currentSettings));
         
         this.hideSettingsModal();
-        this.showSuccess('Налаштування збережено');
+        this.showSuccess(window.i18n.t('messages.settingsSaved'));
     }
 
     /**
@@ -618,7 +814,7 @@ class PhotoSorterApp {
             }
             
             // Оновлюємо UI
-            document.getElementById('languageSelect').value = this.currentSettings.language;
+            document.getElementById('languageSelect').value = window.i18n.getCurrentLanguage();
             document.getElementById('folderFormatSelect').value = this.currentSettings.folderFormat;
             document.getElementById('maxFileSize').value = this.currentSettings.maxFileSize;
             

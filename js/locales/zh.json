@@ -1,0 +1,110 @@
+{
+  "app": {
+    "title": "照片整理器",
+    "subtitle": "自动照片排序",
+    "description": "使用简单而强大的工具快速准确地按日期整理您的照片。"
+  },
+  "folders": {
+    "inputFolders": "输入文件夹",
+    "inputFoldersDesc": "选择包含未整理照片的文件夹",
+    "addFolder": "添加文件夹",
+    "clearAll": "清除全部",
+    "selectedFolders": "已选择的文件夹：",
+    "outputFolder": "输出文件夹",
+    "outputFolderDesc": "整理后照片的文件夹",
+    "selectFolder": "选择文件夹",
+    "totalFiles": "总计：{{count}} 个文件，{{size}}"
+  },
+  "processing": {
+    "mode": "处理模式",
+    "copy": "复制",
+    "copyDesc": "创建照片副本",
+    "move": "移动",
+    "moveDesc": "移动原文件（节省空间）",
+    "options": "其他选项",
+    "createSubfolders": "按日期创建子文件夹",
+    "handleDuplicates": "处理重复文件"
+  },
+  "progress": {
+    "title": "照片处理",
+    "cancel": "取消",
+    "processed": "已处理：",
+    "errors": "错误：",
+    "skipped": "跳过：",
+    "log": "处理日志"
+  },
+  "statistics": {
+    "title": "处理统计",
+    "totalPhotos": "总照片数",
+    "validPhotos": "有效照片",
+    "withExif": "包含EXIF",
+    "totalSize": "总大小"
+  },
+  "buttons": {
+    "startSorting": "开始整理",
+    "settings": "设置",
+    "save": "保存",
+    "close": "关闭"
+  },
+  "settings": {
+    "title": "设置",
+    "language": "界面语言",
+    "folderFormat": "文件夹名称格式",
+    "monthNames": "月份名称",
+    "numbersOnly": "仅数字",
+    "maxFileSize": "最大文件大小（MB）"
+  },
+  "messages": {
+    "folderSelected": "文件夹已选择",
+    "folderAdded": "文件夹已添加",
+    "folderRemoved": "文件夹已删除",
+    "allFoldersCleared": "所有文件夹已清除",
+    "processingStarted": "处理已开始",
+    "processingComplete": "处理完成！已处理：{{processed}}，错误：{{errors}}",
+    "processingCancelled": "处理已取消",
+    "settingsSaved": "设置已保存",
+    "error": "错误",
+    "success": "成功",
+    "folderAlreadyAdded": "此文件夹已添加到列表中",
+    "noInputFolders": "未选择输入文件夹",
+    "noOutputFolder": "未选择输出文件夹",
+    "noImagesFound": "在文件夹中未找到图像",
+    "wasmLoading": "正在加载WebAssembly模块...",
+    "unsupportedDevice": "您的设备不受支持",
+    "mobileNotSupported": "目前不支持移动设备",
+    "safariNotSupported": "Safari不支持File System Access API",
+    "browserNotSupported": "您的浏览器不支持所需功能",
+    "useDesktopBrowser": "请使用<strong>桌面浏览器</strong>（Windows/Mac/Linux上的Chrome、Edge或Firefox）",
+    "useChromeEdgeFirefox": "请使用<strong>Chrome</strong>、<strong>Edge</strong>或<strong>Firefox</strong>"
+  },
+  "environment": {
+    "os": "操作系统：{{os}}",
+    "browser": "浏览器：{{browser}}"
+  },
+  "months": {
+    "01": "01_一月",
+    "02": "02_二月",
+    "03": "03_三月",
+    "04": "04_四月",
+    "05": "05_五月",
+    "06": "06_六月",
+    "07": "07_七月",
+    "08": "08_八月",
+    "09": "09_九月",
+    "10": "10_十月",
+    "11": "11_十一月",
+    "12": "12_十二月"
+  },
+  "errors": {
+    "fileSystemNotSupported": "此浏览器不支持File System Access API",
+    "folderSelectionCancelled": "文件夹选择已取消",
+    "inputFolderError": "选择输入文件夹时出错：{{error}}",
+    "outputFolderError": "选择输出文件夹时出错：{{error}}",
+    "processingError": "处理文件时出错：{{error}}",
+    "initializationError": "应用程序初始化错误：{{error}}",
+    "fileTooLarge": "文件过大：{{size}}",
+    "duplicateFile": "跳过重复文件：{{filename}}",
+    "exifReadError": "读取EXIF数据时出错：{{error}}",
+    "wasmError": "WASM处理错误：{{error}}"
+  }
+}

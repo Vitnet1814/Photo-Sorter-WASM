@@ -1,0 +1,110 @@
+{
+  "app": {
+    "title": "Photo Sorter",
+    "subtitle": "Automatic photo sorting",
+    "description": "Use a simple and powerful tool for quick and accurate sorting of your photos by date."
+  },
+  "folders": {
+    "inputFolders": "Input Folders",
+    "inputFoldersDesc": "Select folders with unsorted photos",
+    "addFolder": "Add Folder",
+    "clearAll": "Clear All",
+    "selectedFolders": "Selected folders:",
+    "outputFolder": "Output Folder",
+    "outputFolderDesc": "Folder for sorted photos",
+    "selectFolder": "Select Folder",
+    "totalFiles": "Total: {{count}} files, {{size}}"
+  },
+  "processing": {
+    "mode": "Processing Mode",
+    "copy": "Copy",
+    "copyDesc": "Creates photo duplicates",
+    "move": "Move",
+    "moveDesc": "Moves originals (saves space)",
+    "options": "Additional Options",
+    "createSubfolders": "Create subfolders by days",
+    "handleDuplicates": "Handle duplicates"
+  },
+  "progress": {
+    "title": "Photo Processing",
+    "cancel": "Cancel",
+    "processed": "Processed:",
+    "errors": "Errors:",
+    "skipped": "Skipped:",
+    "log": "Processing Log"
+  },
+  "statistics": {
+    "title": "Processing Statistics",
+    "totalPhotos": "Total Photos",
+    "validPhotos": "Valid",
+    "withExif": "With EXIF",
+    "totalSize": "Total Size"
+  },
+  "buttons": {
+    "startSorting": "Start Sorting",
+    "settings": "Settings",
+    "save": "Save",
+    "close": "Close"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Interface Language",
+    "folderFormat": "Folder Name Format",
+    "monthNames": "Month Names",
+    "numbersOnly": "Numbers Only",
+    "maxFileSize": "Maximum File Size (MB)"
+  },
+  "messages": {
+    "folderSelected": "Folder selected",
+    "folderAdded": "Folder added",
+    "folderRemoved": "Folder removed",
+    "allFoldersCleared": "All folders cleared",
+    "processingStarted": "Processing started",
+    "processingComplete": "Processing complete! Processed: {{processed}}, errors: {{errors}}",
+    "processingCancelled": "Processing cancelled",
+    "settingsSaved": "Settings saved",
+    "error": "Error",
+    "success": "Success",
+    "folderAlreadyAdded": "This folder is already added to the list",
+    "noInputFolders": "No input folders selected",
+    "noOutputFolder": "No output folder selected",
+    "noImagesFound": "No images found in folders",
+    "wasmLoading": "Loading WebAssembly module...",
+    "unsupportedDevice": "Your device is not supported",
+    "mobileNotSupported": "Mobile devices are not currently supported",
+    "safariNotSupported": "Safari does not support File System Access API",
+    "browserNotSupported": "Your browser does not support required features",
+    "useDesktopBrowser": "Please use a <strong>Desktop browser</strong> (Chrome, Edge or Firefox on Windows/Mac/Linux)",
+    "useChromeEdgeFirefox": "Please use <strong>Chrome</strong>, <strong>Edge</strong> or <strong>Firefox</strong>"
+  },
+  "environment": {
+    "os": "OS: {{os}}",
+    "browser": "Browser: {{browser}}"
+  },
+  "months": {
+    "01": "January",
+    "02": "February", 
+    "03": "March",
+    "04": "April",
+    "05": "May",
+    "06": "June",
+    "07": "July",
+    "08": "August",
+    "09": "September",
+    "10": "October",
+    "11": "November",
+    "12": "December"
+  },
+  "errors": {
+    "fileSystemNotSupported": "File System Access API is not supported in this browser",
+    "folderSelectionCancelled": "Folder selection cancelled",
+    "inputFolderError": "Error selecting input folder: {{error}}",
+    "outputFolderError": "Error selecting output folder: {{error}}",
+    "processingError": "Error processing files: {{error}}",
+    "initializationError": "Application initialization error: {{error}}",
+    "fileTooLarge": "File too large: {{size}}",
+    "duplicateFile": "Duplicate file skipped: {{filename}}",
+    "exifReadError": "Error reading EXIF data: {{error}}",
+    "wasmError": "WASM processing error: {{error}}"
+  }
+}

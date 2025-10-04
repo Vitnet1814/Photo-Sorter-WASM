@@ -1,0 +1,111 @@
+{
+  "app": {
+    "title": "写真整理ツール",
+    "subtitle": "自動写真ソート",
+    "description": "シンプルで強力なツールを使用して、日付別に写真を迅速かつ正確に整理します。"
+  },
+  "folders": {
+    "inputFolders": "入力フォルダ",
+    "inputFoldersDesc": "未整理の写真があるフォルダを選択",
+    "addFolder": "フォルダを追加",
+    "clearAll": "すべてクリア",
+    "selectedFolders": "選択されたフォルダ：",
+    "outputFolder": "出力フォルダ",
+    "outputFolderDesc": "整理された写真のフォルダ",
+    "selectFolder": "フォルダを選択",
+    "totalFiles": "合計：{{count}}ファイル、{{size}}"
+  },
+  "processing": {
+    "mode": "処理モード",
+    "copy": "コピー",
+    "copyDesc": "写真の複製を作成",
+    "move": "移動",
+    "moveDesc": "元ファイルを移動（スペース節約）",
+    "options": "追加オプション",
+    "createSubfolders": "日別にサブフォルダを作成",
+    "handleDuplicates": "重複を処理"
+  },
+  "progress": {
+    "title": "写真処理",
+    "cancel": "キャンセル",
+    "processed": "処理済み：",
+    "errors": "エラー：",
+    "skipped": "スキップ：",
+    "log": "処理ログ"
+  },
+  "statistics": {
+    "title": "処理統計",
+    "totalPhotos": "総写真数",
+    "validPhotos": "有効",
+    "withExif": "EXIF付き",
+    "totalSize": "総サイズ"
+  },
+  "buttons": {
+    "startSorting": "ソート開始",
+    "settings": "設定",
+    "save": "保存",
+    "close": "閉じる"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "インターフェース言語",
+    "folderFormat": "フォルダ名形式",
+    "ukrainianNames": "ウクライナ語名",
+    "englishNames": "英語名",
+    "numbersOnly": "数字のみ",
+    "maxFileSize": "最大ファイルサイズ（MB）"
+  },
+  "messages": {
+    "folderSelected": "フォルダが選択されました",
+    "folderAdded": "フォルダが追加されました",
+    "folderRemoved": "フォルダが削除されました",
+    "allFoldersCleared": "すべてのフォルダがクリアされました",
+    "processingStarted": "処理が開始されました",
+    "processingComplete": "処理完了！処理済み：{{processed}}、エラー：{{errors}}",
+    "processingCancelled": "処理がキャンセルされました",
+    "settingsSaved": "設定が保存されました",
+    "error": "エラー",
+    "success": "成功",
+    "folderAlreadyAdded": "このフォルダは既にリストに追加されています",
+    "noInputFolders": "入力フォルダが選択されていません",
+    "noOutputFolder": "出力フォルダが選択されていません",
+    "noImagesFound": "フォルダに画像が見つかりません",
+    "wasmLoading": "WebAssemblyモジュールを読み込み中...",
+    "unsupportedDevice": "お使いのデバイスはサポートされていません",
+    "mobileNotSupported": "モバイルデバイスは現在サポートされていません",
+    "safariNotSupported": "SafariはFile System Access APIをサポートしていません",
+    "browserNotSupported": "お使いのブラウザは必要な機能をサポートしていません",
+    "useDesktopBrowser": "<strong>デスクトップブラウザ</strong>（Windows/Mac/LinuxのChrome、Edge、Firefox）をご使用ください",
+    "useChromeEdgeFirefox": "<strong>Chrome</strong>、<strong>Edge</strong>、<strong>Firefox</strong>をご使用ください"
+  },
+  "environment": {
+    "os": "OS：{{os}}",
+    "browser": "ブラウザ：{{browser}}"
+  },
+  "months": {
+    "01": "01_1月",
+    "02": "02_2月",
+    "03": "03_3月",
+    "04": "04_4月",
+    "05": "05_5月",
+    "06": "06_6月",
+    "07": "07_7月",
+    "08": "08_8月",
+    "09": "09_9月",
+    "10": "10_10月",
+    "11": "11_11月",
+    "12": "12_12月"
+  },
+  "errors": {
+    "fileSystemNotSupported": "このブラウザではFile System Access APIがサポートされていません",
+    "folderSelectionCancelled": "フォルダ選択がキャンセルされました",
+    "inputFolderError": "入力フォルダの選択エラー：{{error}}",
+    "outputFolderError": "出力フォルダの選択エラー：{{error}}",
+    "processingError": "ファイル処理エラー：{{error}}",
+    "initializationError": "アプリケーション初期化エラー：{{error}}",
+    "fileTooLarge": "ファイルが大きすぎます：{{size}}",
+    "duplicateFile": "重複ファイルをスキップ：{{filename}}",
+    "exifReadError": "EXIFデータ読み取りエラー：{{error}}",
+    "wasmError": "WASM処理エラー：{{error}}"
+  }
+}

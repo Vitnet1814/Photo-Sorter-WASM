@@ -1,0 +1,111 @@
+{
+  "app": {
+    "title": "Foto Organisator",
+    "subtitle": "Automatische foto-sortering",
+    "description": "Gebruik een eenvoudig en krachtig hulpmiddel voor snelle en nauwkeurige sortering van uw foto's op datum."
+  },
+  "folders": {
+    "inputFolders": "Invoermappen",
+    "inputFoldersDesc": "Selecteer mappen met ongesorteerde foto's",
+    "addFolder": "Map toevoegen",
+    "clearAll": "Alles wissen",
+    "selectedFolders": "Geselecteerde mappen:",
+    "outputFolder": "Uitvoermap",
+    "outputFolderDesc": "Map voor gesorteerde foto's",
+    "selectFolder": "Map selecteren",
+    "totalFiles": "Totaal: {{count}} bestanden, {{size}}"
+  },
+  "processing": {
+    "mode": "Verwerkingsmodus",
+    "copy": "Kopiëren",
+    "copyDesc": "Maakt duplicaten van foto's",
+    "move": "Verplaatsen",
+    "moveDesc": "Verplaatst originelen (bespaart ruimte)",
+    "options": "Aanvullende opties",
+    "createSubfolders": "Submappen per dag maken",
+    "handleDuplicates": "Duplicaten afhandelen"
+  },
+  "progress": {
+    "title": "Foto-verwerking",
+    "cancel": "Annuleren",
+    "processed": "Verwerkt:",
+    "errors": "Fouten:",
+    "skipped": "Overgeslagen:",
+    "log": "Verwerkingslog"
+  },
+  "statistics": {
+    "title": "Verwerkingsstatistieken",
+    "totalPhotos": "Totaal foto's",
+    "validPhotos": "Geldig",
+    "withExif": "Met EXIF",
+    "totalSize": "Totale grootte"
+  },
+  "buttons": {
+    "startSorting": "Sortering starten",
+    "settings": "Instellingen",
+    "save": "Opslaan",
+    "close": "Sluiten"
+  },
+  "settings": {
+    "title": "Instellingen",
+    "language": "Interface taal",
+    "folderFormat": "Mapnaam formaat",
+    "ukrainianNames": "Oekraïense namen",
+    "englishNames": "Engelse namen",
+    "numbersOnly": "Alleen nummers",
+    "maxFileSize": "Maximale bestandsgrootte (MB)"
+  },
+  "messages": {
+    "folderSelected": "Map geselecteerd",
+    "folderAdded": "Map toegevoegd",
+    "folderRemoved": "Map verwijderd",
+    "allFoldersCleared": "Alle mappen gewist",
+    "processingStarted": "Verwerking gestart",
+    "processingComplete": "Verwerking voltooid! Verwerkt: {{processed}}, fouten: {{errors}}",
+    "processingCancelled": "Verwerking geannuleerd",
+    "settingsSaved": "Instellingen opgeslagen",
+    "error": "Fout",
+    "success": "Succes",
+    "folderAlreadyAdded": "Deze map is al toegevoegd aan de lijst",
+    "noInputFolders": "Geen invoermappen geselecteerd",
+    "noOutputFolder": "Geen uitvoermap geselecteerd",
+    "noImagesFound": "Geen afbeeldingen gevonden in mappen",
+    "wasmLoading": "WebAssembly module laden...",
+    "unsupportedDevice": "Uw apparaat wordt niet ondersteund",
+    "mobileNotSupported": "Mobiele apparaten worden momenteel niet ondersteund",
+    "safariNotSupported": "Safari ondersteunt File System Access API niet",
+    "browserNotSupported": "Uw browser ondersteunt de vereiste functies niet",
+    "useDesktopBrowser": "Gebruik alstublieft een <strong>desktop browser</strong> (Chrome, Edge of Firefox op Windows/Mac/Linux)",
+    "useChromeEdgeFirefox": "Gebruik alstublieft <strong>Chrome</strong>, <strong>Edge</strong> of <strong>Firefox</strong>"
+  },
+  "environment": {
+    "os": "OS: {{os}}",
+    "browser": "Browser: {{browser}}"
+  },
+  "months": {
+    "01": "01_januari",
+    "02": "02_februari",
+    "03": "03_maart",
+    "04": "04_april",
+    "05": "05_mei",
+    "06": "06_juni",
+    "07": "07_juli",
+    "08": "08_augustus",
+    "09": "09_september",
+    "10": "10_oktober",
+    "11": "11_november",
+    "12": "12_december"
+  },
+  "errors": {
+    "fileSystemNotSupported": "File System Access API wordt niet ondersteund in deze browser",
+    "folderSelectionCancelled": "Mapselectie geannuleerd",
+    "inputFolderError": "Fout bij selecteren invoermap: {{error}}",
+    "outputFolderError": "Fout bij selecteren uitvoermap: {{error}}",
+    "processingError": "Fout bij verwerken bestanden: {{error}}",
+    "initializationError": "Applicatie initialisatie fout: {{error}}",
+    "fileTooLarge": "Bestand te groot: {{size}}",
+    "duplicateFile": "Dubbele bestand overgeslagen: {{filename}}",
+    "exifReadError": "Fout bij lezen EXIF gegevens: {{error}}",
+    "wasmError": "WASM verwerkingsfout: {{error}}"
+  }
+}

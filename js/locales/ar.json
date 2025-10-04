@@ -1,0 +1,111 @@
+{
+  "app": {
+    "title": "منظم الصور",
+    "subtitle": "ترتيب الصور التلقائي",
+    "description": "استخدم أداة بسيطة وقوية لترتيب صورك بسرعة ودقة حسب التاريخ."
+  },
+  "folders": {
+    "inputFolders": "مجلدات الإدخال",
+    "inputFoldersDesc": "اختر المجلدات التي تحتوي على صور غير مرتبة",
+    "addFolder": "إضافة مجلد",
+    "clearAll": "مسح الكل",
+    "selectedFolders": "المجلدات المحددة:",
+    "outputFolder": "مجلد الإخراج",
+    "outputFolderDesc": "مجلد للصور المرتبة",
+    "selectFolder": "اختيار مجلد",
+    "totalFiles": "المجموع: {{count}} ملف، {{size}}"
+  },
+  "processing": {
+    "mode": "وضع المعالجة",
+    "copy": "نسخ",
+    "copyDesc": "ينشئ نسخ من الصور",
+    "move": "نقل",
+    "moveDesc": "ينقل الملفات الأصلية (يوفر مساحة)",
+    "options": "خيارات إضافية",
+    "createSubfolders": "إنشاء مجلدات فرعية حسب الأيام",
+    "handleDuplicates": "التعامل مع المكررات"
+  },
+  "progress": {
+    "title": "معالجة الصور",
+    "cancel": "إلغاء",
+    "processed": "تم معالجتها:",
+    "errors": "الأخطاء:",
+    "skipped": "تم تخطيها:",
+    "log": "سجل المعالجة"
+  },
+  "statistics": {
+    "title": "إحصائيات المعالجة",
+    "totalPhotos": "إجمالي الصور",
+    "validPhotos": "صحيحة",
+    "withExif": "مع EXIF",
+    "totalSize": "الحجم الإجمالي"
+  },
+  "buttons": {
+    "startSorting": "بدء الترتيب",
+    "settings": "الإعدادات",
+    "save": "حفظ",
+    "close": "إغلاق"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "language": "لغة الواجهة",
+    "folderFormat": "تنسيق أسماء المجلدات",
+    "ukrainianNames": "أسماء أوكرانية",
+    "englishNames": "أسماء إنجليزية",
+    "numbersOnly": "أرقام فقط",
+    "maxFileSize": "الحد الأقصى لحجم الملف (MB)"
+  },
+  "messages": {
+    "folderSelected": "تم اختيار المجلد",
+    "folderAdded": "تم إضافة المجلد",
+    "folderRemoved": "تم حذف المجلد",
+    "allFoldersCleared": "تم مسح جميع المجلدات",
+    "processingStarted": "بدأت المعالجة",
+    "processingComplete": "اكتملت المعالجة! تم معالجة: {{processed}}، أخطاء: {{errors}}",
+    "processingCancelled": "تم إلغاء المعالجة",
+    "settingsSaved": "تم حفظ الإعدادات",
+    "error": "خطأ",
+    "success": "نجح",
+    "folderAlreadyAdded": "هذا المجلد مُضاف بالفعل إلى القائمة",
+    "noInputFolders": "لم يتم اختيار مجلدات إدخال",
+    "noOutputFolder": "لم يتم اختيار مجلد إخراج",
+    "noImagesFound": "لم يتم العثور على صور في المجلدات",
+    "wasmLoading": "جاري تحميل وحدة WebAssembly...",
+    "unsupportedDevice": "جهازك غير مدعوم",
+    "mobileNotSupported": "الأجهزة المحمولة غير مدعومة حالياً",
+    "safariNotSupported": "Safari لا يدعم File System Access API",
+    "browserNotSupported": "متصفحك لا يدعم الوظائف المطلوبة",
+    "useDesktopBrowser": "يرجى استخدام <strong>متصفح سطح المكتب</strong> (Chrome أو Edge أو Firefox على Windows/Mac/Linux)",
+    "useChromeEdgeFirefox": "يرجى استخدام <strong>Chrome</strong> أو <strong>Edge</strong> أو <strong>Firefox</strong>"
+  },
+  "environment": {
+    "os": "نظام التشغيل: {{os}}",
+    "browser": "المتصفح: {{browser}}"
+  },
+  "months": {
+    "01": "01_يناير",
+    "02": "02_فبراير",
+    "03": "03_مارس",
+    "04": "04_أبريل",
+    "05": "05_مايو",
+    "06": "06_يونيو",
+    "07": "07_يوليو",
+    "08": "08_أغسطس",
+    "09": "09_سبتمبر",
+    "10": "10_أكتوبر",
+    "11": "11_نوفمبر",
+    "12": "12_ديسمبر"
+  },
+  "errors": {
+    "fileSystemNotSupported": "File System Access API غير مدعوم في هذا المتصفح",
+    "folderSelectionCancelled": "تم إلغاء اختيار المجلد",
+    "inputFolderError": "خطأ في اختيار مجلد الإدخال: {{error}}",
+    "outputFolderError": "خطأ في اختيار مجلد الإخراج: {{error}}",
+    "processingError": "خطأ في معالجة الملفات: {{error}}",
+    "initializationError": "خطأ في تهيئة التطبيق: {{error}}",
+    "fileTooLarge": "الملف كبير جداً: {{size}}",
+    "duplicateFile": "تم تخطي الملف المكرر: {{filename}}",
+    "exifReadError": "خطأ في قراءة بيانات EXIF: {{error}}",
+    "wasmError": "خطأ في معالجة WASM: {{error}}"
+  }
+}

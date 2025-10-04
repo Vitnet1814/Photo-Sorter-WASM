@@ -1,27 +1,32 @@
 # Railway ignore file
-# Ignorujeme файли що не потрібні для деплою
+node_modules/
+dist/
+.git/
+*.log
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Development files
+# Webpack cache
+.webpack/
+.cache/
+
+# IDE files
 .vscode/
 .idea/
-*.log
+*.swp
+*.swo
 
 # OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
-
-# Build artifacts
-build/
-dist/
-*.tar.gz
-
-# Test files
-test_photos/
-sample_images/
-
-# WASM source files (скомпільовані файли беруться з frontend/wasm/)
-wasm-source/
-
-# Backup files
-*.bak
-*.backup

@@ -4,7 +4,7 @@
   "description": "WebAssembly фотопроцесор для браузера",
   "main": "index.html",
   "scripts": {
-    "start": "node start.js",
+    "start": "npm run build && npx serve dist -s -l $PORT",
     "dev": "npx serve . -s -l 8080",
     "serve": "npx serve . -s -l 8080",
     "build": "webpack --mode=production",
@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/Vitnet1814/Photo-Sorter-WASM#readme",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "serve": "^14.2.1"

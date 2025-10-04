@@ -3,12 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Автоматичне сортування фотографій за датою з використанням EXIF даних. Простий і потужний інструмент для організації ваших фото з підтримкою багатьох форматів файлів.">
+    <meta name="keywords" content="сортування фото, організація фотографій, EXIF дані, автоматичне сортування, фото менеджер, сортування за датою, WebAssembly">
+    <meta name="author" content="Photo Sorter App">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="uk">
+    <meta name="revisit-after" content="7 days">
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="theme-color" content="#2563eb">
+    <meta name="msapplication-TileColor" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Photo Sorter">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://photo-sorter.app/">
+    
     <title data-i18n="app.title">Photo Sorter - Сортування фотографій</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://photo-sorter.app/">
+    <meta property="og:title" content="Photo Sorter - Автоматичне сортування фотографій">
+    <meta property="og:description" content="Автоматичне сортування фотографій за датою з використанням EXIF даних. Простий і потужний інструмент для організації ваших фото.">
+    <meta property="og:image" content="https://photo-sorter.app/images/og-image.jpg">
+    <meta property="og:locale" content="uk_UA">
+    <meta property="og:site_name" content="Photo Sorter">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://photo-sorter.app/">
+    <meta property="twitter:title" content="Photo Sorter - Автоматичне сортування фотографій">
+    <meta property="twitter:description" content="Автоматичне сортування фотографій за датою з використанням EXIF даних. Простий і потужний інструмент для організації ваших фото.">
+    <meta property="twitter:image" content="https://photo-sorter.app/images/twitter-image.jpg">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Photo Sorter",
+        "description": "Автоматичне сортування фотографій за датою з використанням EXIF даних",
+        "url": "https://photo-sorter.app/",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "creator": {
+            "@type": "Organization",
+            "name": "Photo Sorter Team"
+        },
+        "featureList": [
+            "Автоматичне сортування за датою",
+            "Читання EXIF даних",
+            "Підтримка багатьох форматів",
+            "Обробка дублікатів",
+            "Багатомовний інтерфейс"
+        ],
+        "screenshot": "https://photo-sorter.app/images/screenshot.jpg"
+    }
+    </script>
 </head>
 <body>
     <!-- Header -->
@@ -37,21 +115,22 @@
     <main class="main">
         <div class="container">
             <!-- Welcome Section -->
-            <section class="welcome-section">
+            <section class="welcome-section" role="banner" aria-labelledby="welcome-title">
                 <div class="welcome-content">
-                    <h2 data-i18n="app.subtitle">Автоматичне сортування фотографій</h2>
+                    <h2 id="welcome-title" data-i18n="app.subtitle">Автоматичне сортування фотографій</h2>
                     <p data-i18n="app.description">Використовуйте простий і потужний інструмент для швидкого та точного сортування ваших фото за датою.</p>
                 </div>
             </section>
 
             <!-- Folder Selection -->
-            <section class="folder-selection">
+            <section class="folder-selection" role="main" aria-labelledby="folder-selection-title">
+                <h2 id="folder-selection-title" class="sr-only">Вибір папок для сортування</h2>
                 <div class="folder-cards">
-                    <div class="folder-card" id="inputFolderCard">
-                        <div class="folder-icon">
+                    <article class="folder-card" id="inputFolderCard" role="region" aria-labelledby="input-folders-title">
+                        <div class="folder-icon" aria-hidden="true">
                             <i class="fas fa-folder-open"></i>
                         </div>
-                        <h3 data-i18n="folders.inputFolders">Вхідні папки</h3>
+                        <h3 id="input-folders-title" data-i18n="folders.inputFolders">Вхідні папки</h3>
                         <p data-i18n="folders.inputFoldersDesc">Виберіть папки з невідсортованими фото</p>
                         <div class="folder-buttons">
                             <button class="btn btn-primary" id="selectInputBtn">
@@ -75,11 +154,11 @@
                         </div>
                     </div>
 
-                    <div class="folder-card" id="outputFolderCard">
-                        <div class="folder-icon">
+                    <article class="folder-card" id="outputFolderCard" role="region" aria-labelledby="output-folder-title">
+                        <div class="folder-icon" aria-hidden="true">
                             <i class="fas fa-folder-plus"></i>
                         </div>
-                        <h3 data-i18n="folders.outputFolder">Вихідна папка</h3>
+                        <h3 id="output-folder-title" data-i18n="folders.outputFolder">Вихідна папка</h3>
                         <p data-i18n="folders.outputFolderDesc">Папка для відсортованих фото</p>
                         <button class="btn btn-primary" id="selectOutputBtn">
                             <i class="fas fa-folder-plus"></i>
@@ -94,10 +173,11 @@
             </section>
 
             <!-- Processing Options -->
-            <section class="processing-options">
+            <section class="processing-options" role="region" aria-labelledby="processing-title">
+                <h2 id="processing-title" class="sr-only">Налаштування обробки</h2>
                 <div class="options-grid">
-                    <div class="option-group">
-                        <h3 data-i18n="processing.mode">Режим обробки</h3>
+                    <fieldset class="option-group">
+                        <legend><h3 data-i18n="processing.mode">Режим обробки</h3></legend>
                         <div class="radio-group">
                             <label class="radio-label">
                                 <input type="radio" name="processingMode" value="copy" checked>
@@ -119,8 +199,8 @@
                     </div>
 
 
-                    <div class="option-group">
-                        <h3 data-i18n="processing.options">Додаткові опції</h3>
+                    <fieldset class="option-group">
+                        <legend><h3 data-i18n="processing.options">Додаткові опції</h3></legend>
                         <div class="checkbox-group">
                             <label class="checkbox-label" title="Структура папок: Рік/Місяць/День (активний) або Рік/Місяць (неактивний)">
                                 <input type="checkbox" id="createSubfolders">

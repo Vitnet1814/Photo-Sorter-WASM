@@ -1,0 +1,35 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://photo-sorter.app/sitemap.xml
+
+# Crawl-delay для захисту сервера
+Crawl-delay: 1
+
+# Дозволити доступ до всіх основних ресурсів
+Allow: /css/
+Allow: /js/
+Allow: /wasm/
+Allow: /images/
+Allow: /locales/
+
+# Заборонити доступ до служебних файлів
+Disallow: /node_modules/
+Disallow: /emsdk/
+Disallow: /wasm-source/
+Disallow: /backup-old-files/
+Disallow: /*.md$
+Disallow: /*.sh$
+Disallow: /*.json$
+Disallow: /package-lock.json
+Disallow: /webpack.config.js
+Disallow: /start.js
+
+# Заборонити доступ до тестових файлів
+Disallow: /test.html
+Disallow: /*test*
+
+# Дозволити доступ до основних файлів
+Allow: /index.html
+Allow: /dist/

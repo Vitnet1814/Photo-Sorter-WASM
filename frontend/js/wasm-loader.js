@@ -113,6 +113,12 @@ class WASMLoader {
         }
 
         try {
+            // Перевіряємо розмір даних перед передачею в WASM
+            if (fileData.length > 32 * 1024) {
+                console.warn(`⚠️ Файл ${filename} занадто великий для WASM (${fileData.length} байт), обмежуємо до 32KB`);
+                fileData = fileData.slice(0, 32 * 1024);
+            }
+
             this.module.ccall('processPhoto', null, 
                 ['string', 'array', 'number', 'string', 'string', 'string', 'string', 'string', 'number', 'number', 'number'],
                 [filename, fileData, fileData.length, dateTaken, dateModified, cameraMake, cameraModel, location, fileSize, width, height]
@@ -239,6 +245,12 @@ class WASMLoader {
         }
 
         try {
+            // Перевіряємо розмір даних перед передачею в WASM
+            if (fileData.length > 32 * 1024) {
+                console.warn(`⚠️ EXIF дані занадто великі (${fileData.length} байт), обмежуємо до 32KB`);
+                fileData = fileData.slice(0, 32 * 1024);
+            }
+
             return this.module.ccall('createExifReader', 'number', ['array', 'number'], [fileData, fileData.length]);
         } catch (error) {
             console.error('Помилка створення EXIF читача:', error);

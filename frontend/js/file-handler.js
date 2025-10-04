@@ -110,9 +110,11 @@ class FileHandler {
      * Отримує всі зображення з папки
      * @param {FileSystemDirectoryHandle} folderHandle - Handle папки
      * @param {FileSystemDirectoryHandle} parentHandle - Handle батьківської папки
+     * @param {Set} processedFiles - Множина вже оброблених файлів (для уникнення дублювання)
+     * @param {boolean} handleDuplicates - Чи обробляти дублікати
      * @returns {Promise<Array>} Масив об'єктів {file, handle, parentHandle}
      */
-    async getImageFiles(folderHandle, parentHandle = null) {
+    async getImageFiles(folderHandle, parentHandle = null, processedFiles = new Set(), handleDuplicates = true) {
         const files = [];
         
         try {
@@ -122,6 +124,17 @@ class FileHandler {
                     if (this.supportedFormats.includes(extension)) {
                         try {
                             const file = await handle.getFile();
+                            
+                            // Перевіряємо чи є файл дублікатом (тільки якщо увімкнено обробку дублікатів)
+                            if (handleDuplicates && this.isDuplicateFile(file, name, processedFiles)) {
+                                console.log(`⚠️ Пропущено дублікат: ${name} (${file.size} байт, ${new Date(file.lastModified).toLocaleString()})`);
+                                continue;
+                            }
+                            
+                            // Додаємо файл до множини оброблених
+                            const fileId = `${file.size}_${file.lastModified}`;
+                            processedFiles.add(fileId);
+                            
                             console.log(`📄 Прочитано файл ${name}: ${file.size} байт, тип: ${file.type}`);
                             files.push({ file, handle, parentHandle: folderHandle });
                         } catch (error) {
@@ -130,7 +143,7 @@ class FileHandler {
                     }
                 } else if (handle.kind === 'directory') {
                     // Рекурсивно обробляємо підпапки
-                    const subFiles = await this.getImageFiles(handle, folderHandle);
+                    const subFiles = await this.getImageFiles(handle, folderHandle, processedFiles, handleDuplicates);
                     files.push(...subFiles);
                 }
             }
@@ -149,6 +162,44 @@ class FileHandler {
     isImageFile(filename) {
         const extension = filename.split('.').pop().toLowerCase();
         return this.supportedFormats.includes(extension);
+    }
+
+    /**
+     * Перевіряє чи є файл дублікатом
+     * @param {File} file - Файл для перевірки
+     * @param {string} filename - Назва файлу
+     * @param {Set} processedFiles - Множина оброблених файлів
+     * @returns {boolean} Чи є файл дублікатом
+     */
+    isDuplicateFile(file, filename, processedFiles) {
+        // Основний критерій: розмір + дата модифікації
+        const fileId = `${file.size}_${file.lastModified}`;
+        
+        if (processedFiles.has(fileId)) {
+            return true;
+        }
+        
+        // Додаткова перевірка: схожі назви файлів
+        const baseName = filename.replace(/\s+\d+$/, '').toLowerCase(); // Видаляємо " 2", " 3" тощо
+        
+        for (const processedId of processedFiles) {
+            const [size, timestamp] = processedId.split('_');
+            if (size === file.size.toString() && timestamp === file.lastModified.toString()) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Отримує базову назву файлу без номерів дублікатів
+     * @param {string} filename - Повна назва файлу
+     * @returns {string} Базова назва
+     */
+    getBaseFileName(filename) {
+        // Видаляємо пробіл + число в кінці (наприклад: " 2", " 3")
+        return filename.replace(/\s+\d+$/, '').toLowerCase();
     }
 
     /**
@@ -229,28 +280,33 @@ class FileHandler {
             
             // Використовуємо WASM модуль для читання EXIF
             if (window.wasmLoader && window.wasmLoader.isModuleLoaded()) {
-                // Обмежуємо розмір даних для WASM (тільки перші 64KB для EXIF парсингу)
-                const maxSize = 64 * 1024; // 64KB
+                // Обмежуємо розмір даних для WASM (тільки перші 32KB для EXIF парсингу)
+                const maxSize = 32 * 1024; // 32KB (зменшено для стабільності)
                 const dataToProcess = uint8Array.length > maxSize ? uint8Array.slice(0, maxSize) : uint8Array;
                 
-                const readerPtr = window.wasmLoader.createExifReader(dataToProcess);
-                
-                if (readerPtr) {
-                    const exifData = {
-                        dateTaken: window.wasmLoader.readExifDate(readerPtr),
-                        dateTime: window.wasmLoader.readExifDateTime(readerPtr),
-                        dateDigitized: window.wasmLoader.readExifDateTimeDigitized(readerPtr),
-                        gpsDateStamp: window.wasmLoader.readExifGpsDateStamp(readerPtr),
-                        gpsTimeStamp: window.wasmLoader.readExifGpsTimeStamp(readerPtr),
-                        cameraMake: window.wasmLoader.readCameraMake(readerPtr),
-                        cameraModel: window.wasmLoader.readCameraModel(readerPtr),
-                        width: window.wasmLoader.readImageWidth(readerPtr),
-                        height: window.wasmLoader.readImageHeight(readerPtr),
-                        hasExif: window.wasmLoader.hasExifData(readerPtr)
-                    };
+                try {
+                    const readerPtr = window.wasmLoader.createExifReader(dataToProcess);
                     
-                    window.wasmLoader.destroyExifReader(readerPtr);
-                    return exifData;
+                    if (readerPtr && readerPtr !== 0) {
+                        const exifData = {
+                            dateTaken: window.wasmLoader.readExifDate(readerPtr),
+                            dateTime: window.wasmLoader.readExifDateTime(readerPtr),
+                            dateDigitized: window.wasmLoader.readExifDateTimeDigitized(readerPtr),
+                            gpsDateStamp: window.wasmLoader.readExifGpsDateStamp(readerPtr),
+                            gpsTimeStamp: window.wasmLoader.readExifGpsTimeStamp(readerPtr),
+                            cameraMake: window.wasmLoader.readCameraMake(readerPtr),
+                            cameraModel: window.wasmLoader.readCameraModel(readerPtr),
+                            width: window.wasmLoader.readImageWidth(readerPtr),
+                            height: window.wasmLoader.readImageHeight(readerPtr),
+                            hasExif: window.wasmLoader.hasExifData(readerPtr)
+                        };
+                        
+                        window.wasmLoader.destroyExifReader(readerPtr);
+                        return exifData;
+                    }
+                } catch (wasmError) {
+                    console.warn(`WASM EXIF помилка для ${file.name}:`, wasmError.message);
+                    // Продовжуємо з fallback даними
                 }
             }
             
@@ -308,23 +364,28 @@ class FileHandler {
             if (window.wasmLoader && window.wasmLoader.isModuleLoaded()) {
                 console.log(`🔬 WASM обробка файлу ${file.name} з розміром ${file.size} байт`);
                 
-                // Обмежуємо розмір даних для WASM (тільки перші 64KB)
-                const maxSize = 64 * 1024; // 64KB
-                const dataToProcess = uint8Array.length > maxSize ? uint8Array.slice(0, maxSize) : uint8Array;
-                
-                window.wasmLoader.processPhoto(
-                    file.name,
-                    dataToProcess,
-                    exifData.dateTaken,
-                    new Date(file.lastModified).toISOString().split('T')[0],
-                    exifData.cameraMake,
-                    exifData.cameraModel,
-                    '', // location
-                    file.size,
-                    exifData.width,
-                    exifData.height
-                );
-                console.log(`✅ WASM обробка завершена для ${file.name}`);
+                try {
+                    // Обмежуємо розмір даних для WASM (тільки перші 32KB для стабільності)
+                    const maxSize = 32 * 1024; // 32KB
+                    const dataToProcess = uint8Array.length > maxSize ? uint8Array.slice(0, maxSize) : uint8Array;
+                    
+                    window.wasmLoader.processPhoto(
+                        file.name,
+                        dataToProcess,
+                        exifData.dateTaken,
+                        new Date(file.lastModified).toISOString().split('T')[0],
+                        exifData.cameraMake,
+                        exifData.cameraModel,
+                        '', // location
+                        file.size,
+                        exifData.width,
+                        exifData.height
+                    );
+                    console.log(`✅ WASM обробка завершена для ${file.name}`);
+                } catch (wasmError) {
+                    console.warn(`⚠️ WASM помилка для ${file.name}:`, wasmError.message);
+                    // Продовжуємо обробку без WASM
+                }
             } else {
                 console.log(`⚠️ WASM модуль не завантажений для ${file.name}`);
             }
@@ -371,7 +432,9 @@ class FileHandler {
         this.skipped = 0;
 
         try {
-            const files = await this.getImageFiles(this.inputFolderHandle);
+            const processedFiles = new Set();
+            const handleDuplicates = options.handleDuplicates !== undefined ? options.handleDuplicates : true;
+            const files = await this.getImageFiles(this.inputFolderHandle, null, processedFiles, handleDuplicates);
             this.totalFiles = files.length;
 
             if (files.length === 0) {
@@ -379,6 +442,13 @@ class FileHandler {
             }
 
             console.log(`📊 Знайдено ${files.length} зображень для обробки`);
+            console.log(`🔧 Обробка дублікатів: ${handleDuplicates ? 'УВІМКНЕНО' : 'ВИМКНЕНО'}`);
+            console.log(`📁 Створення підпапок: ${options.createSubfolders !== false ? 'УВІМКНЕНО' : 'ВИМКНЕНО'}`);
+            
+            // Перевіряємо чи є дублікати
+            if (this.inputFolderHandle === this.outputFolderHandle) {
+                console.warn('⚠️ УВАГА: Вхідна та вихідна папки однакові! Можливі дублікати файлів.');
+            }
             
             
             // Обробляємо файли по одному
@@ -399,7 +469,7 @@ class FileHandler {
                 console.log(`📊 Розмір файлу до копіювання: ${file.size} байт`);
 
                 // Копіюємо або переміщуємо файл
-                await this.copyOrMoveFile(file, options.processingMode || 'copy', fileHandle, parentHandle);
+                await this.copyOrMoveFile(file, options.processingMode || 'copy', fileHandle, parentHandle, options, result.exifData);
 
                 // Викликаємо callback прогресу
                 if (progressCallback) {
@@ -440,14 +510,19 @@ class FileHandler {
      * @param {string} mode - Режим: 'copy' або 'move'
      * @param {FileSystemFileHandle} originalFileHandle - Handle оригінального файлу (для переміщення)
      * @param {FileSystemDirectoryHandle} parentHandle - Handle батьківської папки оригінального файлу
+     * @param {Object} options - Опції обробки
+     * @param {Object} exifData - EXIF дані файлу
      */
-    async copyOrMoveFile(file, mode = 'copy', originalFileHandle = null, parentHandle = null) {
+    async copyOrMoveFile(file, mode = 'copy', originalFileHandle = null, parentHandle = null, options = {}, exifData = {}) {
         try {
-            // Отримуємо метадані з WASM
-            const metadata = this.getFileMetadata(file);
+            // Отримуємо метадані з найранішою датою
+            const metadata = this.getFileMetadata(file, exifData);
             
             // Створюємо структуру папок
-            const folderPath = this.createFolderStructure(metadata);
+            const createSubfolders = options.createSubfolders !== undefined ? options.createSubfolders : true;
+            const folderPath = this.createFolderStructure(metadata, createSubfolders);
+            
+            console.log(`📅 Використано найранішу дату для ${file.name}: ${metadata.earliestDate.toLocaleDateString('uk-UA')}`);
             
             // Створюємо папки
             const targetFolderHandle = await this.createFolders(folderPath);
@@ -472,19 +547,63 @@ class FileHandler {
     /**
      * Отримує метадані файлу з WASM
      * @param {File} file - Файл
+     * @param {Object} exifData - EXIF дані
      * @returns {Object} Метадані
      */
-    getFileMetadata(file) {
-        // Використовуємо тільки дату модифікації файлу для створення структури папок
-        const date = new Date(file.lastModified);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
+    getFileMetadata(file, exifData = {}) {
+        // Збираємо всі можливі дати
+        const dates = [];
+        
+        // Дата зйомки (DateTimeOriginal)
+        if (exifData.dateTaken) {
+            const dateTaken = new Date(exifData.dateTaken);
+            if (!isNaN(dateTaken.getTime())) {
+                dates.push(dateTaken);
+            }
+        }
+        
+        // DateTime
+        if (exifData.dateTime) {
+            const dateTime = new Date(exifData.dateTime);
+            if (!isNaN(dateTime.getTime())) {
+                dates.push(dateTime);
+            }
+        }
+        
+        // DateTimeDigitized
+        if (exifData.dateDigitized) {
+            const dateDigitized = new Date(exifData.dateDigitized);
+            if (!isNaN(dateDigitized.getTime())) {
+                dates.push(dateDigitized);
+            }
+        }
+        
+        // GPS дати
+        if (exifData.gpsDateStamp && exifData.gpsTimeStamp) {
+            const gpsDate = new Date(`${exifData.gpsDateStamp}T${exifData.gpsTimeStamp}`);
+            if (!isNaN(gpsDate.getTime())) {
+                dates.push(gpsDate);
+            }
+        }
+        
+        // Дата модифікації файлу (як fallback)
+        const fileDate = new Date(file.lastModified);
+        dates.push(fileDate);
+        
+        // Знаходимо найранішу дату
+        const earliestDate = dates.reduce((earliest, current) => {
+            return current < earliest ? current : earliest;
+        });
+        
+        const year = earliestDate.getFullYear();
+        const month = String(earliestDate.getMonth() + 1).padStart(2, '0');
+        const day = String(earliestDate.getDate()).padStart(2, '0');
         
         return {
             dateTaken: `${year}-${month}-${day}`,
-            cameraMake: '',
-            cameraModel: '',
+            earliestDate: earliestDate,
+            cameraMake: exifData.cameraMake || '',
+            cameraModel: exifData.cameraModel || '',
             fileSize: file.size,
             format: file.name.split('.').pop().toLowerCase()
         };
@@ -493,9 +612,10 @@ class FileHandler {
     /**
      * Створює структуру папок для файлу
      * @param {Object} metadata - Метадані файлу
+     * @param {boolean} createSubfolders - Чи створювати підпапки за днями
      * @returns {string} Шлях до папки
      */
-    createFolderStructure(metadata) {
+    createFolderStructure(metadata, createSubfolders = true) {
         const basePath = this.outputFolderHandle.name;
         
         if (!metadata.dateTaken) {
@@ -514,7 +634,14 @@ class FileHandler {
         
         const monthName = monthNames[month] || month;
         
-        return `${basePath}/${year}/${monthName}/${day}`;
+        // Різні рівні деталізації
+        if (createSubfolders) {
+            // Максимальна деталізація: Рік/Місяць/День
+            return `${basePath}/${year}/${monthName}/${day}`;
+        } else {
+            // Менша деталізація: Рік/Місяць
+            return `${basePath}/${year}/${monthName}`;
+        }
     }
 
     /**

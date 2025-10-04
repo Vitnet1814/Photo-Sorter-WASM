@@ -13,10 +13,8 @@ class PhotoSorterApp {
             folderFormat: 'ukrainian',
             maxFileSize: 100,
             processingMode: 'copy',
-            sortCriteria: 0,
             createSubfolders: true,
-            handleDuplicates: true,
-            preserveStructure: false
+            handleDuplicates: true
         };
         this.isProcessing = false;
         this.progressInterval = null;
@@ -279,9 +277,6 @@ class PhotoSorterApp {
         });
         
         // Зміна критерію сортування
-        document.getElementById('sortCriteria').addEventListener('change', (e) => {
-            this.currentSettings.sortCriteria = parseInt(e.target.value);
-        });
         
         // Зміна чекбоксів
         document.getElementById('createSubfolders').addEventListener('change', (e) => {
@@ -290,10 +285,6 @@ class PhotoSorterApp {
         
         document.getElementById('handleDuplicates').addEventListener('change', (e) => {
             this.currentSettings.handleDuplicates = e.target.checked;
-        });
-        
-        document.getElementById('preserveStructure').addEventListener('change', (e) => {
-            this.currentSettings.preserveStructure = e.target.checked;
         });
         
         // Закриття модальних вікон по кліку поза ними

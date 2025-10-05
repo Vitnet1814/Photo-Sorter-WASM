@@ -316,8 +316,31 @@ module.exports = (env, argv) => {
                     {
                         from: 'railway.json',
                         to: 'railway.json'
+                    },
+                    // Копіювання favicon файлів в корінь dist
+                    {
+                        from: 'favicon.ico',
+                        to: 'favicon.ico'
+                    },
+                    {
+                        from: 'favicon.svg',
+                        to: 'favicon.svg'
                     }
                 ]
+            }),
+            
+            // Копіювання favicon файлів в кожну локалізовану папку
+            new CopyWebpackPlugin({
+                patterns: supportedLanguages.map(lang => [
+                    {
+                        from: 'favicon.ico',
+                        to: `${lang}/favicon.ico`
+                    },
+                    {
+                        from: 'favicon.svg',
+                        to: `${lang}/favicon.svg`
+                    }
+                ]).flat()
             })
         ],
         

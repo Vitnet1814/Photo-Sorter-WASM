@@ -44,7 +44,8 @@
     "startSorting": "Sortierung starten",
     "settings": "Einstellungen",
     "save": "Speichern",
-    "close": "Schließen"
+    "close": "Schließen",
+    "toggleTheme": "Design umschalten"
   },
   "settings": {
     "title": "Einstellungen",

@@ -14,7 +14,8 @@ class PhotoSorterApp {
             maxFileSize: 100,
             processingMode: 'copy',
             createSubfolders: false,
-            handleDuplicates: false
+            handleDuplicates: false,
+            theme: 'light'
         };
         this.isProcessing = false;
         this.progressInterval = null;
@@ -164,6 +165,13 @@ class PhotoSorterApp {
      * Оновлює підказки після зміни мови
      */
     updateTooltips() {
+        // Підказка для перемикача теми
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            const tooltip = window.i18n ? window.i18n.t('buttons.toggleTheme') : 'Перемкнути тему';
+            themeToggle.title = tooltip;
+        }
+
         // Підказка для чекбокса "Створювати підпапки за днями"
         const createSubfoldersCheckbox = document.getElementById('createSubfolders');
         if (createSubfoldersCheckbox) {
@@ -373,6 +381,7 @@ class PhotoSorterApp {
         const settingsBtn = document.getElementById('settingsBtn');
         const closeSettingsBtn = document.getElementById('closeSettingsBtn');
         const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const themeToggle = document.getElementById('themeToggle');
         
         if (selectInputBtn) {
             selectInputBtn.addEventListener('click', () => this.selectInputFolder());
@@ -397,6 +406,9 @@ class PhotoSorterApp {
         }
         if (saveSettingsBtn) {
             saveSettingsBtn.addEventListener('click', () => this.saveSettings());
+        }
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => this.toggleTheme());
         }
         
         // Обробник зміни мови
@@ -915,8 +927,34 @@ class PhotoSorterApp {
             
             this.fileHandler.setMaxFileSize(this.currentSettings.maxFileSize);
             
+            // Застосовуємо тему
+            this.applyTheme(this.currentSettings.theme || 'light');
+            
         } catch (error) {
         }
+    }
+
+    /**
+     * Застосовує тему до сторінки
+     * @param {string} theme - Назва теми ('light' або 'dark')
+     */
+    applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.setAttribute('data-theme', theme);
+        }
+        this.currentSettings.theme = theme;
+    }
+
+    /**
+     * Перемикає тему
+     */
+    toggleTheme() {
+        const currentTheme = this.currentSettings.theme || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        this.applyTheme(newTheme);
+        this.saveSettings();
     }
 
     /**
@@ -969,7 +1007,8 @@ class PhotoSorterApp {
             maxFileSize: 100,
             processingMode: 'copy',
             createSubfolders: false,
-            handleDuplicates: false
+            handleDuplicates: false,
+            theme: 'light'
         };
     }
 

@@ -44,7 +44,8 @@
     "startSorting": "Start Sorting",
     "settings": "Settings",
     "save": "Save",
-    "close": "Close"
+    "close": "Close",
+    "toggleTheme": "Toggle theme"
   },
   "settings": {
     "title": "Settings",

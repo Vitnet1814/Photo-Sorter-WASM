@@ -44,7 +44,8 @@
     "startSorting": "Iniciar clasificación",
     "settings": "Configuración",
     "save": "Guardar",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "toggleTheme": "Cambiar tema"
   },
   "settings": {
     "title": "Configuración",

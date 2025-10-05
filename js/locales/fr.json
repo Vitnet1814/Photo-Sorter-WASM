@@ -44,7 +44,8 @@
     "startSorting": "Commencer le tri",
     "settings": "Paramètres",
     "save": "Enregistrer",
-    "close": "Fermer"
+    "close": "Fermer",
+    "toggleTheme": "Changer le thème"
   },
   "settings": {
     "title": "Paramètres",

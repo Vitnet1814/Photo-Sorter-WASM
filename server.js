@@ -44,16 +44,29 @@ app.get('/', (req, res) => {
 // Обробка підкаталогів мов
 const supportedLanguages = ['uk', 'en', 'ru', 'zh', 'es', 'pt', 'fr', 'de', 'ar', 'ja', 'ko', 'hi', 'it', 'nl', 'sv', 'pl'];
 
+// Middleware для обробки favicon файлів
+app.use((req, res, next) => {
+    const faviconMatch = req.path.match(/^\/([a-z]{2})\/favicon\.(ico|svg)$/);
+    if (faviconMatch) {
+        const [, lang, ext] = faviconMatch;
+        if (supportedLanguages.includes(lang)) {
+            const filePath = path.join(__dirname, 'dist', lang, `favicon.${ext}`);
+            return res.sendFile(filePath);
+        }
+    }
+    next();
+});
+
 supportedLanguages.forEach(lang => {
-    // Редирект без слеша на слеш
-    app.get(`/${lang}`, (req, res) => {
-        res.redirect(`/${lang}/`);
-    });
-    
-    // Обслуговування HTML файлів для кожної мови
-    app.get(`/${lang}/*`, (req, res) => {
+    // Обслуговування HTML файлів для кожної мови (тільки для кореневого шляху)
+    app.get(`/${lang}/`, (req, res) => {
         const filePath = path.join(__dirname, 'dist', lang, 'index.html');
         res.sendFile(filePath);
+    });
+    
+    // Редирект без слеша на слеш (після обробки статичних файлів)
+    app.get(`/${lang}`, (req, res) => {
+        res.redirect(`/${lang}/`);
     });
 });
 

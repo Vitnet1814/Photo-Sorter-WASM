@@ -950,6 +950,155 @@ class PhotoSorterApp {
         this.currentSettings = { ...this.currentSettings, ...settings };
         this.loadSettings();
     }
+
+    /**
+     * Оновлює налаштування
+     * @param {Object} settings - Нові налаштування
+     */
+    updateSettings(settings) {
+        this.currentSettings = { ...this.currentSettings, ...settings };
+    }
+
+    /**
+     * Скидає налаштування до за замовчуванням
+     */
+    resetSettings() {
+        this.currentSettings = {
+            language: 'uk',
+            folderFormat: 'monthNames',
+            maxFileSize: 100,
+            processingMode: 'copy',
+            createSubfolders: false,
+            handleDuplicates: false
+        };
+    }
+
+    /**
+     * Оновлює прогрес обробки
+     * @param {number} current - Поточний прогрес
+     * @param {number} total - Загальна кількість
+     */
+    updateProgress(current, total) {
+        this.currentProgress = current;
+        this.totalItems = total;
+    }
+
+    /**
+     * Отримує відсоток прогресу
+     * @returns {number} Відсоток прогресу
+     */
+    getProgressPercentage() {
+        if (this.totalItems === 0) return 0;
+        return Math.round((this.currentProgress / this.totalItems) * 100);
+    }
+
+    /**
+     * Додає до статистики
+     * @param {string} type - Тип статистики
+     * @param {number} count - Кількість
+     */
+    addToStats(type, count = 1) {
+        if (!this.stats) this.stats = { processed: 0, errors: 0, skipped: 0 };
+        this.stats[type] = (this.stats[type] || 0) + count;
+    }
+
+    /**
+     * Отримує статистику
+     * @returns {Object} Статистика
+     */
+    getStats() {
+        return this.stats || { processed: 0, errors: 0, skipped: 0 };
+    }
+
+    /**
+     * Скидає статистику
+     */
+    resetStats() {
+        this.stats = { processed: 0, errors: 0, skipped: 0 };
+    }
+
+    /**
+     * Встановлює мову
+     * @param {string} language - Код мови
+     */
+    setLanguage(language) {
+        const supportedLanguages = ['uk', 'en', 'ru', 'de', 'fr', 'es', 'it', 'pt', 'pl', 'nl', 'sv', 'ko', 'ja', 'zh', 'hi', 'ar'];
+        if (supportedLanguages.includes(language)) {
+            this.currentSettings.language = language;
+        }
+    }
+
+    /**
+     * Завантажує локалізацію
+     * @param {string} language - Код мови
+     * @returns {Promise<Object>} Локалізація
+     */
+    async loadLocalization(language) {
+        const response = await fetch(`/js/locales/${language}.json`);
+        return response.json();
+    }
+
+    /**
+     * Валідує вхідні дані
+     * @param {*} input - Вхідні дані
+     * @returns {boolean} Чи валідні дані
+     */
+    validateInput(input) {
+        return input !== null && input !== undefined && input !== '';
+    }
+
+    /**
+     * Санітизує вхідні дані
+     * @param {string} input - Вхідні дані
+     * @returns {string} Санітизовані дані
+     */
+    sanitizeInput(input) {
+        if (typeof input !== 'string') return '';
+        return input
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+            .replace(/javascript:/gi, '')
+            .replace(/on\w+\s*=/gi, '');
+    }
+
+    /**
+     * Перевіряє чи розмір файлу валідний
+     * @param {Object} file - Файл для перевірки
+     * @returns {boolean} Чи валідний розмір
+     */
+    isFileSizeValid(file) {
+        const maxSize = this.currentSettings.maxFileSize * 1024 * 1024;
+        return file.size <= maxSize;
+    }
+
+    /**
+     * Логує помилку
+     * @param {string} message - Повідомлення про помилку
+     */
+    logError(message) {
+        console.error(message);
+    }
+
+    /**
+     * Обробляє помилку
+     * @param {string} message - Повідомлення про помилку
+     * @param {Error} error - Об'єкт помилки
+     */
+    handleError(message, error) {
+        if (this.onError) {
+            this.onError(message, error);
+        }
+    }
+
+    /**
+     * Ініціалізує додаток
+     * @returns {Promise<void>}
+     */
+    async initialize() {
+        if (this.wasmLoader && this.wasmLoader.load) {
+            await this.wasmLoader.load();
+            this.isInitialized = true;
+        }
+    }
 }
 
 // Ініціалізація додатку при завантаженні сторінки

@@ -1304,6 +1304,89 @@ class FileHandler {
             this.supportedFormats.splice(index, 1);
         }
     }
+
+    /**
+     * Перевіряє чи розмір файлу валідний
+     * @param {Object} file - Файл для перевірки
+     * @returns {boolean} Чи валідний розмір
+     */
+    isFileSizeValid(file) {
+        return file.size <= this.maxFileSize;
+    }
+
+    /**
+     * Оновлює статистику обробки
+     * @param {string} type - Тип статистики (processed, error, skipped)
+     */
+    updateStats(type) {
+        switch (type) {
+            case 'processed':
+                this.processedFiles++;
+                break;
+            case 'error':
+                this.errors++;
+                break;
+            case 'skipped':
+                this.skipped++;
+                break;
+        }
+    }
+
+    /**
+     * Скидає статистику обробки
+     */
+    resetStats() {
+        this.processedFiles = 0;
+        this.totalFiles = 0;
+        this.errors = 0;
+        this.skipped = 0;
+    }
+
+    /**
+     * Валідує файл
+     * @param {Object} file - Файл для валідації
+     * @returns {boolean} Чи валідний файл
+     */
+    validateFile(file) {
+        if (!file || !file.name) return false;
+        return this.isImageFile(file.name) && this.isFileSizeValid(file);
+    }
+
+    /**
+     * Читає дані файлу
+     * @param {File} file - Файл для читання
+     * @returns {Promise<ArrayBuffer>} Дані файлу
+     */
+    async readFileData(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(new Error('Помилка читання файлу'));
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+    /**
+     * Логує помилку
+     * @param {string} message - Повідомлення про помилку
+     * @param {Error} error - Об'єкт помилки
+     */
+    logError(message, error) {
+        console.error(message, error);
+    }
+
+    /**
+     * Санітизує вхідні дані
+     * @param {string} input - Вхідні дані
+     * @returns {string} Санітизовані дані
+     */
+    sanitizeInput(input) {
+        if (typeof input !== 'string') return '';
+        return input
+            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+            .replace(/javascript:/gi, '')
+            .replace(/on\w+\s*=/gi, '');
+    }
 }
 
 // Створюємо глобальний екземпляр

@@ -462,6 +462,138 @@ class WASMLoader {
             }
         };
     }
+
+    /**
+     * Викликає функцію WASM
+     * @param {string} functionName - Назва функції
+     * @param {Array} args - Аргументи функції
+     * @returns {*} Результат функції
+     */
+    callWasmFunction(functionName, args = []) {
+        if (!this.wasmInstance || !this.wasmInstance.exports) {
+            throw new Error('WASM модуль не завантажений');
+        }
+
+        if (!this.wasmInstance.exports[functionName]) {
+            throw new Error(`Функція ${functionName} не знайдена`);
+        }
+
+        return this.wasmInstance.exports[functionName](...args);
+    }
+
+    /**
+     * Перевіряє наявність функції
+     * @param {string} functionName - Назва функції
+     * @returns {boolean} Чи існує функція
+     */
+    hasFunction(functionName) {
+        return this.wasmInstance && 
+               this.wasmInstance.exports && 
+               typeof this.wasmInstance.exports[functionName] === 'function';
+    }
+
+    /**
+     * Виділяє пам'ять
+     * @param {number} size - Розмір пам'яті
+     * @returns {number} Покажчик на пам'ять
+     */
+    allocateMemory(size) {
+        if (!this.wasmInstance || !this.wasmInstance.exports) {
+            throw new Error('WASM модуль не завантажений');
+        }
+
+        if (size > 100 * 1024 * 1024) { // 100MB
+            throw new Error('Недостатньо пам\'яті');
+        }
+
+        return this.wasmInstance.exports.malloc(size);
+    }
+
+    /**
+     * Звільняє пам'ять
+     * @param {number} ptr - Покажчик на пам'ять
+     */
+    freeMemory(ptr) {
+        if (!this.wasmInstance || !this.wasmInstance.exports) {
+            throw new Error('WASM модуль не завантажений');
+        }
+
+        if (ptr === null || ptr === undefined) {
+            throw new Error('Невірний покажчик на пам\'ять');
+        }
+
+        this.wasmInstance.exports.free(ptr);
+    }
+
+    /**
+     * Обробляє зображення
+     * @param {ArrayBuffer} imageData - Дані зображення
+     * @returns {Promise<ArrayBuffer>} Оброблені дані
+     */
+    async processImage(imageData) {
+        if (!this.wasmInstance || !this.wasmInstance.exports) {
+            throw new Error('WASM модуль не завантажений');
+        }
+
+        return this.wasmInstance.exports.processImage(imageData);
+    }
+
+    /**
+     * Отримує інформацію про зображення
+     * @returns {Object} Інформація про зображення
+     */
+    getImageInfo() {
+        if (!this.wasmInstance || !this.wasmInstance.exports) {
+            throw new Error('WASM модуль не завантажений');
+        }
+
+        return this.wasmInstance.exports.getImageInfo();
+    }
+
+    /**
+     * Санітизує параметри
+     * @param {Array} params - Параметри для санітизації
+     * @returns {Array} Санітизовані параметри
+     */
+    sanitizeParams(params) {
+        return params.map(param => {
+            if (typeof param !== 'string') return param;
+            return param
+                .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                .replace(/javascript:/gi, '')
+                .replace(/on\w+\s*=/gi, '');
+        });
+    }
+
+    /**
+     * Логує повідомлення
+     * @param {string} message - Повідомлення
+     */
+    log(message) {
+        console.log('WasmLoader:', message);
+    }
+
+    /**
+     * Логує помилку
+     * @param {string} message - Повідомлення про помилку
+     * @param {Error} error - Об'єкт помилки
+     */
+    logError(message, error) {
+        console.error('WasmLoader Error:', message, error);
+    }
+
+    /**
+     * Отримує діагностичну інформацію
+     * @returns {Object} Діагностична інформація
+     */
+    getDiagnostics() {
+        return {
+            isLoaded: this.isLoaded,
+            isLoading: this.isLoading,
+            loadError: this.loadError,
+            memoryUsage: this.getMemoryUsage()
+        };
+    }
 }
 
 // Створюємо глобальний екземпляр

@@ -4,7 +4,8 @@
   "description": "WebAssembly фотопроцесор для браузера",
   "main": "index.html",
   "scripts": {
-    "start": "npm run build && npx serve dist -s -l $PORT",
+    "start": "npm run build && node server.js",
+    "start:railway": "npm run build && node server.js",
     "dev": "npx serve . -s -l 8080",
     "serve": "npx serve . -s -l 8080",
     "build": "webpack --mode=production",
@@ -30,6 +31,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "express": "^4.21.2",
     "serve": "^14.2.1"
   },
   "devDependencies": {

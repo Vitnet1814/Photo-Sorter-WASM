@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="<%= language %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Автоматичне сортування фотографій за датою з використанням EXIF даних. Простий і потужний інструмент для організації ваших фото з підтримкою багатьох форматів файлів.">
-    <meta name="keywords" content="сортування фото, організація фотографій, EXIF дані, автоматичне сортування, фото менеджер, сортування за датою, WebAssembly">
+    <meta name="description" content="<%= metaTags.description %>">
+    <meta name="keywords" content="<%= metaTags.keywords %>">
     <meta name="author" content="Photo Sorter App">
     <meta name="robots" content="index, follow">
-    <meta name="language" content="uk">
+    <meta name="language" content="<%= language %>">
     <meta name="revisit-after" content="7 days">
+    
+    <!-- Географічні метатеги -->
+    <meta name="geo.region" content="<%= metaTags.geoRegion %>">
+    <meta name="geo.country" content="<%= metaTags.geoCountry %>">
+    <meta name="geo.placename" content="<%= metaTags.geoPlacename %>">
     
     <!-- Additional SEO Meta Tags -->
     <meta name="theme-color" content="#2563eb">
@@ -20,10 +25,16 @@
     <meta name="mobile-web-app-capable" content="yes">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://photo-sorter.app/">
+    <link rel="canonical" href="<%= canonicalUrl %>">
     
-    <title data-i18n="app.title">Photo Sorter - Сортування фотографій</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <!-- Hreflang теги для всіх мов -->
+    <% supportedLanguages.forEach(lang => { %>
+    <link rel="alternate" hreflang="<%= lang %>" href="https://photo-sorter-wasm-production.up.railway.app/<%= lang %>/">
+    <% }); %>
+    <link rel="alternate" hreflang="x-default" href="https://photo-sorter-wasm-production.up.railway.app/en/">
+    
+    <title data-i18n="app.title"><%= metaTags.title %></title>
+    <link rel="stylesheet" href="/css/styles.css">
     <style>
         /* Приховані заголовки для доступності - не впливають на візуальний вигляд */
         .sr-only {
@@ -45,28 +56,29 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://photo-sorter.app/">
-    <meta property="og:title" content="Photo Sorter - Автоматичне сортування фотографій">
-    <meta property="og:description" content="Автоматичне сортування фотографій за датою з використанням EXIF даних. Простий і потужний інструмент для організації ваших фото.">
-    <meta property="og:image" content="https://photo-sorter.app/images/og-image.jpg">
-    <meta property="og:locale" content="uk_UA">
+    <meta property="og:url" content="<%= canonicalUrl %>">
+    <meta property="og:title" content="<%= metaTags.ogTitle %>">
+    <meta property="og:description" content="<%= metaTags.ogDescription %>">
+    <meta property="og:image" content="https://photo-sorter-wasm-production.up.railway.app/images/og-image.jpg">
+    <meta property="og:locale" content="<%= metaTags.locale %>">
     <meta property="og:site_name" content="Photo Sorter">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://photo-sorter.app/">
-    <meta property="twitter:title" content="Photo Sorter - Автоматичне сортування фотографій">
-    <meta property="twitter:description" content="Автоматичне сортування фотографій за датою з використанням EXIF даних. Простий і потужний інструмент для організації ваших фото.">
-    <meta property="twitter:image" content="https://photo-sorter.app/images/twitter-image.jpg">
+    <meta property="twitter:url" content="<%= canonicalUrl %>">
+    <meta property="twitter:title" content="<%= metaTags.twitterTitle %>">
+    <meta property="twitter:description" content="<%= metaTags.twitterDescription %>">
+    <meta property="twitter:image" content="https://photo-sorter-wasm-production.up.railway.app/images/twitter-image.jpg">
 
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Photo Sorter",
-        "description": "Автоматичне сортування фотографій за датою з використанням EXIF даних",
-        "url": "https://photo-sorter.app/",
+        "name": "<%= metaTags.title %>",
+        "description": "<%= metaTags.description %>",
+        "url": "<%= canonicalUrl %>",
+        "inLanguage": "<%= language %>",
         "applicationCategory": "MultimediaApplication",
         "operatingSystem": "Web Browser",
         "offers": {
@@ -85,7 +97,7 @@
             "Обробка дублікатів",
             "Багатомовний інтерфейс"
         ],
-        "screenshot": "https://photo-sorter.app/images/screenshot.jpg"
+        "screenshot": "https://photo-sorter-wasm-production.up.railway.app/images/screenshot.jpg"
     }
     </script>
 </head>

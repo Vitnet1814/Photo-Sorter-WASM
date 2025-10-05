@@ -1,0 +1,91 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/en/"
+    },
+    {
+      "source": "/uk",
+      "destination": "/uk/"
+    },
+    {
+      "source": "/en",
+      "destination": "/en/"
+    },
+    {
+      "source": "/ru",
+      "destination": "/ru/"
+    },
+    {
+      "source": "/zh",
+      "destination": "/zh/"
+    },
+    {
+      "source": "/es",
+      "destination": "/es/"
+    },
+    {
+      "source": "/pt",
+      "destination": "/pt/"
+    },
+    {
+      "source": "/fr",
+      "destination": "/fr/"
+    },
+    {
+      "source": "/de",
+      "destination": "/de/"
+    },
+    {
+      "source": "/ar",
+      "destination": "/ar/"
+    },
+    {
+      "source": "/ja",
+      "destination": "/ja/"
+    },
+    {
+      "source": "/ko",
+      "destination": "/ko/"
+    },
+    {
+      "source": "/hi",
+      "destination": "/hi/"
+    },
+    {
+      "source": "/it",
+      "destination": "/it/"
+    },
+    {
+      "source": "/nl",
+      "destination": "/nl/"
+    },
+    {
+      "source": "/sv",
+      "destination": "/sv/"
+    },
+    {
+      "source": "/pl",
+      "destination": "/pl/"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}

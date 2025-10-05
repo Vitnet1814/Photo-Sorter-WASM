@@ -52,7 +52,7 @@ class WASMLoader {
             // Завантажуємо модуль
             // Завантажуємо скрипт
             const script = document.createElement('script');
-            script.src = 'wasm/photo-processor.js';
+            script.src = '/wasm/photo-processor.js';
             script.type = 'text/javascript';
             
             return new Promise((resolve, reject) => {

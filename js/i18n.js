@@ -58,7 +58,14 @@ class I18n {
      * Визначає мову користувача
      */
     detectLanguage() {
-        // Спочатку перевіряємо збережену мову
+        // Спочатку перевіряємо URL
+        const pathLang = this.getLanguageFromURL();
+        if (pathLang && this.supportedLanguages.includes(pathLang)) {
+            this.currentLanguage = pathLang;
+            return;
+        }
+
+        // Потім збережену мову
         const savedLanguage = localStorage.getItem('photoSorterLanguage');
         if (savedLanguage && this.supportedLanguages.includes(savedLanguage)) {
             this.currentLanguage = savedLanguage;
@@ -89,11 +96,21 @@ class I18n {
     }
 
     /**
+     * Визначає мову з URL
+     * @returns {string|null} Код мови або null
+     */
+    getLanguageFromURL() {
+        const path = window.location.pathname;
+        const match = path.match(/^\/([a-z]{2})\//);
+        return match ? match[1] : null;
+    }
+
+    /**
      * Завантажує переклади для поточної мови
      */
     async loadTranslations() {
         try {
-            const response = await fetch(`js/locales/${this.currentLanguage}.json`);
+            const response = await fetch(`/js/locales/${this.currentLanguage}.json`);
             if (response.ok) {
                 this.translations = await response.json();
             } else {
@@ -105,7 +122,7 @@ class I18n {
             // Fallback до англійської
             if (this.currentLanguage !== this.fallbackLanguage) {
                 this.currentLanguage = this.fallbackLanguage;
-                const fallbackResponse = await fetch(`js/locales/${this.fallbackLanguage}.json`);
+                const fallbackResponse = await fetch(`/js/locales/${this.fallbackLanguage}.json`);
                 if (fallbackResponse.ok) {
                     this.translations = await fallbackResponse.json();
                 }
@@ -162,6 +179,15 @@ class I18n {
 
         this.currentLanguage = language;
         localStorage.setItem('photoSorterLanguage', language);
+        
+        // Редирект на відповідний підкаталог
+        const currentPath = window.location.pathname;
+        const newPath = currentPath.replace(/^\/[a-z]{2}\//, `/${language}/`);
+        
+        if (newPath !== currentPath) {
+            window.location.href = newPath;
+            return;
+        }
         
         // Завантажуємо нові переклади
         await this.loadTranslations();
@@ -225,6 +251,14 @@ class I18n {
      */
     getCurrentLanguage() {
         return this.currentLanguage;
+    }
+
+    /**
+     * Отримує поточну мову з URL
+     * @returns {string|null} Код мови з URL або null
+     */
+    getCurrentLanguageFromURL() {
+        return this.getLanguageFromURL();
     }
 
     /**

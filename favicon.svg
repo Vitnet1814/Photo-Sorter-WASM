@@ -1,0 +1,20 @@
+<svg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'>
+  <!-- Фон папки -->
+  <rect x='4' y='6' width='24' height='20' rx='2' fill='#6366f1' stroke='#4f46e5' stroke-width='1'/>
+  
+  <!-- Верхня частина папки -->
+  <rect x='4' y='6' width='12' height='6' rx='2' fill='#5855eb'/>
+  
+  <!-- Фото всередині папки -->
+  <rect x='8' y='12' width='16' height='12' rx='1' fill='#ffffff' stroke='#6366f1' stroke-width='0.5'/>
+  
+  <!-- Об'єктив камери -->
+  <circle cx='16' cy='18' r='2.5' fill='#6366f1'/>
+  <circle cx='16' cy='18' r='1' fill='#ffffff'/>
+  
+  <!-- Вспишка -->
+  <rect x='20' y='14' width='1.5' height='1' rx='0.5' fill='#fbbf24'/>
+  
+  <!-- Тінь -->
+  <rect x='5' y='7' width='22' height='18' rx='2' fill='none' stroke='#1e293b' stroke-width='0.5' opacity='0.2'/>
+</svg>

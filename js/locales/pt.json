@@ -50,8 +50,7 @@
     "title": "Configurações",
     "language": "Idioma da interface",
     "folderFormat": "Formato de nomes de pastas",
-    "ukrainianNames": "Nomes ucranianos",
-    "englishNames": "Nomes em inglês",
+    "monthNames": "Nomes dos meses",
     "numbersOnly": "Apenas números",
     "maxFileSize": "Tamanho máximo do arquivo (MB)"
   },
@@ -98,7 +97,13 @@
   },
   "tooltips": {
     "createSubfoldersActive": "Estrutura de pastas: Ano/Mês/Dia",
-    "createSubfoldersInactive": "Estrutura de pastas: Ano/Mês"
+    "createSubfoldersInactive": "Estrutura de pastas: Ano/Mês",
+    "folderFormatNumbers": "YYYY/MM/DD → 2025/05/31",
+    "folderFormatMonthNames": "YYYY/MM/DD → 2025/05_may/31",
+    "maxFileSize": "Tamanho máximo de arquivo para processamento. Arquivos maiores serão ignorados (padrão: 100MB)",
+    "copyMode": "Cria cópias de fotos na nova estrutura de pastas. Originais permanecem no lugar",
+    "moveMode": "Move arquivos originais para nova estrutura. Economiza espaço em disco",
+    "handleDuplicates": "Detecta automaticamente e ignora fotos duplicadas por tamanho de arquivo e data de criação"
   },
   "errors": {
     "fileSystemNotSupported": "File System Access API não é suportado neste navegador",

@@ -50,8 +50,7 @@
     "title": "설정",
     "language": "인터페이스 언어",
     "folderFormat": "폴더 이름 형식",
-    "ukrainianNames": "우크라이나어 이름",
-    "englishNames": "영어 이름",
+    "monthNames": "월 이름",
     "numbersOnly": "숫자만",
     "maxFileSize": "최대 파일 크기 (MB)"
   },
@@ -98,7 +97,13 @@
   },
   "tooltips": {
     "createSubfoldersActive": "폴더 구조: 년/월/일",
-    "createSubfoldersInactive": "폴더 구조: 년/월"
+    "createSubfoldersInactive": "폴더 구조: 년/월",
+    "folderFormatNumbers": "YYYY/MM/DD → 2025/05/31",
+    "folderFormatMonthNames": "YYYY/MM/DD → 2025/05_may/31",
+    "maxFileSize": "처리할 파일의 최대 크기. 이보다 큰 파일은 건너뜁니다 (기본값: 100MB)",
+    "copyMode": "새 폴더 구조에서 사진 복사본을 생성. 원본은 원래 위치에 유지",
+    "moveMode": "원본 파일을 새 구조로 이동. 디스크 공간 절약",
+    "handleDuplicates": "파일 크기와 생성 날짜로 중복 사진을 자동 감지하여 건너뜀"
   },
   "errors": {
     "fileSystemNotSupported": "이 브라우저에서는 File System Access API가 지원되지 않습니다",

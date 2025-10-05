@@ -164,6 +164,7 @@ class PhotoSorterApp {
      * Оновлює підказки після зміни мови
      */
     updateTooltips() {
+        // Підказка для чекбокса "Створювати підпапки за днями"
         const createSubfoldersCheckbox = document.getElementById('createSubfolders');
         if (createSubfoldersCheckbox) {
             const createSubfoldersLabel = createSubfoldersCheckbox.closest('.checkbox-label');
@@ -175,6 +176,64 @@ class PhotoSorterApp {
                 const tooltip = window.i18n ? window.i18n.t(tooltipKey) : 
                     (isChecked ? "Структура папок: Рік/Місяць/День" : "Структура папок: Рік/Місяць");
                 createSubfoldersLabel.title = tooltip;
+            }
+        }
+
+        // Підказка для чекбокса "Обробляти дублікати"
+        const handleDuplicatesCheckbox = document.getElementById('handleDuplicates');
+        if (handleDuplicatesCheckbox) {
+            const handleDuplicatesLabel = handleDuplicatesCheckbox.closest('.checkbox-label');
+            if (handleDuplicatesLabel) {
+                const tooltip = window.i18n ? window.i18n.t('tooltips.handleDuplicates') : 
+                    "Автоматично виявляє та пропускає дублікати фото за розміром файлу та датою створення";
+                handleDuplicatesLabel.title = tooltip;
+            }
+        }
+
+        // Підказка для селекта формату папок
+        const folderFormatSelect = document.getElementById('folderFormatSelect');
+        if (folderFormatSelect) {
+            const folderFormatLabel = folderFormatSelect.closest('.setting-group').querySelector('label');
+            if (folderFormatLabel) {
+                const selectedValue = folderFormatSelect.value;
+                const tooltipKey = selectedValue === 'numbers' 
+                    ? 'tooltips.folderFormatNumbers' 
+                    : 'tooltips.folderFormatMonthNames';
+                const tooltip = window.i18n ? window.i18n.t(tooltipKey) : 
+                    (selectedValue === 'numbers' ? "YYYY/MM/DD → 2025/05/31" : "YYYY/MM/DD → 2025/05_may/31");
+                folderFormatLabel.title = tooltip;
+            }
+        }
+
+        // Підказка для поля "Максимальний розмір файлу"
+        const maxFileSizeInput = document.getElementById('maxFileSize');
+        if (maxFileSizeInput) {
+            const maxFileSizeLabel = maxFileSizeInput.closest('.setting-group').querySelector('label');
+            if (maxFileSizeLabel) {
+                const tooltip = window.i18n ? window.i18n.t('tooltips.maxFileSize') : 
+                    "Максимальний розмір файлу для обробки. Файли більше цього розміру будуть пропущені (за замовчуванням: 100MB)";
+                maxFileSizeLabel.title = tooltip;
+            }
+        }
+
+        // Підказки для радіо-кнопок режимів обробки
+        const copyRadio = document.querySelector('input[name="processingMode"][value="copy"]');
+        if (copyRadio) {
+            const copyLabel = copyRadio.closest('.radio-label');
+            if (copyLabel) {
+                const tooltip = window.i18n ? window.i18n.t('tooltips.copyMode') : 
+                    "Створює копії фото в новій структурі папок. Оригінали залишаються на місці";
+                copyLabel.title = tooltip;
+            }
+        }
+
+        const moveRadio = document.querySelector('input[name="processingMode"][value="move"]');
+        if (moveRadio) {
+            const moveLabel = moveRadio.closest('.radio-label');
+            if (moveLabel) {
+                const tooltip = window.i18n ? window.i18n.t('tooltips.moveMode') : 
+                    "Переносить оригінальні файли в нову структуру. Економить місце на диску";
+                moveLabel.title = tooltip;
             }
         }
     }
@@ -287,6 +346,9 @@ class PhotoSorterApp {
             // Завантажуємо налаштування
             this.loadSettings();
             
+            // Оновлюємо підказки після повної ініціалізації
+            this.updateTooltips();
+            
             // Приховуємо loading overlay
             this.hideLoadingOverlay();
             
@@ -392,6 +454,34 @@ class PhotoSorterApp {
         if (handleDuplicatesCheckbox) {
             handleDuplicatesCheckbox.addEventListener('change', (e) => {
                 this.currentSettings.handleDuplicates = e.target.checked;
+            });
+        }
+        
+        // Обробник зміни формату папок
+        const folderFormatSelect = document.getElementById('folderFormatSelect');
+        if (folderFormatSelect) {
+            // Знаходимо label елемент
+            const folderFormatLabel = folderFormatSelect.closest('.setting-group').querySelector('label');
+            
+            // Функція для оновлення підказки
+            const updateFolderFormatTooltip = () => {
+                const selectedValue = folderFormatSelect.value;
+                const tooltipKey = selectedValue === 'numbers' 
+                    ? 'tooltips.folderFormatNumbers' 
+                    : 'tooltips.folderFormatMonthNames';
+                const tooltip = window.i18n ? window.i18n.t(tooltipKey) : 
+                    (selectedValue === 'numbers' ? "YYYY/MM/DD → 2025/05/31" : "YYYY/MM/DD → 2025/05_may/31");
+                if (folderFormatLabel) {
+                    folderFormatLabel.title = tooltip;
+                }
+            };
+            
+            // Встановлюємо початкову підказку
+            updateFolderFormatTooltip();
+            
+            folderFormatSelect.addEventListener('change', (e) => {
+                this.currentSettings.folderFormat = e.target.value;
+                updateFolderFormatTooltip();
             });
         }
         
@@ -777,6 +867,10 @@ class PhotoSorterApp {
      */
     showSettingsModal() {
         document.getElementById('settingsModal').classList.add('active');
+        // Оновлюємо підказки при відкритті модального вікна з невеликою затримкою
+        setTimeout(() => {
+            this.updateTooltips();
+        }, 100);
     }
 
     /**

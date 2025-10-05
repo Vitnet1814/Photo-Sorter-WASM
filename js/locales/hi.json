@@ -50,8 +50,7 @@
     "title": "सेटिंग्स",
     "language": "इंटरफेस भाषा",
     "folderFormat": "फोल्डर नाम प्रारूप",
-    "ukrainianNames": "यूक्रेनी नाम",
-    "englishNames": "अंग्रेजी नाम",
+    "monthNames": "महीने के नाम",
     "numbersOnly": "केवल संख्याएं",
     "maxFileSize": "अधिकतम फ़ाइल आकार (MB)"
   },
@@ -98,7 +97,13 @@
   },
   "tooltips": {
     "createSubfoldersActive": "फोल्डर संरचना: वर्ष/माह/दिन",
-    "createSubfoldersInactive": "फोल्डर संरचना: वर्ष/माह"
+    "createSubfoldersInactive": "फोल्डर संरचना: वर्ष/माह",
+    "folderFormatNumbers": "YYYY/MM/DD → 2025/05/31",
+    "folderFormatMonthNames": "YYYY/MM/DD → 2025/05_may/31",
+    "maxFileSize": "प्रसंस्करण के लिए अधिकतम फ़ाइल आकार। इससे बड़ी फ़ाइलें छोड़ी जाएंगी (डिफ़ॉल्ट: 100MB)",
+    "copyMode": "नई फोल्डर संरचना में तस्वीरों की प्रतियां बनाता है। मूल फ़ाइलें अपनी जगह पर रहती हैं",
+    "moveMode": "मूल फ़ाइलों को नई संरचना में ले जाता है। डिस्क स्थान बचाता है",
+    "handleDuplicates": "फ़ाइल आकार और निर्माण तिथि के आधार पर डुप्लिकेट तस्वीरों का स्वचालित रूप से पता लगाता है और छोड़ता है"
   },
   "errors": {
     "fileSystemNotSupported": "इस ब्राउज़र में File System Access API समर्थित नहीं है",

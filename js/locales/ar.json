@@ -50,8 +50,7 @@
     "title": "الإعدادات",
     "language": "لغة الواجهة",
     "folderFormat": "تنسيق أسماء المجلدات",
-    "ukrainianNames": "أسماء أوكرانية",
-    "englishNames": "أسماء إنجليزية",
+    "monthNames": "أسماء الشهور",
     "numbersOnly": "أرقام فقط",
     "maxFileSize": "الحد الأقصى لحجم الملف (MB)"
   },
@@ -98,7 +97,13 @@
   },
   "tooltips": {
     "createSubfoldersActive": "هيكل المجلدات: السنة/الشهر/اليوم",
-    "createSubfoldersInactive": "هيكل المجلدات: السنة/الشهر"
+    "createSubfoldersInactive": "هيكل المجلدات: السنة/الشهر",
+    "folderFormatNumbers": "YYYY/MM/DD → 2025/05/31",
+    "folderFormatMonthNames": "YYYY/MM/DD → 2025/05_may/31",
+    "maxFileSize": "الحد الأقصى لحجم الملف للمعالجة. سيتم تخطي الملفات الأكبر (افتراضي: 100MB)",
+    "copyMode": "ينشئ نسخ من الصور في هيكل مجلدات جديد. تبقى النسخ الأصلية في مكانها",
+    "moveMode": "ينقل الملفات الأصلية إلى هيكل جديد. يوفر مساحة القرص",
+    "handleDuplicates": "يكتشف تلقائياً ويتخطى الصور المكررة حسب حجم الملف وتاريخ الإنشاء"
   },
   "errors": {
     "fileSystemNotSupported": "File System Access API غير مدعوم في هذا المتصفح",

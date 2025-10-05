@@ -97,7 +97,13 @@
   },
   "tooltips": {
     "createSubfoldersActive": "Ordnerstruktur: Jahr/Monat/Tag",
-    "createSubfoldersInactive": "Ordnerstruktur: Jahr/Monat"
+    "createSubfoldersInactive": "Ordnerstruktur: Jahr/Monat",
+    "folderFormatNumbers": "YYYY/MM/DD → 2025/05/31",
+    "folderFormatMonthNames": "YYYY/MM/DD → 2025/05_may/31",
+    "maxFileSize": "Maximale Dateigröße für Verarbeitung. Größere Dateien werden übersprungen (Standard: 100MB)",
+    "copyMode": "Erstellt Kopien von Fotos in neuer Ordnerstruktur. Originale bleiben an Ort und Stelle",
+    "moveMode": "Verschiebt Originaldateien in neue Struktur. Spart Speicherplatz",
+    "handleDuplicates": "Erkennt automatisch und überspringt doppelte Fotos nach Dateigröße und Erstellungsdatum"
   },
   "errors": {
     "fileSystemNotSupported": "File System Access API wird in diesem Browser nicht unterstützt",

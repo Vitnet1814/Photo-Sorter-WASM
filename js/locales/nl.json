@@ -50,8 +50,7 @@
     "title": "Instellingen",
     "language": "Interface taal",
     "folderFormat": "Mapnaam formaat",
-    "ukrainianNames": "Oekraïense namen",
-    "englishNames": "Engelse namen",
+    "monthNames": "Maandnamen",
     "numbersOnly": "Alleen nummers",
     "maxFileSize": "Maximale bestandsgrootte (MB)"
   },
@@ -98,7 +97,13 @@
   },
   "tooltips": {
     "createSubfoldersActive": "Mapstructuur: Jaar/Maand/Dag",
-    "createSubfoldersInactive": "Mapstructuur: Jaar/Maand"
+    "createSubfoldersInactive": "Mapstructuur: Jaar/Maand",
+    "folderFormatNumbers": "YYYY/MM/DD → 2025/05/31",
+    "folderFormatMonthNames": "YYYY/MM/DD → 2025/05_may/31",
+    "maxFileSize": "Maximale bestandsgrootte voor verwerking. Grotere bestanden worden overgeslagen (standaard: 100MB)",
+    "copyMode": "Maakt kopieën van foto's in nieuwe mapstructuur. Originelen blijven op hun plaats",
+    "moveMode": "Verplaatst originele bestanden naar nieuwe structuur. Bespaart schijfruimte",
+    "handleDuplicates": "Detecteert automatisch en slaat dubbele foto's over op basis van bestandsgrootte en aanmaakdatum"
   },
   "errors": {
     "fileSystemNotSupported": "File System Access API wordt niet ondersteund in deze browser",

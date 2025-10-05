@@ -97,7 +97,13 @@
   },
   "tooltips": {
     "createSubfoldersActive": "Структура папок: Год/Месяц/День",
-    "createSubfoldersInactive": "Структура папок: Год/Месяц"
+    "createSubfoldersInactive": "Структура папок: Год/Месяц",
+    "folderFormatNumbers": "YYYY/MM/DD → 2025/05/31",
+    "folderFormatMonthNames": "YYYY/MM/DD → 2025/05_may/31",
+    "maxFileSize": "Максимальный размер файла для обработки. Файлы больше этого размера будут пропущены (по умолчанию: 100MB)",
+    "copyMode": "Создает копии фото в новой структуре папок. Оригиналы остаются на месте",
+    "moveMode": "Переносит оригинальные файлы в новую структуру. Экономит место на диске",
+    "handleDuplicates": "Автоматически обнаруживает и пропускает дубликаты фото по размеру файла и дате создания"
   },
   "errors": {
     "fileSystemNotSupported": "File System Access API не поддерживается в этом браузере",

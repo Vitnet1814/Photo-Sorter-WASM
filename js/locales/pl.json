@@ -50,8 +50,7 @@
     "title": "Ustawienia",
     "language": "Język interfejsu",
     "folderFormat": "Format nazw folderów",
-    "ukrainianNames": "Nazwy ukraińskie",
-    "englishNames": "Nazwy angielskie",
+    "monthNames": "Nazwy miesięcy",
     "numbersOnly": "Tylko cyfry",
     "maxFileSize": "Maksymalny rozmiar pliku (MB)"
   },
@@ -98,7 +97,13 @@
   },
   "tooltips": {
     "createSubfoldersActive": "Struktura folderów: Rok/Miesiąc/Dzień",
-    "createSubfoldersInactive": "Struktura folderów: Rok/Miesiąc"
+    "createSubfoldersInactive": "Struktura folderów: Rok/Miesiąc",
+    "folderFormatNumbers": "YYYY/MM/DD → 2025/05/31",
+    "folderFormatMonthNames": "YYYY/MM/DD → 2025/05_may/31",
+    "maxFileSize": "Maksymalny rozmiar pliku do przetwarzania. Większe pliki zostaną pominięte (domyślnie: 100MB)",
+    "copyMode": "Tworzy kopie zdjęć w nowej strukturze folderów. Oryginały pozostają na miejscu",
+    "moveMode": "Przenosi oryginalne pliki do nowej struktury. Oszczędza miejsce na dysku",
+    "handleDuplicates": "Automatycznie wykrywa i pomija zduplikowane zdjęcia na podstawie rozmiaru pliku i daty utworzenia"
   },
   "errors": {
     "fileSystemNotSupported": "File System Access API nie jest obsługiwane w tej przeglądarce",

@@ -97,7 +97,13 @@
   },
   "tooltips": {
     "createSubfoldersActive": "Structure des dossiers : Année/Mois/Jour",
-    "createSubfoldersInactive": "Structure des dossiers : Année/Mois"
+    "createSubfoldersInactive": "Structure des dossiers : Année/Mois",
+    "folderFormatNumbers": "YYYY/MM/DD → 2025/05/31",
+    "folderFormatMonthNames": "YYYY/MM/DD → 2025/05_may/31",
+    "maxFileSize": "Taille maximale de fichier pour traitement. Les fichiers plus grands seront ignorés (par défaut : 100MB)",
+    "copyMode": "Crée des copies de photos dans nouvelle structure de dossiers. Les originaux restent en place",
+    "moveMode": "Déplace les fichiers originaux vers nouvelle structure. Économise l'espace disque",
+    "handleDuplicates": "Détecte automatiquement et ignore les photos dupliquées par taille de fichier et date de création"
   },
   "errors": {
     "fileSystemNotSupported": "File System Access API n'est pas pris en charge dans ce navigateur",

@@ -50,8 +50,7 @@
     "title": "Inställningar",
     "language": "Gränssnittsspråk",
     "folderFormat": "Mappnamnformat",
-    "ukrainianNames": "Ukrainska namn",
-    "englishNames": "Engelska namn",
+    "monthNames": "Månadsnamn",
     "numbersOnly": "Endast siffror",
     "maxFileSize": "Maximal filstorlek (MB)"
   },
@@ -98,7 +97,13 @@
   },
   "tooltips": {
     "createSubfoldersActive": "Mappstruktur: År/Månad/Dag",
-    "createSubfoldersInactive": "Mappstruktur: År/Månad"
+    "createSubfoldersInactive": "Mappstruktur: År/Månad",
+    "folderFormatNumbers": "YYYY/MM/DD → 2025/05/31",
+    "folderFormatMonthNames": "YYYY/MM/DD → 2025/05_may/31",
+    "maxFileSize": "Maximal filstorlek för bearbetning. Större filer kommer att hoppas över (standard: 100MB)",
+    "copyMode": "Skapar kopior av foton i ny mappstruktur. Originalen stannar kvar på plats",
+    "moveMode": "Flyttar originalfiler till ny struktur. Sparar diskutrymme",
+    "handleDuplicates": "Upptäcker automatiskt och hoppar över duplicerade foton baserat på filstorlek och skapelsedatum"
   },
   "errors": {
     "fileSystemNotSupported": "File System Access API stöds inte i denna webbläsare",

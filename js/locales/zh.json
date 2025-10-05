@@ -97,7 +97,13 @@
   },
   "tooltips": {
     "createSubfoldersActive": "文件夹结构：年/月/日",
-    "createSubfoldersInactive": "文件夹结构：年/月"
+    "createSubfoldersInactive": "文件夹结构：年/月",
+    "folderFormatNumbers": "YYYY/MM/DD → 2025/05/31",
+    "folderFormatMonthNames": "YYYY/MM/DD → 2025/05_may/31",
+    "maxFileSize": "处理文件的最大大小。超过此大小的文件将被跳过（默认：100MB）",
+    "copyMode": "在新文件夹结构中创建照片副本。原件保留在原位",
+    "moveMode": "将原始文件移动到新结构。节省磁盘空间",
+    "handleDuplicates": "自动检测并跳过重复照片（根据文件大小和创建日期）"
   },
   "errors": {
     "fileSystemNotSupported": "此浏览器不支持File System Access API",

@@ -40,6 +40,18 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="favicon.svg">
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Photo Sorter">
+    <meta name="application-name" content="Photo Sorter">
+    <meta name="msapplication-TileColor" content="#2563eb">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
     <link rel="stylesheet" href="/css/styles.css">
     <style>
         /* Приховані заголовки для доступності - не впливають на візуальний вигляд */
@@ -388,5 +400,8 @@
     </div>
 
     <!-- Scripts will be injected by webpack -->
+    <script src="/js/sw-manager.js"></script>
+    <script src="/js/sw-diagnostics.js"></script>
+    <script src="/js/sw-cleanup.js"></script>
 </body>
 </html>

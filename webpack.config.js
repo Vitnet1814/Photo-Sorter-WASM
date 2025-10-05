@@ -325,6 +325,31 @@ module.exports = (env, argv) => {
                     {
                         from: 'favicon.svg',
                         to: 'favicon.svg'
+                    },
+                    // Service Worker файли
+                    {
+                        from: 'sw.js',
+                        to: 'sw.js'
+                    },
+                    {
+                        from: 'js/sw-manager.js',
+                        to: 'js/sw-manager.js'
+                    },
+                    {
+                        from: 'js/sw-diagnostics.js',
+                        to: 'js/sw-diagnostics.js'
+                    },
+                    {
+                        from: 'js/sw-cleanup.js',
+                        to: 'js/sw-cleanup.js'
+                    },
+                    {
+                        from: 'manifest.json',
+                        to: 'manifest.json'
+                    },
+                    {
+                        from: 'browserconfig.xml',
+                        to: 'browserconfig.xml'
                     }
                 ]
             }),
@@ -339,6 +364,31 @@ module.exports = (env, argv) => {
                     {
                         from: 'favicon.svg',
                         to: `${lang}/favicon.svg`
+                    },
+                    // Service Worker файли для кожної мови
+                    {
+                        from: 'sw.js',
+                        to: `${lang}/sw.js`
+                    },
+                    {
+                        from: 'js/sw-manager.js',
+                        to: `${lang}/js/sw-manager.js`
+                    },
+                    {
+                        from: 'js/sw-diagnostics.js',
+                        to: `${lang}/js/sw-diagnostics.js`
+                    },
+                    {
+                        from: 'js/sw-cleanup.js',
+                        to: `${lang}/js/sw-cleanup.js`
+                    },
+                    {
+                        from: 'manifest.json',
+                        to: `${lang}/manifest.json`
+                    },
+                    {
+                        from: 'browserconfig.xml',
+                        to: `${lang}/browserconfig.xml`
                     }
                 ]).flat()
             })

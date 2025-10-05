@@ -7,6 +7,7 @@ class PhotoSorterApp {
     constructor() {
         this.wasmLoader = window.wasmLoader;
         this.fileHandler = window.fileHandler;
+        this.swManager = null;
         this.isInitialized = false;
         this.currentSettings = {
             language: 'uk',
@@ -339,6 +340,9 @@ class PhotoSorterApp {
             // Показуємо loading overlay
             this.showLoadingOverlay();
             
+            // Ініціалізуємо Service Worker
+            await this.initializeServiceWorker();
+            
             // Ініціалізуємо локалізацію
             await window.i18n.init();
             
@@ -515,6 +519,57 @@ class PhotoSorterApp {
         const loadingOverlay = document.getElementById('loadingOverlay');
         if (loadingOverlay) {
             loadingOverlay.style.display = 'flex';
+        }
+    }
+
+    /**
+     * Ініціалізує Service Worker
+     */
+    async initializeServiceWorker() {
+        try {
+            // Перевіряємо підтримку Service Worker
+            if (!('serviceWorker' in navigator)) {
+                console.log('[App] Service Worker не підтримується');
+                return;
+            }
+
+            // Перевіряємо чи доступний ServiceWorkerManager
+            if (typeof ServiceWorkerManager === 'undefined') {
+                console.log('[App] ServiceWorkerManager не завантажений');
+                return;
+            }
+
+            // Ініціалізуємо менеджер Service Worker
+            this.swManager = new ServiceWorkerManager();
+            
+            // Реєструємо Service Worker
+            const registered = await this.swManager.register();
+            
+            if (registered) {
+                console.log('[App] Service Worker успішно ініціалізований');
+                
+                // Отримуємо статистику кешу
+                const cacheStats = await this.swManager.getCacheStats();
+                console.log('[App] Статистика кешу:', cacheStats);
+                
+                // Додаємо інформацію про кеш в інтерфейс
+                this.updateCacheInfo(cacheStats);
+            } else {
+                console.log('[App] Не вдалося ініціалізувати Service Worker');
+            }
+        } catch (error) {
+            console.error('[App] Помилка ініціалізації Service Worker:', error);
+            // Не блокуємо роботу додатку при помилці SW
+        }
+    }
+
+    /**
+     * Оновлює інформацію про кеш в інтерфейсі
+     */
+    updateCacheInfo(cacheStats) {
+        // Логуємо інформацію про кеш в консоль для розробників
+        if (cacheStats.status === 'available') {
+            console.log(`[App] Розмір кешу: ${cacheStats.sizeFormatted}`);
         }
     }
 

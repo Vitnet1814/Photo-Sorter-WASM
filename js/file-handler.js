@@ -307,6 +307,78 @@ class FileHandler {
     }
 
     /**
+     * Форматує тільки ту дату, по якій файл був відсортований
+     * @param {Object} exifData - EXIF дані
+     * @param {File} file - Файл
+     * @returns {string} Відформатована дата сортування
+     */
+    formatSortingDateInfo(exifData, file) {
+        const dateInfo = [];
+        
+        // Знаходимо найранішу дату (як в getFileMetadata)
+        const dates = [];
+        
+        // Дата зйомки (DateTimeOriginal)
+        if (exifData.dateTaken) {
+            const dateTaken = new Date(exifData.dateTaken);
+            if (!isNaN(dateTaken.getTime())) {
+                dates.push(dateTaken);
+            }
+        }
+        
+        // DateTime
+        if (exifData.dateTime) {
+            const dateTime = new Date(exifData.dateTime);
+            if (!isNaN(dateTime.getTime())) {
+                dates.push(dateTime);
+            }
+        }
+        
+        // DateTimeDigitized
+        if (exifData.dateDigitized) {
+            const dateDigitized = new Date(exifData.dateDigitized);
+            if (!isNaN(dateDigitized.getTime())) {
+                dates.push(dateDigitized);
+            }
+        }
+        
+        // GPS дати
+        if (exifData.gpsDateStamp && exifData.gpsTimeStamp) {
+            const gpsDate = new Date(`${exifData.gpsDateStamp}T${exifData.gpsTimeStamp}`);
+            if (!isNaN(gpsDate.getTime())) {
+                dates.push(gpsDate);
+            }
+        }
+        
+        // Дата модифікації файлу (як fallback)
+        const fileDate = new Date(file.lastModified);
+        dates.push(fileDate);
+        
+        // Знаходимо найранішу дату
+        const earliestDate = dates.reduce((earliest, current) => {
+            return current < earliest ? current : earliest;
+        });
+        
+        // Форматуємо дату
+        const formattedDate = earliestDate.toISOString().replace('T', ' ').substring(0, 19);
+        
+        // Визначаємо тип дати
+        let dateType = 'Дата модифікації файлу';
+        if (exifData.dateTaken && new Date(exifData.dateTaken).getTime() === earliestDate.getTime()) {
+            dateType = 'Дата зйомки';
+        } else if (exifData.dateTime && new Date(exifData.dateTime).getTime() === earliestDate.getTime()) {
+            dateType = 'DateTime';
+        } else if (exifData.dateDigitized && new Date(exifData.dateDigitized).getTime() === earliestDate.getTime()) {
+            dateType = 'DateTimeDigitized';
+        } else if (exifData.gpsDateStamp && exifData.gpsTimeStamp && 
+                   new Date(`${exifData.gpsDateStamp}T${exifData.gpsTimeStamp}`).getTime() === earliestDate.getTime()) {
+            dateType = 'GPS дата';
+        }
+        
+        return `${dateType} - ${formattedDate}`;
+    }
+
+    /**
      * Читає EXIF дані з файлу
      * @param {File} file - Файл
      * @returns {Promise<Object>} EXIF дані
@@ -428,7 +500,7 @@ class FileHandler {
                 filename: file.name,
                 size: file.size,
                 exifData: exifData,
-                dateInfo: this.formatDateInfo(exifData, file)
+                dateInfo: this.formatSortingDateInfo(exifData, file)
             };
         } catch (error) {
             this.errors++;
@@ -448,6 +520,8 @@ class FileHandler {
      * @returns {Promise<Object>} Результат обробки
      */
     async processAllFiles(options = {}, progressCallback = null) {
+        console.log('[DEBUG] processAllFiles викликано з:', { options, hasCallback: !!progressCallback });
+        
         if (this.inputFolderHandles.length === 0) {
             throw new Error('Вхідні папки не вибрані');
         }
@@ -466,13 +540,17 @@ class FileHandler {
             const handleDuplicates = options.handleDuplicates !== undefined ? options.handleDuplicates : true;
             const allFiles = [];
 
+            console.log('[DEBUG] Збираємо файли з вхідних папок...');
             // Збираємо файли з усіх вхідних папок
             for (const folderData of this.inputFolderHandles) {
+                console.log('[DEBUG] Обробляємо папку:', folderData.name);
                 const files = await this.getImageFiles(folderData.handle, null, processedFiles, handleDuplicates);
                 allFiles.push(...files);
+                console.log('[DEBUG] Знайдено файлів у папці:', files.length);
             }
 
             this.totalFiles = allFiles.length;
+            console.log('[DEBUG] Загальна кількість файлів:', this.totalFiles);
 
             if (allFiles.length === 0) {
                 throw new Error('В папках не знайдено зображень');
@@ -481,9 +559,11 @@ class FileHandler {
             // Перевіряємо чи є дублікати
             const hasSameOutputFolder = this.inputFolderHandles.some(folderData => folderData.handle === this.outputFolderHandle);
             
+            console.log('[DEBUG] Починаємо обробку файлів...');
             // Обробляємо файли по одному
             for (let i = 0; i < allFiles.length; i++) {
                 if (!this.isProcessing) {
+                    console.log('[DEBUG] Обробка скасована користувачем');
                     break; // Скасовано користувачем
                 }
 
@@ -492,15 +572,18 @@ class FileHandler {
                 const fileHandle = fileObj.handle;
                 const parentHandle = fileObj.parentHandle;
                 
+                console.log(`[DEBUG] Обробляємо файл ${i + 1}/${allFiles.length}:`, file.name);
+                
                 // Обробляємо файл через WASM
                 const result = await this.processFile(file, options);
+                console.log('[DEBUG] Результат обробки файлу:', result);
 
                 // Копіюємо або переміщуємо файл
                 await this.copyOrMoveFile(file, options.processingMode || 'copy', fileHandle, parentHandle, options, result.exifData);
 
                 // Викликаємо callback прогресу
                 if (progressCallback) {
-                    progressCallback({
+                    const progressData = {
                         current: i + 1,
                         total: allFiles.length,
                         processed: this.processedFiles,
@@ -508,24 +591,33 @@ class FileHandler {
                         skipped: this.skipped,
                         currentFile: file.name,
                         result: result
-                    });
+                    };
+                    console.log('[DEBUG] Викликаємо callback прогресу з даними:', progressData);
+                    progressCallback(progressData);
+                } else {
+                    console.log('[DEBUG] Callback прогресу не передано');
                 }
 
                 // Невелика затримка для UI
                 await new Promise(resolve => setTimeout(resolve, 10));
             }
 
-            return {
+            const finalResult = {
                 success: true,
                 total: allFiles.length,
                 processed: this.processedFiles,
                 errors: this.errors,
                 skipped: this.skipped
             };
+            
+            console.log('[DEBUG] Обробка завершена з результатом:', finalResult);
+            return finalResult;
         } catch (error) {
+            console.error('[DEBUG] Помилка в processAllFiles:', error);
             throw error;
         } finally {
             this.isProcessing = false;
+            console.log('[DEBUG] processAllFiles завершено, isProcessing = false');
         }
     }
 
@@ -1216,6 +1308,7 @@ class FileHandler {
      * Скасовує обробку
      */
     cancelProcessing() {
+        console.log('[DEBUG] FileHandler: скасування обробки');
         this.isProcessing = false;
     }
 

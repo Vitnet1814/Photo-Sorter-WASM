@@ -830,37 +830,55 @@ class PhotoSorterApp {
      * Починає обробку файлів
      */
     async startProcessing() {
+        console.log('[DEBUG] startProcessing викликано');
+        
         if (this.isProcessing) {
+            console.log('[DEBUG] Обробка вже запущена, виходимо');
             return;
         }
 
         try {
+            console.log('[DEBUG] Починаємо обробку файлів');
             this.isProcessing = true;
             this.updateStartButton();
             
             // Показуємо секцію прогресу
-            document.getElementById('progressSection').style.display = 'block';
+            const progressSection = document.getElementById('progressSection');
+            if (progressSection) {
+                progressSection.style.display = 'block';
+                console.log('[DEBUG] Секція прогресу показана');
+            } else {
+                console.error('[DEBUG] Елемент progressSection не знайдено!');
+            }
             
             // Очищаємо попередні дані
             this.fileHandler.clear();
             this.clearProgressLog();
+            console.log('[DEBUG] Попередні дані очищено');
             
             // Починаємо обробку
+            console.log('[DEBUG] Викликаємо fileHandler.processAllFiles');
             const result = await this.fileHandler.processAllFiles(
                 this.currentSettings,
-                (progress) => this.updateProgress(progress)
+                (progress) => {
+                    console.log('[DEBUG] Callback прогресу викликано:', progress);
+                    this.updateProgress(progress);
+                }
             );
             
+            console.log('[DEBUG] Обробка завершена:', result);
             this.showSuccess(window.i18n.t('messages.processingComplete', { 
                 processed: result.processed, 
                 errors: result.errors 
             }));
             
         } catch (error) {
+            console.error('[DEBUG] Помилка під час обробки:', error);
             this.showError(window.i18n.t('errors.processingError', { error: error.message }));
         } finally {
             this.isProcessing = false;
             this.updateStartButton();
+            console.log('[DEBUG] Обробка завершена, isProcessing = false');
         }
     }
 
@@ -868,10 +886,28 @@ class PhotoSorterApp {
      * Скасовує обробку
      */
     cancelProcessing() {
+        console.log('[DEBUG] Скасування обробки...');
+        
+        // Скасовуємо обробку в fileHandler
         this.fileHandler.cancelProcessing();
+        
+        // Оновлюємо стан додатку
         this.isProcessing = false;
         this.updateStartButton();
+        
+        // Приховуємо секцію прогресу
+        const progressSection = document.getElementById('progressSection');
+        if (progressSection) {
+            progressSection.style.display = 'none';
+        }
+        
+        // Додаємо запис в лог про скасування
+        this.addLogEntry('error', 'Обробка скасована користувачем');
+        
+        // Показуємо повідомлення
         this.showSuccess(window.i18n.t('messages.processingCancelled'));
+        
+        console.log('[DEBUG] Обробка скасована');
     }
 
     /**
@@ -879,31 +915,53 @@ class PhotoSorterApp {
      * @param {Object} progress - Дані прогресу
      */
     updateProgress(progress) {
+        console.log('[DEBUG] updateProgress викликано з:', progress);
+        
         // Оновлюємо прогрес-бар
         const progressFill = document.getElementById('progressFill');
-        const percentage = Math.round((progress.current / progress.total) * 100);
-        progressFill.style.width = percentage + '%';
+        if (progressFill && progress.current && progress.total) {
+            const percentage = Math.round((progress.current / progress.total) * 100);
+            progressFill.style.width = percentage + '%';
+            console.log('[DEBUG] Прогрес-бар оновлено:', percentage + '%');
+        }
         
         // Оновлюємо статистику
-        document.getElementById('processedCount').textContent = progress.processed;
-        document.getElementById('errorCount').textContent = progress.errors;
-        document.getElementById('skippedCount').textContent = progress.skipped;
+        const processedCountEl = document.getElementById('processedCount');
+        const errorCountEl = document.getElementById('errorCount');
+        const skippedCountEl = document.getElementById('skippedCount');
+        
+        if (processedCountEl) processedCountEl.textContent = progress.processed || 0;
+        if (errorCountEl) errorCountEl.textContent = progress.errors || 0;
+        if (skippedCountEl) skippedCountEl.textContent = progress.skipped || 0;
+        
+        console.log('[DEBUG] Статистика оновлена:', {
+            processed: progress.processed,
+            errors: progress.errors,
+            skipped: progress.skipped
+        });
         
         // Додаємо детальний запис в лог з розміром файлу та датними параметрами
-        let logMessage = `${progress.currentFile}`;
-        if (progress.result.success && progress.result.size) {
-            logMessage += ` (${this.formatFileSize(progress.result.size)})`;
+        if (progress.currentFile && progress.result) {
+            let logMessage = `${progress.currentFile}`;
+            if (progress.result.success && progress.result.size) {
+                logMessage += ` (${this.formatFileSize(progress.result.size)})`;
+            }
+            
+            // Додаємо датну інформацію якщо є
+            if (progress.result.success && progress.result.dateInfo) {
+                logMessage += ` - ${progress.result.dateInfo}`;
+            }
+            
+            logMessage += `: ${progress.result.success ? 'успішно' : progress.result.error}`;
+            
+            this.addLogEntry(progress.result.success ? 'success' : 'error', logMessage);
+            console.log('[DEBUG] Додано запис в лог:', logMessage);
+        } else {
+            console.log('[DEBUG] Немає даних для логування:', {
+                currentFile: progress.currentFile,
+                result: progress.result
+            });
         }
-        
-        // Додаємо датну інформацію якщо є
-        if (progress.result.success && progress.result.dateInfo) {
-            logMessage += ` - ${progress.result.dateInfo}`;
-        }
-        
-        logMessage += `: ${progress.result.success ? 'успішно' : progress.result.error}`;
-        
-        this.addLogEntry(progress.result.success ? 'success' : 'error', logMessage);
-        
     }
 
     /**
@@ -912,13 +970,22 @@ class PhotoSorterApp {
      * @param {string} message - Повідомлення
      */
     addLogEntry(type, message) {
+        console.log('[DEBUG] addLogEntry викликано:', { type, message });
+        
         const logContent = document.getElementById('logContent');
+        if (!logContent) {
+            console.error('[DEBUG] Елемент logContent не знайдено!');
+            return;
+        }
+        
         const entry = document.createElement('div');
         entry.className = `log-entry ${type}`;
         entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
         
         logContent.appendChild(entry);
         logContent.scrollTop = logContent.scrollHeight;
+        
+        console.log('[DEBUG] Запис додано в лог, загальна кількість записів:', logContent.children.length);
     }
 
     /**
@@ -1068,11 +1135,11 @@ class PhotoSorterApp {
     }
 
     /**
-     * Оновлює прогрес обробки
+     * Оновлює прогрес обробки (legacy метод)
      * @param {number} current - Поточний прогрес
      * @param {number} total - Загальна кількість
      */
-    updateProgress(current, total) {
+    updateProgressLegacy(current, total) {
         this.currentProgress = current;
         this.totalItems = total;
     }

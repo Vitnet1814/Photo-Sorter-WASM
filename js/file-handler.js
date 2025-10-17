@@ -121,7 +121,29 @@ class FileHandler {
     }
 
     /**
-     * Отримує інформацію про папку
+     * Отримує інформацію про вихідну папку (спрощена версія)
+     * @param {FileSystemDirectoryHandle} folderHandle - Handle папки
+     * @returns {Promise<Object>} Інформація про папку
+     */
+    async getOutputFolderInfo(folderHandle) {
+        try {
+            // Для вихідної папки ми просто показуємо назву папки
+            // Реальну інформацію про диск браузер не може отримати з міркувань безпеки
+            return {
+                name: folderHandle.name,
+                message: 'Папка готова для сортування'
+            };
+        } catch (error) {
+            console.warn('Не вдалося отримати інформацію про папку:', error);
+            return {
+                name: folderHandle.name,
+                message: 'Папка готова для сортування'
+            };
+        }
+    }
+
+    /**
+     * Отримує інформацію про папку (для вхідних папок)
      * @param {FileSystemDirectoryHandle} folderHandle - Handle папки
      * @returns {Promise<Object>} Інформація про папку
      */

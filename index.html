@@ -203,6 +203,22 @@
                             <div class="folder-path" id="outputFolderPath"></div>
                             <div class="folder-stats" id="outputFolderStats"></div>
                         </div>
+                        
+                        <!-- Disk Space Confirmation Radio -->
+                        <div class="disk-space-checkbox" id="diskSpaceCheckbox" style="display: none;">
+                            <div class="radio-group">
+                                <label class="radio-label" id="diskSpaceLabel">
+                                    <input type="radio" name="confirmDiskSpace" id="confirmDiskSpace">
+                                    <span class="radio-custom" aria-hidden="true"></span>
+                                    <div class="radio-content">
+                                        <div class="radio-text-container">
+                                            <strong data-i18n="messages.diskSpaceCheckbox">Я підтверджую наявність достатнього вільного місця на диску</strong>
+                                            <span class="info-icon" id="diskSpaceInfoIcon">ⓘ</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

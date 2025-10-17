@@ -238,12 +238,20 @@ class PhotoSorterApp {
 
         const moveRadio = document.querySelector('input[name="processingMode"][value="move"]');
         if (moveRadio) {
-            const moveLabel = moveRadio.closest('.radio-label');
-            if (moveLabel) {
-                const tooltip = window.i18n ? window.i18n.t('tooltips.moveMode') : 
-                    "Переносить оригінальні файли в нову структуру. Економить місце на диску";
-                moveLabel.title = tooltip;
-            }
+        const moveLabel = moveRadio.closest('.radio-label');
+        if (moveLabel) {
+            const tooltip = window.i18n ? window.i18n.t('tooltips.moveMode') : 
+                "Переносить оригінальні файли в нову структуру. Економить місце на диску";
+            moveLabel.title = tooltip;
+        }
+
+        // Встановлюємо підказку для іконки інформації
+        const diskSpaceInfoIcon = document.getElementById('diskSpaceInfoIcon');
+        if (diskSpaceInfoIcon) {
+            const tooltip = window.i18n ? window.i18n.t('messages.diskSpaceTooltip') : 
+                "Браузер з міркувань безпеки не дозволяє програмно перевіряти вільне місце на диску. Будь ласка, переконайтеся, що на цільовому диску є достатньо місця для обробки всіх файлів.";
+            diskSpaceInfoIcon.title = tooltip;
+        }
         }
     }
 
@@ -345,6 +353,9 @@ class PhotoSorterApp {
             
             // Ініціалізуємо локалізацію
             await window.i18n.init();
+            console.log('Локалізація ініціалізована:', window.i18n.t('messages.folderInfoLoading'));
+            console.log('Поточна мова:', window.i18n.getCurrentLanguage());
+            console.log('Доступні мови:', window.i18n.getAvailableLanguages());
             
             // Завантажуємо WASM модуль
             await this.wasmLoader.load();
@@ -501,6 +512,19 @@ class PhotoSorterApp {
             });
         }
         
+        // Обробник для радіобаттона перевірки місця на диску
+        const confirmDiskSpaceRadio = document.getElementById('confirmDiskSpace');
+        if (confirmDiskSpaceRadio) {
+            confirmDiskSpaceRadio.addEventListener('change', (e) => {
+                const diskSpaceCheckbox = document.getElementById('diskSpaceCheckbox');
+                if (e.target.checked) {
+                    diskSpaceCheckbox.classList.remove('warning');
+                }
+                // Оновлюємо стан кнопки "Почати"
+                this.updateStartButton();
+            });
+        }
+        
         // Закриття модальних вікон по кліку поза ними
         document.querySelectorAll('.modal').forEach(modal => {
             modal.addEventListener('click', (e) => {
@@ -518,6 +542,50 @@ class PhotoSorterApp {
     showLoadingOverlay() {
         const loadingOverlay = document.getElementById('loadingOverlay');
         if (loadingOverlay) {
+            loadingOverlay.style.display = 'flex';
+        }
+    }
+
+    /**
+     * Показує loading overlay з динамічним повідомленням
+     * @param {string} message - Повідомлення для відображення
+     */
+    showLoadingOverlayWithMessage(message) {
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingText = loadingOverlay?.querySelector('p');
+        
+        if (loadingOverlay) {
+            if (loadingText) {
+                // Перевіряємо, чи це ключ локалізації чи готовий текст
+                if (message.startsWith('messages.')) {
+                    // Якщо це ключ локалізації, намагаємося його перекласти
+                    if (window.i18n && window.i18n.t) {
+                        try {
+                            const translatedMessage = window.i18n.t(message);
+                            console.log('Переклад повідомлення:', message, '->', translatedMessage);
+                            
+                            // Перевіряємо, чи переклад не повернув сам ключ
+                            if (translatedMessage === message) {
+                                console.warn('Переклад повернув сам ключ, використовуємо fallback');
+                                loadingText.textContent = 'Завантаження...';
+                            } else {
+                                loadingText.textContent = translatedMessage;
+                            }
+                        } catch (error) {
+                            console.error('Помилка перекладу:', error);
+                            loadingText.textContent = 'Завантаження...';
+                        }
+                    } else {
+                        // Якщо локалізація ще не готова, показуємо fallback текст
+                        console.log('Локалізація не готова, показуємо fallback:', message);
+                        console.log('window.i18n доступний:', !!window.i18n);
+                        loadingText.textContent = 'Завантаження...';
+                    }
+                } else {
+                    // Якщо це готовий текст, показуємо його
+                    loadingText.textContent = message;
+                }
+            }
             loadingOverlay.style.display = 'flex';
         }
     }
@@ -634,11 +702,22 @@ class PhotoSorterApp {
         try {
             const folderData = await this.fileHandler.selectInputFolder();
             if (folderData) {
-                const folderInfo = await this.fileHandler.getFolderInfo(folderData.handle);
-                this.addInputFolderToList(folderData, folderInfo);
-                this.updateStartButton();
+                // Показуємо спінер з повідомленням
+                this.showLoadingOverlayWithMessage('messages.folderInfoLoading');
+                
+                try {
+                    const folderInfo = await this.fileHandler.getFolderInfo(folderData.handle);
+                    this.addInputFolderToList(folderData, folderInfo);
+                    this.updateStartButton();
+                } finally {
+                    // Приховуємо спінер
+                    this.hideLoadingOverlay();
+                }
             }
         } catch (error) {
+            // Приховуємо спінер у випадку помилки
+            this.hideLoadingOverlay();
+            
             if (error.message.includes('вже додана')) {
                 this.showError(window.i18n.t('messages.folderAlreadyAdded'));
             } else {
@@ -761,20 +840,28 @@ class PhotoSorterApp {
         const folders = this.fileHandler.getInputFolders();
         if (folders.length === 0) return;
 
-        let totalFiles = 0;
-        let totalSize = 0;
+        // Показуємо спінер з повідомленням
+        this.showLoadingOverlayWithMessage('messages.folderStatsUpdating');
 
-        for (const folderData of folders) {
-            const folderInfo = await this.fileHandler.getFolderInfo(folderData.handle);
-            totalFiles += folderInfo.fileCount;
-            totalSize += folderInfo.totalSize;
+        try {
+            let totalFiles = 0;
+            let totalSize = 0;
+
+            for (const folderData of folders) {
+                const folderInfo = await this.fileHandler.getFolderInfo(folderData.handle);
+                totalFiles += folderInfo.fileCount;
+                totalSize += folderInfo.totalSize;
+            }
+
+            const folderStats = document.getElementById('inputFolderStats');
+            folderStats.textContent = window.i18n.t('folders.totalFiles', { 
+                count: totalFiles, 
+                size: this.formatFileSize(totalSize) 
+            });
+        } finally {
+            // Приховуємо спінер
+            this.hideLoadingOverlay();
         }
-
-        const folderStats = document.getElementById('inputFolderStats');
-        folderStats.textContent = window.i18n.t('folders.totalFiles', { 
-            count: totalFiles, 
-            size: this.formatFileSize(totalSize) 
-        });
     }
 
     /**
@@ -784,11 +871,21 @@ class PhotoSorterApp {
         try {
             const folderHandle = await this.fileHandler.selectOutputFolder();
             if (folderHandle) {
-                const folderInfo = await this.fileHandler.getFolderInfo(folderHandle);
-                this.updateOutputFolderInfo(folderInfo);
-                this.updateStartButton();
+                // Показуємо спінер з повідомленням
+                this.showLoadingOverlayWithMessage('messages.outputFolderReady');
+                
+                try {
+                    const folderInfo = await this.fileHandler.getOutputFolderInfo(folderHandle);
+                    this.updateOutputFolderInfo(folderInfo);
+                    this.updateStartButton();
+                } finally {
+                    // Приховуємо спінер
+                    this.hideLoadingOverlay();
+                }
             }
         } catch (error) {
+            // Приховуємо спінер у випадку помилки
+            this.hideLoadingOverlay();
             this.showError(window.i18n.t('errors.outputFolderError', { error: error.message }));
         }
     }
@@ -803,14 +900,25 @@ class PhotoSorterApp {
         const info = document.getElementById('outputFolderInfo');
         const path = document.getElementById('outputFolderPath');
         const stats = document.getElementById('outputFolderStats');
+        const diskSpaceCheckbox = document.getElementById('diskSpaceCheckbox');
         
         card.classList.add('selected');
         info.style.display = 'block';
+        diskSpaceCheckbox.style.display = 'block';
+        
         path.textContent = folderInfo.name;
-        stats.textContent = window.i18n.t('folders.totalFiles', { 
-            count: folderInfo.fileCount, 
-            size: folderInfo.formattedSize 
-        });
+        stats.textContent = folderInfo.message;
+        
+        
+        // Скидаємо радіобаттон при зміні папки
+        const confirmRadio = document.getElementById('confirmDiskSpace');
+        if (confirmRadio) {
+            confirmRadio.checked = false;
+            diskSpaceCheckbox.classList.remove('warning');
+        }
+        
+        // Оновлюємо стан кнопки "Почати"
+        this.updateStartButton();
     }
 
     /**
@@ -822,8 +930,10 @@ class PhotoSorterApp {
         
         const hasInputFolders = this.fileHandler.getInputFolders().length > 0;
         const hasOutputFolder = this.fileHandler.outputFolderHandle !== null;
+        const confirmDiskSpaceRadio = document.getElementById('confirmDiskSpace');
+        const isDiskSpaceConfirmed = confirmDiskSpaceRadio ? confirmDiskSpaceRadio.checked : false;
         
-        startBtn.disabled = !hasInputFolders || !hasOutputFolder || this.isProcessing;
+        startBtn.disabled = !hasInputFolders || !hasOutputFolder || !isDiskSpaceConfirmed || this.isProcessing;
     }
 
     /**
@@ -834,6 +944,18 @@ class PhotoSorterApp {
         
         if (this.isProcessing) {
             console.log('[DEBUG] Обробка вже запущена, виходимо');
+            return;
+        }
+
+        // Перевіряємо радіобаттон перевірки місця на диску
+        const confirmDiskSpaceRadio = document.getElementById('confirmDiskSpace');
+        if (confirmDiskSpaceRadio && !confirmDiskSpaceRadio.checked) {
+            const diskSpaceCheckbox = document.getElementById('diskSpaceCheckbox');
+            if (diskSpaceCheckbox) {
+                diskSpaceCheckbox.classList.add('warning');
+                // Показуємо повідомлення
+                this.showError(window.i18n.t('messages.diskSpaceWarning'));
+            }
             return;
         }
 
